@@ -255,13 +255,10 @@ selection approaches widely used in soil science research
 
 To cite this package in publications:
 
-    Soil Science Team (2024). soilquality: Soil Quality Index Calculation
-    with PCA and AHP. R package version 1.0.0.
-    https://github.com/soilscience/soilquality
+    Carbajal, Carlos (2025). soilquality: Soil Quality Index Calculation with PCA and AHP. R package version 1.0.0. https://github.com/ccarbajal16/soilquality
 
 #### Getting Help
 
 - Function documentation: `?function_name` or `help(function_name)`
 - Vignettes: `browseVignettes("soilquality")`
-- Issues: <https://github.com/soilscience/soilquality/issues>
-- Discussions: <https://github.com/soilscience/soilquality/discussions>
+- Issues: <https://github.com/ccarbajal16/soilquality/issues>
