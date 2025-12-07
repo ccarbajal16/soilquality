@@ -1,2 +1,6 @@
 ^doc$
 ^Meta$
+^data-raw$
+^lib$
+^coverage_report\.html$
+^Rplots\.pdf$

@@ -1,4 +1,6 @@
 #' @keywords internal
+#' @importFrom graphics abline barplot boxplot hist legend lines mtext par
+#' @importFrom stats approx biplot complete.cases sd
 "_PACKAGE"
 
 #' soilquality: Soil Quality Index Calculation with PCA and AHP

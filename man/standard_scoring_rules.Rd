@@ -13,7 +13,7 @@ If a property set name is provided (e.g., "basic", "standard"), the
 corresponding properties from \code{soil_property_sets} will be used.}
 }
 \value{
-A named list of \code{\link{scoring_rule}} objects, one for each
+A named list of \code{scoring_rule} objects, one for each
   property. The names of the list correspond to the property names.
 }
 \description{
