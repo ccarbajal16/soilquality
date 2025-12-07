@@ -1,4 +1,7 @@
 url: https://ccarbajal16.github.io/soilquality/
+
+logo: man/figures/logo.png
+
 template:
   bootstrap: 5
   bootswatch: cosmo

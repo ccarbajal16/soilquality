@@ -1,4 +1,4 @@
-# soilquality
+# soilquality <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
 <!-- badges: start -->
 [![R-CMD-check](https://img.shields.io/badge/R--CMD--check-passing-brightgreen.svg)](https://github.com/ccarbajal16/soilquality)
