@@ -1,0 +1,32 @@
+Package: soilquality
+Type: Package
+Title: Soil Quality Index Calculation with PCA and AHP
+Version: 1.0.0
+Authors@R: c(
+    person("Soil Science Team", email = "soilquality@example.com", 
+           role = c("aut", "cre"))
+    )
+Description: Provides tools for calculating Soil Quality Index (SQI) using 
+    Principal Component Analysis (PCA) for Minimum Data Set (MDS) selection 
+    and Analytic Hierarchy Process (AHP) for expert-based weighting. The 
+    package transforms soil property data into standardized quality metrics 
+    with comprehensive visualization and interactive tools.
+License: MIT + file LICENSE
+Encoding: UTF-8
+LazyData: true
+Depends: 
+    R (>= 3.5.0)
+Imports:
+    stats,
+    utils
+Suggests:
+    shiny,
+    DT,
+    testthat (>= 3.0.0),
+    knitr,
+    rmarkdown,
+    covr
+RoxygenNote: 7.0.0
+VignetteBuilder: knitr
+URL: https://github.com/soilscience/soilquality
+BugReports: https://github.com/soilscience/soilquality/issues
