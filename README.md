@@ -191,7 +191,7 @@ citation("soilquality")
 
 Or use:
 
-> Soil Science Team (2024). soilquality: Soil Quality Index Calculation with PCA and AHP.
+> Carbajal, Carlos (2025). soilquality: Soil Quality Index Calculation with PCA and AHP.
 > R package version 1.0.0. https://github.com/ccarbajal16/soilquality
 
 ## Contributing
