@@ -1,0 +1,281 @@
+---
+title: "Introduction to soilquality"
+author: "soilquality package"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to soilquality}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  fig.width = 7,
+  fig.height = 5
+)
+```
+
+## Overview
+
+The **soilquality** package provides tools for calculating Soil Quality Index 
+(SQI) using a scientifically rigorous approach that combines:
+
+- **Principal Component Analysis (PCA)** for selecting a Minimum Data Set (MDS) 
+  of soil indicators
+- **Analytic Hierarchy Process (AHP)** for expert-based weighting of indicators
+- **Flexible scoring functions** for normalizing soil properties to a 0-1 scale
+- **Visualization tools** for interpreting and communicating results
+
+This package is designed for soil scientists, researchers, and environmental 
+consultants who need to assess soil quality in a systematic and reproducible way.
+
+## Installation
+
+### From GitHub
+
+You can install the development version of soilquality from GitHub:
+
+```{r install-github, eval = FALSE}
+# Install devtools if you haven't already
+install.packages("devtools")
+
+# Install soilquality from GitHub
+devtools::install_github("username/soilquality")
+```
+
+### From CRAN
+
+Once released on CRAN, you can install the package with:
+
+```{r install-cran, eval = FALSE}
+install.packages("soilquality")
+```
+
+## Basic Workflow
+
+The typical workflow for calculating SQI involves these steps:
+
+1. Load and prepare your soil data
+2. Select soil properties for analysis
+3. Define scoring rules for each property
+4. Calculate indicator weights (optional: use AHP)
+5. Compute the SQI
+6. Visualize and interpret results
+
+Let's walk through a complete example using the included `soil_ucayali` dataset.
+
+### Load the Package and Data
+
+```{r load-package}
+library(soilquality)
+
+# Load the example dataset
+data(soil_ucayali)
+
+# View the first few rows
+head(soil_ucayali)
+```
+
+The `soil_ucayali` dataset contains 50 soil samples from the Ucayali region of 
+Peru, with 14 soil properties including physical, chemical, and fertility 
+indicators.
+
+### Quick Start: Basic SQI Calculation
+
+The simplest way to calculate SQI is using `compute_sqi_properties()` with 
+default settings:
+
+```{r basic-sqi}
+# Calculate SQI using standard fertility properties
+result <- compute_sqi_properties(
+  data = soil_ucayali,
+  properties = c("pH", "OM", "N", "P", "K", "CEC"),
+  id_column = "SampleID"
+)
+
+# View the result
+print(result)
+```
+
+This function automatically:
+
+- Standardizes the selected properties
+- Performs PCA to select the Minimum Data Set (MDS)
+- Applies standard scoring rules appropriate for each property
+- Calculates equal weights for indicators (or uses AHP if provided)
+- Computes the final SQI for each sample
+
+### Understanding the Results
+
+The result object contains several components:
+
+```{r result-components}
+# Selected MDS indicators
+result$mds
+
+# Indicator weights
+result$weights
+
+# Consistency Ratio (for AHP)
+result$CR
+
+# View SQI values for first few samples
+head(result$results[, c("SampleID", "SQI")])
+```
+
+**Key components:**
+
+- **mds**: The soil properties selected as the Minimum Data Set through PCA
+- **weights**: The importance weight assigned to each MDS indicator
+- **CR**: Consistency Ratio for AHP (should be < 0.1 for reliable weights)
+- **results**: A data frame with original data, scored indicators, and final SQI
+
+### Interpreting SQI Values
+
+SQI values range from 0 to 1, where:
+
+- **0.8 - 1.0**: Excellent soil quality
+- **0.6 - 0.8**: Good soil quality
+- **0.4 - 0.6**: Moderate soil quality
+- **0.2 - 0.4**: Poor soil quality
+- **0.0 - 0.2**: Very poor soil quality
+
+```{r sqi-summary}
+# Summary statistics of SQI
+summary(result$results$SQI)
+
+# Count samples by quality class
+sqi_values <- result$results$SQI
+quality_class <- cut(sqi_values, 
+                     breaks = c(0, 0.2, 0.4, 0.6, 0.8, 1.0),
+                     labels = c("Very Poor", "Poor", "Moderate", 
+                                "Good", "Excellent"))
+table(quality_class)
+```
+
+## Visualization
+
+The package provides several visualization options to help interpret results.
+
+### SQI Distribution
+
+View the distribution of SQI values across all samples:
+
+```{r plot-distribution, fig.width = 7, fig.height = 5}
+plot(result, type = "distribution")
+```
+
+This histogram shows how SQI values are distributed, with a vertical line 
+indicating the mean SQI.
+
+### Indicator Scores
+
+Compare the scores of different indicators:
+
+```{r plot-indicators, fig.width = 7, fig.height = 5}
+plot(result, type = "indicators")
+```
+
+Boxplots show the distribution of scores for each MDS indicator, helping 
+identify which properties are limiting soil quality.
+
+### Indicator Weights
+
+View the relative importance of each indicator:
+
+```{r plot-weights, fig.width = 7, fig.height = 5}
+plot(result, type = "weights")
+```
+
+The bar chart shows the weight assigned to each indicator. The Consistency 
+Ratio (CR) is displayed at the top.
+
+### PCA Scree Plot
+
+Examine the variance explained by principal components:
+
+```{r plot-scree, fig.width = 7, fig.height = 5}
+plot(result, type = "scree")
+```
+
+This plot helps understand how much variance is captured by the selected 
+principal components.
+
+### Comprehensive Report
+
+Generate all plots at once in a multi-panel layout:
+
+```{r plot-report, fig.width = 10, fig.height = 10}
+plot_sqi_report(result)
+```
+
+## Using Pre-defined Property Sets
+
+The package includes several pre-defined property sets for common analyses:
+
+```{r property-sets}
+# Available property sets
+names(soil_property_sets)
+
+# View the standard property set
+soil_property_sets$standard
+
+# Use a pre-defined property set
+result_standard <- compute_sqi_properties(
+  data = soil_ucayali,
+  properties = soil_property_sets$standard,
+  id_column = "SampleID"
+)
+```
+
+Available property sets:
+
+- **basic**: Essential properties (pH, OM, P, K)
+- **standard**: Common soil test properties
+- **comprehensive**: Extended property list
+- **physical**: Physical properties only
+- **chemical**: Chemical properties only
+- **fertility**: Fertility-related properties
+
+## Custom Property Selection
+
+You can also specify your own custom set of properties:
+
+```{r custom-properties}
+# Focus on physical properties
+physical_props <- c("Sand", "Silt", "Clay", "BD")
+
+result_physical <- compute_sqi_properties(
+  data = soil_ucayali,
+  properties = physical_props,
+  id_column = "SampleID"
+)
+
+# View selected MDS
+result_physical$mds
+```
+
+## Next Steps
+
+This introduction covered the basic workflow for calculating SQI. To learn more:
+
+- **Advanced Usage**: See `vignette("advanced-usage")` for custom scoring rules, 
+  property selection strategies, and advanced visualization options
+- **AHP Matrices**: See `vignette("ahp-matrices")` for creating expert-based 
+  indicator weights using the Analytic Hierarchy Process
+- **Function Reference**: Use `help(package = "soilquality")` to browse all 
+  available functions
+
+## References
+
+- Andrews, S. S., Karlen, D. L., & Cambardella, C. A. (2004). The soil 
+  management assessment framework: A quantitative soil quality evaluation 
+  method. *Soil Science Society of America Journal*, 68(6), 1945-1962.
+
+- Saaty, T. L. (1980). *The Analytic Hierarchy Process*. McGraw-Hill.
+
+- Shukla, M. K., Lal, R., & Ebinger, M. (2006). Determining soil quality 
+  indicators by factor analysis. *Soil and Tillage Research*, 87(2), 194-204.
