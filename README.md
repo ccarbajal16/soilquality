@@ -96,7 +96,7 @@ custom_rules <- list(
 )
 
 result <- compute_sqi_properties(
-  data = soil_data,
+  data = soil_ucayali,
   properties = c("pH", "OM", "BD", "P"),
   scoring_rules = custom_rules
 )
@@ -109,11 +109,11 @@ result <- compute_sqi_properties(
 indicators <- c("pH", "OM", "P", "K")
 ahp_matrix <- create_ahp_matrix(indicators, mode = "interactive")
 
-# Use in SQI computation
+# Use computed AHP weights in SQI calculation
 result <- compute_sqi_properties(
   data = soil_ucayali,
-  properties = indicators,
-  pairwise_matrix = ahp_matrix$matrix
+  properties = ahp_matrix$indicators,
+  pairwise_matrix = ahp_matrix$weights
 )
 ```
 
