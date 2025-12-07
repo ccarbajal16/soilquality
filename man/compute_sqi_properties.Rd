@@ -100,12 +100,12 @@ result <- compute_sqi_properties(
   scoring_rules = rules
 )
 
-# Use standard scoring rules for a property set
+# Use standard scoring rules for available properties
 result <- compute_sqi_properties(
   data = soil_data,
-  properties = soil_property_sets$basic,
+  properties = c("pH", "OM"),
   id_column = "SampleID",
-  scoring_rules = standard_scoring_rules("basic")
+  scoring_rules = standard_scoring_rules(c("pH", "OM"))
 )
 
 }

@@ -180,13 +180,6 @@ Useful links:
   \item Report bugs at \url{https://github.com/soilscience/soilquality/issues}
 }
 
-
-Useful links:
-\itemize{
-  \item \url{https://github.com/soilscience/soilquality}
-  \item Report bugs at \url{https://github.com/soilscience/soilquality/issues}
-}
-
 }
 \author{
 \strong{Maintainer}: Soil Science Team \email{soilquality@example.com}

@@ -153,7 +153,6 @@
 #'     McGraw-Hill, New York.
 #' }
 #'
-#' @docType package
 #' @name soilquality-package
 #' @aliases soilquality
 NULL
