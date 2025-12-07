@@ -1,7 +1,7 @@
 # soilquality
 
 <!-- badges: start -->
-[![R-CMD-check](https://img.shields.io/badge/R--CMD--check-passing-brightgreen.svg)](https://github.com/soilscience/soilquality)
+[![R-CMD-check](https://img.shields.io/badge/R--CMD--check-passing-brightgreen.svg)](https://github.com/ccarbajal16/soilquality)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
@@ -35,7 +35,7 @@ if (!requireNamespace("devtools", quietly = TRUE)) {
 }
 
 # Install soilquality
-devtools::install_github("soilscience/soilquality")
+devtools::install_github("ccarbajal16/soilquality")
 ```
 
 ### From CRAN (Stable Release)
@@ -179,7 +179,7 @@ Comprehensive documentation is available through:
 
 - **Function Reference**: Access help for any function with `?function_name`
 
-- **Package Website**: [https://soilscience.github.io/soilquality](https://soilscience.github.io/soilquality)
+- **Package Website**: [https://ccarbajal16.github.io/soilquality](https://ccarbajal16.github.io/soilquality)
 
 ## Citation
 
@@ -191,8 +191,8 @@ citation("soilquality")
 
 Or use:
 
-> Soil Science Team (2024). soilquality: Soil Quality Index Calculation with PCA and AHP. 
-> R package version 1.0.0. https://github.com/soilscience/soilquality
+> Soil Science Team (2024). soilquality: Soil Quality Index Calculation with PCA and AHP.
+> R package version 1.0.0. https://github.com/ccarbajal16/soilquality
 
 ## Contributing
 
@@ -205,7 +205,7 @@ Contributions are welcome! Please feel free to submit a Pull Request or open an 
 
 ## Issues and Support
 
-Please report issues at: https://github.com/soilscience/soilquality/issues
+Please report issues at: https://github.com/ccarbajal16/soilquality/issues
 
 For questions and discussions, use the GitHub Discussions page.
 
