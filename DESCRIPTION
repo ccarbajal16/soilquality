@@ -26,7 +26,7 @@ Suggests:
     knitr,
     rmarkdown,
     covr
-RoxygenNote: 7.0.0
+RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 URL: https://github.com/soilscience/soilquality
 BugReports: https://github.com/soilscience/soilquality/issues
