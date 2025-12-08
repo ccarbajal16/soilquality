@@ -36,6 +36,20 @@ standardized quality metrics.
 
 ### From GitHub (Development Version)
 
+#### Using pak (Recommended)
+
+``` r
+# Install pak if needed
+if (!requireNamespace("pak", quietly = TRUE)) {
+  install.packages("pak")
+}
+
+# Install soilquality
+pak::pak("ccarbajal16/soilquality")
+```
+
+#### Using devtools
+
 ``` r
 # Install devtools if needed
 if (!requireNamespace("devtools", quietly = TRUE)) {
