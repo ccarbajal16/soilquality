@@ -932,17 +932,17 @@ Scoring Rule: optimum_range
 
 ```r
 # Step-by-step fertility assessment
-library(soilquality)
-data(soil_ucayali)
+# 1. Read soil data with automatic encoding detection
+soil_data <- read_soil_csv("data/soil_data.csv")
 
-# 1. Select fertility properties
+# 2. Select fertility properties
 props <- soil_property_sets$fertility
 print(props)
 
-# 2. Generate standard scoring rules
+# 3. Generate standard scoring rules
 rules <- standard_scoring_rules(props)
 
-# 3. Create AHP weights based on nutrient importance
+# 4. Create AHP weights based on nutrient importance
 # Importance order: OM > N > P > CEC > K > Ca > Mg > S
 ratios <- c(OM = 8, N = 7, P = 6, CEC = 5, K = 4, Ca = 3, Mg = 2, S = 1)
 pairwise <- ratio_to_saaty(ratios[props])
@@ -952,33 +952,48 @@ ahp <- ahp_weights(pairwise, props)
 print(ahp$weights)
 print(paste("Consistency Ratio:", round(ahp$CR, 4)))
 
-# 4. Compute SQI
+# 5. Compute SQI - let function determine MDS first
 result <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = props,
   id_column = "SampleID",
   scoring_rules = rules,
-  pairwise_matrix = pairwise,
   var_threshold = 0.05,
   loading_threshold = 0.5
 )
 
-# 5. Examine results
-print(result)
-summary(result$results$SQI)
+# After getting MDS, create pairwise matrix for those specific indicators
+mds_props <- result$mds
+mds_ratios <- ratios[mds_props]
+mds_pairwise <- ratio_to_saaty(mds_ratios)
 
-# 6. Identify samples by quality class
-result$results$Quality_Class <- cut(
-  result$results$SQI,
+# Recompute with MDS-specific weights
+result_weighted <- compute_sqi_properties(
+  data = soil_data,
+  properties = props,
+  id_column = "SampleID",
+  scoring_rules = rules,
+  pairwise_matrix = mds_pairwise,
+  var_threshold = 0.05,
+  loading_threshold = 0.5
+)
+
+# 6. Examine results
+print(result_weighted)
+summary(result_weighted$results$SQI)
+
+# 7. Identify samples by quality class
+result_weighted$results$Quality_Class <- cut(
+  result_weighted$results$SQI,
   breaks = c(0, 0.25, 0.50, 0.75, 1.0),
   labels = c("Poor", "Fair", "Good", "Excellent"),
   include.lowest = TRUE
 )
 
-table(result$results$Quality_Class)
+table(result_weighted$results$Quality_Class)
 
-# 7. Export results
-write.csv(result$results, "fertility_sqi_results.csv", row.names = FALSE)
+# 8. Export results
+write.csv(result_weighted$results, "fertility_sqi_results.csv", row.names = FALSE)
 ```
 
 ---
