@@ -15,13 +15,13 @@
 #'     capacity (CEC). Recommended for most soil quality assessments.}
 #'   \item{comprehensive}{An extensive set of 15 properties including all
 #'     standard properties plus bulk density (BD), electrical conductivity
-#'     (EC), calcium (Ca), magnesium (Mg), sodium (Na), and sulfur (S).
+#'     (EC), calcium (Ca), magnesium (Mg) and sodium (Na).
 #'     Suitable for detailed soil characterization.}
 #'   \item{physical}{Physical properties only: Sand, Silt, Clay, and BD.
 #'     Focuses on soil structure and texture characteristics.}
 #'   \item{chemical}{Chemical properties only: pH, EC, CEC, Ca, Mg, K, Na.
 #'     Focuses on soil chemistry and nutrient availability.}
-#'   \item{fertility}{Fertility-related properties: OM, N, P, K, Ca, Mg, S,
+#'   \item{fertility}{Fertility-related properties: OM, N, P, K, Ca, Mg
 #'     CEC. Focuses on nutrient supply and retention capacity.}
 #' }
 #'
@@ -47,13 +47,13 @@ soil_property_sets <- list(
   standard = c("Sand", "Silt", "Clay", "pH", "OM", "N", "P", "K", "CEC"),
 
   comprehensive = c("Sand", "Silt", "Clay", "pH", "OM", "N", "P", "K",
-                    "CEC", "BD", "EC", "Ca", "Mg", "Na", "S"),
+                    "CEC", "BD", "EC", "Ca", "Mg", "Na"),
 
   physical = c("Sand", "Silt", "Clay", "BD"),
 
   chemical = c("pH", "EC", "CEC", "Ca", "Mg", "K", "Na"),
 
-  fertility = c("OM", "N", "P", "K", "Ca", "Mg", "S", "CEC")
+  fertility = c("OM", "N", "P", "K", "Ca", "Mg", "CEC")
 )
 
 
