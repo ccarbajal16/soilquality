@@ -854,17 +854,17 @@ S = 1 - \left(\frac{|x - x_{opt}|}{tolerance}\right)^2
 <h3 id="id_96-complete-example-fertility-assessment">9.6 Complete Example: Fertility Assessment<a class="anchor" aria-label="anchor" href="#id_96-complete-example-fertility-assessment"></a></h3>
 <div class="sourceCode" id="cb51"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Step-by-step fertility assessment</span></span>
-<span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ccarbajal16/soilquality" class="external-link">soilquality</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">soil_ucayali</span><span class="op">)</span></span>
+<span><span class="co"># 1. Read soil data with automatic encoding detection</span></span>
+<span><span class="va">soil_data</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/read_soil_csv.html">read_soil_csv</a></span><span class="op">(</span><span class="st">"data/soil_data.csv"</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 1. Select fertility properties</span></span>
+<span><span class="co"># 2. Select fertility properties</span></span>
 <span><span class="va">props</span> <span class="op">&lt;-</span> <span class="va">soil_property_sets</span><span class="op">$</span><span class="va">fertility</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">props</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 2. Generate standard scoring rules</span></span>
+<span><span class="co"># 3. Generate standard scoring rules</span></span>
 <span><span class="va">rules</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/standard_scoring_rules.html">standard_scoring_rules</a></span><span class="op">(</span><span class="va">props</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 3. Create AHP weights based on nutrient importance</span></span>
+<span><span class="co"># 4. Create AHP weights based on nutrient importance</span></span>
 <span><span class="co"># Importance order: OM &gt; N &gt; P &gt; CEC &gt; K &gt; Ca &gt; Mg &gt; S</span></span>
 <span><span class="va">ratios</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span>OM <span class="op">=</span> <span class="fl">8</span>, N <span class="op">=</span> <span class="fl">7</span>, P <span class="op">=</span> <span class="fl">6</span>, CEC <span class="op">=</span> <span class="fl">5</span>, K <span class="op">=</span> <span class="fl">4</span>, Ca <span class="op">=</span> <span class="fl">3</span>, Mg <span class="op">=</span> <span class="fl">2</span>, S <span class="op">=</span> <span class="fl">1</span><span class="op">)</span></span>
 <span><span class="va">pairwise</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ratio_to_saaty.html">ratio_to_saaty</a></span><span class="op">(</span><span class="va">ratios</span><span class="op">[</span><span class="va">props</span><span class="op">]</span><span class="op">)</span></span>
@@ -874,33 +874,48 @@ S = 1 - \left(\frac{|x - x_{opt}|}{tolerance}\right)^2
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">ahp</span><span class="op">$</span><span class="va">weights</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/paste.html" class="external-link">paste</a></span><span class="op">(</span><span class="st">"Consistency Ratio:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="va">ahp</span><span class="op">$</span><span class="va">CR</span>, <span class="fl">4</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 4. Compute SQI</span></span>
+<span><span class="co"># 5. Compute SQI - let function determine MDS first</span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="va">props</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span>,</span>
 <span>  scoring_rules <span class="op">=</span> <span class="va">rules</span>,</span>
-<span>  pairwise_matrix <span class="op">=</span> <span class="va">pairwise</span>,</span>
 <span>  var_threshold <span class="op">=</span> <span class="fl">0.05</span>,</span>
 <span>  loading_threshold <span class="op">=</span> <span class="fl">0.5</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 5. Examine results</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">results</span><span class="op">$</span><span class="va">SQI</span><span class="op">)</span></span>
+<span><span class="co"># After getting MDS, create pairwise matrix for those specific indicators</span></span>
+<span><span class="va">mds_props</span> <span class="op">&lt;-</span> <span class="va">result</span><span class="op">$</span><span class="va">mds</span></span>
+<span><span class="va">mds_ratios</span> <span class="op">&lt;-</span> <span class="va">ratios</span><span class="op">[</span><span class="va">mds_props</span><span class="op">]</span></span>
+<span><span class="va">mds_pairwise</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/ratio_to_saaty.html">ratio_to_saaty</a></span><span class="op">(</span><span class="va">mds_ratios</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 6. Identify samples by quality class</span></span>
-<span><span class="va">result</span><span class="op">$</span><span class="va">results</span><span class="op">$</span><span class="va">Quality_Class</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut</a></span><span class="op">(</span></span>
-<span>  <span class="va">result</span><span class="op">$</span><span class="va">results</span><span class="op">$</span><span class="va">SQI</span>,</span>
+<span><span class="co"># Recompute with MDS-specific weights</span></span>
+<span><span class="va">result_weighted</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
+<span>  properties <span class="op">=</span> <span class="va">props</span>,</span>
+<span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span>,</span>
+<span>  scoring_rules <span class="op">=</span> <span class="va">rules</span>,</span>
+<span>  pairwise_matrix <span class="op">=</span> <span class="va">mds_pairwise</span>,</span>
+<span>  var_threshold <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  loading_threshold <span class="op">=</span> <span class="fl">0.5</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 6. Examine results</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result_weighted</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/summary.html" class="external-link">summary</a></span><span class="op">(</span><span class="va">result_weighted</span><span class="op">$</span><span class="va">results</span><span class="op">$</span><span class="va">SQI</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># 7. Identify samples by quality class</span></span>
+<span><span class="va">result_weighted</span><span class="op">$</span><span class="va">results</span><span class="op">$</span><span class="va">Quality_Class</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/cut.html" class="external-link">cut</a></span><span class="op">(</span></span>
+<span>  <span class="va">result_weighted</span><span class="op">$</span><span class="va">results</span><span class="op">$</span><span class="va">SQI</span>,</span>
 <span>  breaks <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">0.25</span>, <span class="fl">0.50</span>, <span class="fl">0.75</span>, <span class="fl">1.0</span><span class="op">)</span>,</span>
 <span>  labels <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Poor"</span>, <span class="st">"Fair"</span>, <span class="st">"Good"</span>, <span class="st">"Excellent"</span><span class="op">)</span>,</span>
 <span>  include.lowest <span class="op">=</span> <span class="cn">TRUE</span></span>
 <span><span class="op">)</span></span>
 <span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">results</span><span class="op">$</span><span class="va">Quality_Class</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/base/table.html" class="external-link">table</a></span><span class="op">(</span><span class="va">result_weighted</span><span class="op">$</span><span class="va">results</span><span class="op">$</span><span class="va">Quality_Class</span><span class="op">)</span></span>
 <span></span>
-<span><span class="co"># 7. Export results</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">result</span><span class="op">$</span><span class="va">results</span>, <span class="st">"fertility_sqi_results.csv"</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
+<span><span class="co"># 8. Export results</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">result_weighted</span><span class="op">$</span><span class="va">results</span>, <span class="st">"fertility_sqi_results.csv"</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span></code></pre></div>
 <hr></div>
 </div>
 <div class="section level2">
