@@ -6,6 +6,8 @@
 \alias{soilquality}
 \title{soilquality: Soil Quality Index Calculation with PCA and AHP}
 \description{
+\if{html}{\figure{logo.png}{options: style='float: right' alt='logo' width='120'}}
+
 Provides tools for calculating Soil Quality Index (SQI) using Principal Component Analysis (PCA) for Minimum Data Set (MDS) selection and Analytic Hierarchy Process (AHP) for expert-based weighting. The package transforms soil property data into standardized quality metrics with comprehensive visualization and interactive tools.
 
 The soilquality package provides a comprehensive toolkit for calculating
@@ -176,13 +178,13 @@ The package uses the following options:
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://github.com/soilscience/soilquality}
-  \item Report bugs at \url{https://github.com/soilscience/soilquality/issues}
+  \item \url{https://github.com/ccarbajal16/soilquality}
+  \item Report bugs at \url{https://github.com/ccarbajal16/soilquality/issues}
 }
 
 }
 \author{
-\strong{Maintainer}: Soil Science Team \email{soilquality@example.com}
+\strong{Maintainer}: Carlos Carbajal \email{ccarbajal@educagis.com}
 
 }
 \keyword{internal}
