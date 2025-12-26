@@ -119,6 +119,7 @@ reference:
     Built-in datasets for examples and testing
   contents:
   - soil_ucayali
+  - soil_data
 
 - title: Print Methods
   desc: >
