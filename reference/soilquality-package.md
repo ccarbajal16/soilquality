@@ -179,10 +179,10 @@ The package uses the following options:
 
 Useful links:
 
-- <https://github.com/soilscience/soilquality>
+- <https://github.com/ccarbajal16/soilquality>
 
-- Report bugs at <https://github.com/soilscience/soilquality/issues>
+- Report bugs at <https://github.com/ccarbajal16/soilquality/issues>
 
 ## Author
 
-**Maintainer**: Soil Science Team <soilquality@example.com>
+**Maintainer**: Carlos Carbajal <ccarbajal@educagis.com>

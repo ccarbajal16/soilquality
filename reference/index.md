@@ -99,6 +99,8 @@ Built-in datasets for examples and testing
 
 - [`soil_ucayali`](https://ccarbajal16.github.io/soilquality/reference/soil_ucayali.md)
   : Example Soil Data from Ucayali, Peru
+- [`soil_data`](https://ccarbajal16.github.io/soilquality/reference/soil_data.md)
+  : Extended Soil Data from Ucayali, Peru
 
 ## Print Methods
 
