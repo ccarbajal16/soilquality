@@ -61,7 +61,7 @@
                         <h4 data-toc-skip class="author">soilquality
 package</h4>
             
-            <h4 data-toc-skip class="date">2025-12-10</h4>
+            <h4 data-toc-skip class="date">2025-12-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/ccarbajal16/soilquality/blob/master/vignettes/advanced-usage.Rmd" class="external-link"><code>vignettes/advanced-usage.Rmd</code></a></small>
       <div class="d-none name"><code>advanced-usage.Rmd</code></div>
@@ -465,7 +465,7 @@ matrix):</p>
 <span></span>
 <span><span class="co"># Distribution plot</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">result_viz</span>, type <span class="op">=</span> <span class="st">"distribution"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="advanced-usage_files/figure-html/custom-plots-1.png" class="r-plt" width="672"></p>
+<p><img src="advanced-usage_files/figure-html/custom-plots-1.png" class="r-plt" alt="" width="672"></p>
 </div>
 <div class="section level3">
 <h3 id="comparing-multiple-scenarios">Comparing Multiple Scenarios<a class="anchor" aria-label="anchor" href="#comparing-multiple-scenarios"></a>
@@ -498,7 +498,7 @@ matrix):</p>
 <span>     main <span class="op">=</span> <span class="st">"Chemical Properties"</span>,</span>
 <span>     xlab <span class="op">=</span> <span class="st">"SQI"</span>, col <span class="op">=</span> <span class="st">"lightgreen"</span>, xlim <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">0</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/graphics/abline.html" class="external-link">abline</a></span><span class="op">(</span>v <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">result_chemical</span><span class="op">$</span><span class="va">results</span><span class="op">$</span><span class="va">SQI</span><span class="op">)</span>, col <span class="op">=</span> <span class="st">"red"</span>, lwd <span class="op">=</span> <span class="fl">2</span><span class="op">)</span></span></code></pre></div>
-<p><img src="advanced-usage_files/figure-html/compare-scenarios-1.png" class="r-plt" width="960"></p>
+<p><img src="advanced-usage_files/figure-html/compare-scenarios-1.png" class="r-plt" alt="" width="960"></p>
 <div class="sourceCode" id="cb16"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/par.html" class="external-link">par</a></span><span class="op">(</span>mfrow <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="fl">1</span>, <span class="fl">1</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -508,7 +508,7 @@ matrix):</p>
 <p>Visualize relationships between samples and variables:</p>
 <div class="sourceCode" id="cb17"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">result_viz</span>, type <span class="op">=</span> <span class="st">"biplot"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="advanced-usage_files/figure-html/biplot-1.png" class="r-plt" width="768"></p>
+<p><img src="advanced-usage_files/figure-html/biplot-1.png" class="r-plt" alt="" width="768"></p>
 </div>
 <div class="section level3">
 <h3 id="indicator-contribution-analysis">Indicator Contribution Analysis<a class="anchor" aria-label="anchor" href="#indicator-contribution-analysis"></a>
@@ -528,7 +528,7 @@ matrix):</p>
 <span>        ylab <span class="op">=</span> <span class="st">"Weighted Score"</span>,</span>
 <span>        las <span class="op">=</span> <span class="fl">2</span>,</span>
 <span>        col <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/grDevices/palettes.html" class="external-link">rainbow</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">result_viz</span><span class="op">$</span><span class="va">mds</span><span class="op">)</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
-<p><img src="advanced-usage_files/figure-html/indicator-contribution-1.png" class="r-plt" width="672"></p>
+<p><img src="advanced-usage_files/figure-html/indicator-contribution-1.png" class="r-plt" alt="" width="672"></p>
 </div>
 </div>
 <div class="section level2">

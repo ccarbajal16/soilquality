@@ -61,7 +61,7 @@
                         <h4 data-toc-skip class="author">soilquality
 package</h4>
             
-            <h4 data-toc-skip class="date">2025-12-10</h4>
+            <h4 data-toc-skip class="date">2025-12-26</h4>
       
       <small class="dont-index">Source: <a href="https://github.com/ccarbajal16/soilquality/blob/master/vignettes/introduction.Rmd" class="external-link"><code>vignettes/introduction.Rmd</code></a></small>
       <div class="d-none name"><code>introduction.Rmd</code></div>
@@ -406,7 +406,7 @@ results.</p>
 <p>View the distribution of SQI values across all samples:</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">result</span>, type <span class="op">=</span> <span class="st">"distribution"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/plot-distribution-1.png" class="r-plt" width="672"></p>
+<p><img src="introduction_files/figure-html/plot-distribution-1.png" class="r-plt" alt="" width="672"></p>
 <p>This histogram shows how SQI values are distributed, with a vertical
 line indicating the mean SQI.</p>
 </div>
@@ -416,7 +416,7 @@ line indicating the mean SQI.</p>
 <p>Compare the scores of different indicators:</p>
 <div class="sourceCode" id="cb8"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">result</span>, type <span class="op">=</span> <span class="st">"indicators"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/plot-indicators-1.png" class="r-plt" width="672"></p>
+<p><img src="introduction_files/figure-html/plot-indicators-1.png" class="r-plt" alt="" width="672"></p>
 <p>Boxplots show the distribution of scores for each MDS indicator,
 helping identify which properties are limiting soil quality.</p>
 </div>
@@ -426,7 +426,7 @@ helping identify which properties are limiting soil quality.</p>
 <p>View the relative importance of each indicator:</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">result</span>, type <span class="op">=</span> <span class="st">"weights"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/plot-weights-1.png" class="r-plt" width="672"></p>
+<p><img src="introduction_files/figure-html/plot-weights-1.png" class="r-plt" alt="" width="672"></p>
 <p>The bar chart shows the weight assigned to each indicator. The
 Consistency Ratio (CR) is displayed at the top.</p>
 </div>
@@ -436,7 +436,7 @@ Consistency Ratio (CR) is displayed at the top.</p>
 <p>Examine the variance explained by principal components:</p>
 <div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/graphics/plot.default.html" class="external-link">plot</a></span><span class="op">(</span><span class="va">result</span>, type <span class="op">=</span> <span class="st">"scree"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/plot-scree-1.png" class="r-plt" width="672"></p>
+<p><img src="introduction_files/figure-html/plot-scree-1.png" class="r-plt" alt="" width="672"></p>
 <p>This plot helps understand how much variance is captured by the
 selected principal components.</p>
 </div>
@@ -446,7 +446,7 @@ selected principal components.</p>
 <p>Generate all plots at once in a multi-panel layout:</p>
 <div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="../reference/plot_sqi_report.html">plot_sqi_report</a></span><span class="op">(</span><span class="va">result</span><span class="op">)</span></span></code></pre></div>
-<p><img src="introduction_files/figure-html/plot-report-1.png" class="r-plt" width="960"></p>
+<p><img src="introduction_files/figure-html/plot-report-1.png" class="r-plt" alt="" width="960"></p>
 </div>
 </div>
 <div class="section level2">
