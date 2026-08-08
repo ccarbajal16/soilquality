@@ -625,7 +625,7 @@ test_that("network and pca routes select differently on soil_data", {
   expect_false(identical(sort(pca$mds), sort(net$mds)))
 })
 
-test_that("the network route composes with sqi_validate and sqi_compare", {
+test_that("the network route composes with sqi_validate and sqi_stability", {
   skip_if_not_installed("igraph")
 
   df <- soil_data[, c("SampleID", network_props)]
@@ -638,7 +638,7 @@ test_that("the network route composes with sqi_validate and sqi_compare", {
   v <- suppressWarnings(sqi_validate(net))
   expect_s3_class(v, "sqi_validation")
 
-  cmp <- sqi_compare(pca = pca, network = net)
+  cmp <- sqi_stability(pca = pca, network = net)
   expect_equal(nrow(cmp$pairs), 1)
   expect_false(is.na(cmp$pairs$spearman))
 })
