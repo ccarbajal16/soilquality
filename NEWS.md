@@ -49,6 +49,8 @@ regression test now enforces that.
   decomposition, weights and SQI values of the default pipeline against the
   shipped `soil_data`. Every change from here must leave it green or declare
   itself a break.
+- Migrated the test suite to `testthat` edition 3 (`Config/testthat/edition: 3`).
+  No test changes were required. User-facing behaviour is unaffected.
 
 # soilquality 1.0.0
 

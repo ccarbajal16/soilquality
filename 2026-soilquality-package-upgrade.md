@@ -113,11 +113,16 @@ and Open decision 2.
   `soil_data` **before** touching anything — every phase below must leave it green.
 - [x] **0.3 ~~Create~~ Verify the shared fixture.** ✅ No new fixture needed — `soil_data` (50 × 16)
   already satisfies every stated requirement. All new tests use it. See *Data & assumptions*.
-- [ ] **0.4 ⚠️ NEW — decide the `testthat` edition.** The suite runs on **edition 2**; `DESCRIPTION`
-  lacks `Config/testthat/edition: 3`. Either add the field and fix whatever the migration breaks
-  (do it *now*, in Phase 0, while the baseline is fresh), or record the decision to stay on 2 and
-  hold every new test to 2e idioms. Do not leave this implicit — it silently constrains the ~1 000
-  lines of tests the phases below will add.
+- [x] **0.4 ⚠️ NEW — decide the `testthat` edition.** ✅ **Migrated to edition 3.** Added
+  `Config/testthat/edition: 3` to `DESCRIPTION`. The migration cost exactly one line: the suite used
+  none of the idioms edition 3 removes (`context()`, `expect_that()`, `expect_is()`,
+  `expect_equivalent()`, `expect_less_than()`/`expect_more_than()`, `setup()`/`teardown()`,
+  `with_mock()`, `expect_known_*()`), and the Phase 1–2 tests were already written in 3e style.
+  All 12 test files pass and `R CMD check` is clean under the new edition.
+  ⚠️ **Verification note for anyone repeating this:** `testthat::test_dir("tests/testthat")` does
+  **not** pick up the edition from `DESCRIPTION` — it has no idea which package the directory
+  belongs to, so it silently runs on edition 2 and reports a **false green**. Confirm with
+  `testthat::edition_get()` and run via `devtools::test()` or `R CMD check`, which do read the field.
 - [ ] **0.5 ⚠️ NEW — record the Shiny sync policy.** `run_sqi_app()` exists. Decide once, here,
   whether new routes surface in the app or the app is explicitly frozen at the current feature set,
   and note it in `NEWS.md`. Deciding per-phase guarantees drift.
@@ -409,7 +414,8 @@ cannot be compared across studies.
    threshold? Recommend a **warning** — a silent number will be ignored. *(still open)*
 4. **Scope of Phase 6.3** (`sensitivity_resistance()`) — genuinely useful but the least-used method
    in the corpus. Defer if time is short. *(still open)*
-5. ⚠️ **NEW — `testthat` edition 2 or 3?** See Task 0.4. Blocks the style of every test written below.
+5. ✅ **RESOLVED — `testthat` edition 3.** Migrated in Phase 0; cost one line in `DESCRIPTION`
+   because the suite used no removed idioms. Write every new test to 3e. See Task 0.4.
 6. ⚠️ **NEW — does `run_sqi_app()` expose the new routes?** See Task 0.5. Decide once, not per phase.
 
 ## Risks & mitigations

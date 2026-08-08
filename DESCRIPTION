@@ -30,3 +30,4 @@ VignetteBuilder: knitr
 URL: https://github.com/ccarbajal16/soilquality
 BugReports: https://github.com/ccarbajal16/soilquality/issues
 Config/roxygen2/version: 8.0.0
+Config/testthat/edition: 3
