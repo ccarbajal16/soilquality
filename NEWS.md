@@ -17,7 +17,7 @@ discriminates, rather than assuming it does.
   for an index, the spread across decision categories is the right one. A
   warning fires above `middle_band_threshold` (default 0.8) because a silent
   number gets ignored.
-- `sqi_compare()` - runs the same samples through two or more recipes and
+- `sqi_stability()` - runs the same samples through two or more recipes and
   reports whether the ranking survives: Spearman rho per pair, plus a flag
   when the best or worst sample changes. A high rank correlation does not
   rescue a changed extreme if the extreme is what you act on.

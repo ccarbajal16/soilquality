@@ -119,7 +119,7 @@ Yuan, X. and Shi, Y. (2026) -- sensitivity index, fidelity to the TDS.
 Theresa, M. et al. (2026) -- yield as an external validator.
 }
 \seealso{
-\code{\link{sqi_compare}} to check whether conclusions survive a
+\code{\link{sqi_stability}} to check whether conclusions survive a
   change of recipe; \code{\link{plot_sqi_validation}} for the distribution
   plot
 }

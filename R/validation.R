@@ -96,7 +96,7 @@
 #'                       id_column = "SampleID", select = "none")
 #' sqi_validate(result, tds = tds)
 #'
-#' @seealso \code{\link{sqi_compare}} to check whether conclusions survive a
+#' @seealso \code{\link{sqi_stability}} to check whether conclusions survive a
 #'   change of recipe; \code{\link{plot_sqi_validation}} for the distribution
 #'   plot
 #'
@@ -160,7 +160,7 @@ sqi_validate <- function(x,
              "An index that declines to separate samples cannot inform a ",
              "decision, however well it correlates with anything else. ",
              "Consider a scoring or aggregation route that discriminates ",
-             "more strongly -- see sqi_compare()."),
+             "more strongly -- see sqi_stability()."),
       100 * middle_band_share, 100 * middle_band_threshold
     ), call. = FALSE)
   }
@@ -316,7 +316,7 @@ print.sqi_validation <- function(x, ...) {
 }
 
 
-#' Compare Soil Quality Indices computed by different recipes
+#' Test whether a conclusion survives a change of index recipe
 #'
 #' Runs the same samples through two or more index recipes and reports whether
 #' the \strong{ranking of samples survives}. This is the practical question
@@ -335,13 +335,20 @@ print.sqi_validation <- function(x, ...) {
 #' combination of scoring and aggregation producing p > 0.05 -- that is, it
 #' was \strong{stable}, not merely accurate.
 #'
+#' \strong{On the name.} The CRAN package \pkg{SQIpro} exports an unrelated
+#' \code{sqi_compare()}, which tabulates the index value each of its methods
+#' produces. This function asks a different question and therefore carries a
+#' different name: not \emph{what value does each recipe give}, but \emph{does
+#' my conclusion hold when the recipe changes}. The unit of comparison here is
+#' the ranking, not the values.
+#'
 #' @param ... Two or more \code{sqi_result} objects or numeric vectors, all of
 #'   the same length. Name them (e.g. \code{linear = }, \code{sigmoid = }) and
 #'   the names are used in the report.
 #' @param labels Optional character vector of names, overriding those taken
 #'   from \code{...}.
 #'
-#' @return An object of class \code{sqi_comparison}, a list with:
+#' @return An object of class \code{sqi_stability}, a list with:
 #'   \describe{
 #'     \item{n}{Number of samples}
 #'     \item{indices}{Named list of the index vectors compared}
@@ -362,16 +369,16 @@ print.sqi_validation <- function(x, ...) {
 #'   scoring_rules = standard_scoring_rules(props, scoring = "sigmoid")
 #' )
 #'
-#' sqi_compare(linear = linear, sigmoid = sigmoid)
+#' sqi_stability(linear = linear, sigmoid = sigmoid)
 #'
 #' @seealso \code{\link{sqi_validate}} to assess a single index
 #'
 #' @export
-sqi_compare <- function(..., labels = NULL) {
+sqi_stability <- function(..., labels = NULL) {
   inputs <- list(...)
 
   if (length(inputs) < 2) {
-    stop("sqi_compare() needs at least 2 indices to compare (got ",
+    stop("sqi_stability() needs at least 2 indices to compare (got ",
          length(inputs), ")")
   }
 
@@ -432,21 +439,21 @@ sqi_compare <- function(..., labels = NULL) {
       pairs = pairs,
       stable = all(pairs$top_preserved & pairs$bottom_preserved)
     ),
-    class = "sqi_comparison"
+    class = "sqi_stability"
   )
 }
 
 
-#' Print method for sqi_comparison objects
+#' Print method for sqi_stability objects
 #'
-#' @param x An \code{sqi_comparison} object
+#' @param x An \code{sqi_stability} object
 #' @param ... Additional arguments (not used)
 #'
 #' @return Invisibly returns the input object
 #'
 #' @export
-print.sqi_comparison <- function(x, ...) {
-  cat("Soil Quality Index recipe comparison\n")
+print.sqi_stability <- function(x, ...) {
+  cat("Soil Quality Index recipe stability\n")
   cat("  Samples:", x$n, "\n")
   cat("  Indices:", paste(names(x$indices), collapse = ", "), "\n\n")
 

@@ -297,9 +297,9 @@ test_that("print.sqi_validation flags an index that does not discriminate", {
 })
 
 
-# ---- sqi_compare ------------------------------------------------------------
+# ---- sqi_stability ------------------------------------------------------------
 
-test_that("sqi_compare reports Spearman rho for every pair", {
+test_that("sqi_stability reports Spearman rho for every pair", {
   linear <- compute_sqi_properties(
     soil_data, properties = baseline_props, id_column = "SampleID",
     scoring_rules = standard_scoring_rules(baseline_props, scoring = "linear")
@@ -309,7 +309,7 @@ test_that("sqi_compare reports Spearman rho for every pair", {
     scoring_rules = standard_scoring_rules(baseline_props, scoring = "sigmoid")
   )
 
-  cmp <- sqi_compare(linear = linear, sigmoid = sigmoid)
+  cmp <- sqi_stability(linear = linear, sigmoid = sigmoid)
 
   expect_equal(nrow(cmp$pairs), 1)
   expect_identical(cmp$pairs$a, "linear")
@@ -318,22 +318,22 @@ test_that("sqi_compare reports Spearman rho for every pair", {
   expect_equal(cmp$n, nrow(soil_data))
 })
 
-test_that("sqi_compare enumerates all pairs of three indices", {
+test_that("sqi_stability enumerates all pairs of three indices", {
   a <- c(0.1, 0.5, 0.9)
   b <- c(0.2, 0.4, 0.8)
   c_ <- c(0.9, 0.5, 0.1)
 
-  cmp <- sqi_compare(a = a, b = b, c = c_)
+  cmp <- sqi_stability(a = a, b = b, c = c_)
 
   expect_equal(nrow(cmp$pairs), 3)
   expect_setequal(paste(cmp$pairs$a, cmp$pairs$b), c("a b", "a c", "b c"))
 })
 
-test_that("sqi_compare detects a perfectly preserved ranking", {
+test_that("sqi_stability detects a perfectly preserved ranking", {
   a <- c(0.1, 0.5, 0.9)
   b <- c(0.2, 0.6, 0.95)   # same order, different values
 
-  cmp <- sqi_compare(a = a, b = b)
+  cmp <- sqi_stability(a = a, b = b)
 
   expect_equal(cmp$pairs$spearman, 1)
   expect_true(cmp$pairs$top_preserved)
@@ -341,11 +341,11 @@ test_that("sqi_compare detects a perfectly preserved ranking", {
   expect_true(cmp$stable)
 })
 
-test_that("sqi_compare flags a reversed ranking", {
+test_that("sqi_stability flags a reversed ranking", {
   a <- c(0.1, 0.5, 0.9)
   b <- rev(a)
 
-  cmp <- sqi_compare(a = a, b = b)
+  cmp <- sqi_stability(a = a, b = b)
 
   expect_equal(cmp$pairs$spearman, -1)
   expect_false(cmp$pairs$top_preserved)
@@ -353,12 +353,12 @@ test_that("sqi_compare flags a reversed ranking", {
   expect_false(cmp$stable)
 })
 
-test_that("sqi_compare flags a changed extreme despite high rank correlation", {
+test_that("sqi_stability flags a changed extreme despite high rank correlation", {
   # The case the docs warn about: rho is high, but the top sample moved.
   a <- c(0.90, 0.89, 0.5, 0.3, 0.1)
   b <- c(0.89, 0.90, 0.5, 0.3, 0.1)
 
-  cmp <- sqi_compare(a = a, b = b)
+  cmp <- sqi_stability(a = a, b = b)
 
   expect_gt(cmp$pairs$spearman, 0.8)
   expect_false(cmp$pairs$top_preserved)
@@ -366,45 +366,45 @@ test_that("sqi_compare flags a changed extreme despite high rank correlation", {
   expect_false(cmp$stable)
 })
 
-test_that("sqi_compare labels unnamed inputs", {
-  cmp <- sqi_compare(c(0.1, 0.5, 0.9), c(0.2, 0.4, 0.8))
+test_that("sqi_stability labels unnamed inputs", {
+  cmp <- sqi_stability(c(0.1, 0.5, 0.9), c(0.2, 0.4, 0.8))
 
   expect_identical(cmp$pairs$a, "index_1")
   expect_identical(cmp$pairs$b, "index_2")
 })
 
-test_that("sqi_compare accepts an explicit labels argument", {
-  cmp <- sqi_compare(c(0.1, 0.5, 0.9), c(0.2, 0.4, 0.8),
+test_that("sqi_stability accepts an explicit labels argument", {
+  cmp <- sqi_stability(c(0.1, 0.5, 0.9), c(0.2, 0.4, 0.8),
                      labels = c("weighted", "area"))
 
   expect_identical(cmp$pairs$a, "weighted")
   expect_identical(cmp$pairs$b, "area")
 })
 
-test_that("sqi_compare validates its input", {
-  expect_error(sqi_compare(c(0.1, 0.5, 0.9)), "at least 2 indices")
+test_that("sqi_stability validates its input", {
+  expect_error(sqi_stability(c(0.1, 0.5, 0.9)), "at least 2 indices")
   expect_error(
-    sqi_compare(a = c(0.1, 0.5, 0.9), b = c(0.1, 0.5)),
+    sqi_stability(a = c(0.1, 0.5, 0.9), b = c(0.1, 0.5)),
     "same samples"
   )
   expect_error(
-    sqi_compare(c(0.1, 0.5), c(0.2, 0.4), labels = c("only_one")),
+    sqi_stability(c(0.1, 0.5), c(0.2, 0.4), labels = c("only_one")),
     "labels has 1 entries"
   )
 })
 
-test_that("sqi_compare mixes sqi_result objects and numeric vectors", {
+test_that("sqi_stability mixes sqi_result objects and numeric vectors", {
   result <- example_result()
 
-  cmp <- sqi_compare(object = result, vector = result$results$SQI)
+  cmp <- sqi_stability(object = result, vector = result$results$SQI)
 
   expect_equal(cmp$pairs$spearman, 1)
   expect_true(cmp$stable)
 })
 
-test_that("print.sqi_comparison reports stability", {
-  stable <- sqi_compare(a = c(0.1, 0.5, 0.9), b = c(0.2, 0.6, 0.95))
-  unstable <- sqi_compare(a = c(0.1, 0.5, 0.9), b = c(0.9, 0.5, 0.1))
+test_that("print.sqi_stability reports stability", {
+  stable <- sqi_stability(a = c(0.1, 0.5, 0.9), b = c(0.2, 0.6, 0.95))
+  unstable <- sqi_stability(a = c(0.1, 0.5, 0.9), b = c(0.9, 0.5, 0.1))
 
   expect_true(any(grepl("Both extremes are preserved",
                         capture.output(print(stable)))))
@@ -415,13 +415,13 @@ test_that("print.sqi_comparison reports stability", {
 
 # ---- weighted vs area, end to end -------------------------------------------
 
-test_that("sqi_compare works across aggregation methods", {
+test_that("sqi_stability works across aggregation methods", {
   weighted <- compute_sqi_properties(soil_data, properties = baseline_props,
                                      id_column = "SampleID", method = "weighted")
   area <- compute_sqi_properties(soil_data, properties = baseline_props,
                                  id_column = "SampleID", method = "area")
 
-  cmp <- sqi_compare(weighted = weighted, area = area)
+  cmp <- sqi_stability(weighted = weighted, area = area)
 
   expect_equal(cmp$n, nrow(soil_data))
   expect_false(is.na(cmp$pairs$spearman))

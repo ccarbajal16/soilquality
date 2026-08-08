@@ -102,6 +102,14 @@ reference:
   contents:
   - sqi_area
 
+- title: Validation
+  desc: >
+    Assessing whether an index actually discriminates, and whether a
+    conclusion survives a change of recipe
+  contents:
+  - sqi_validate
+  - sqi_stability
+
 - title: Property Sets and Standard Rules
   desc: >
     Pre-defined property collections and automatic scoring rules
@@ -115,6 +123,7 @@ reference:
   contents:
   - plot.sqi_result
   - plot_sqi_report
+  - plot_sqi_validation
 
 - title: Interactive Tools
   desc: >
@@ -135,6 +144,8 @@ reference:
   contents:
   - print.ahp_matrix
   - print.scoring_rule
+  - print.sqi_validation
+  - print.sqi_stability
 
 articles:
 - title: Getting Started
