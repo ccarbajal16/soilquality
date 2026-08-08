@@ -54,6 +54,8 @@ Functions for transforming soil properties into quality scores
   : Score indicator with optimum range
 - [`score_threshold()`](https://ccarbajal16.github.io/soilquality/reference/score_threshold.md)
   : Score indicator with threshold-based piecewise interpolation
+- [`score_sigmoid()`](https://ccarbajal16.github.io/soilquality/reference/score_sigmoid.md)
+  : Score indicator with a non-linear (sigmoidal) curve
 
 ## Scoring Constructors
 
@@ -67,6 +69,15 @@ Object-oriented constructors for scoring rules
   : Create an optimum range scoring rule
 - [`threshold_scoring()`](https://ccarbajal16.github.io/soilquality/reference/threshold_scoring.md)
   : Create a threshold-based scoring rule
+- [`sigmoid_scoring()`](https://ccarbajal16.github.io/soilquality/reference/sigmoid_scoring.md)
+  : Create a non-linear (sigmoidal) scoring rule
+
+## Aggregation
+
+Combining scored indicators into a single index
+
+- [`sqi_area()`](https://ccarbajal16.github.io/soilquality/reference/sqi_area.md)
+  : Aggregate indicator scores by the area of a radar diagram
 
 ## Property Sets and Standard Rules
 

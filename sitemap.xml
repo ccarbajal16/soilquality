@@ -1,4 +1,5 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
+<url><loc>https://ccarbajal16.github.io/soilquality/2026-soilquality-package-upgrade.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/404.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/LICENSE-text.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/articles/advanced-usage.html</loc></url>
@@ -29,11 +30,14 @@
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/score_indicators.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/score_lower_better.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/score_optimum.html</loc></url>
+<url><loc>https://ccarbajal16.github.io/soilquality/reference/score_sigmoid.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/score_threshold.html</loc></url>
+<url><loc>https://ccarbajal16.github.io/soilquality/reference/sigmoid_scoring.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/soil_data.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/soil_property_sets.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/soil_ucayali.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/soilquality-package.html</loc></url>
+<url><loc>https://ccarbajal16.github.io/soilquality/reference/sqi_area.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/standard_scoring_rules.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/standardize_numeric.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/threshold_scoring.html</loc></url>

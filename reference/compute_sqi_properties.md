@@ -59,7 +59,11 @@ compute_sqi_properties(
 
 - ...:
 
-  Additional arguments (currently unused).
+  Additional arguments passed to
+  [`compute_sqi_df`](https://ccarbajal16.github.io/soilquality/reference/compute_sqi_df.md),
+  notably `method` to choose between weighted and area aggregation, and
+  `reference` to report the area as a ratio against a non-degraded
+  reference soil.
 
 ## Value
 

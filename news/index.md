@@ -1,5 +1,78 @@
 # Changelog
 
+## soilquality 1.1.0 (development)
+
+Broadens the package from a single SQI route (PCA-MDS, AHP/loading
+weights, linear scoring, weighted additive aggregation) toward the
+routes the soil quality literature actually uses. This release covers
+non-linear scoring and weight-free aggregation. All additions are
+opt-in; the default pipeline produces exactly the values it produced in
+1.0.0, and a golden-output regression test now enforces that.
+
+#### New features
+
+##### Non-linear (sigmoidal) scoring
+
+- [`score_sigmoid()`](https://ccarbajal16.github.io/soilquality/reference/score_sigmoid.md) -
+  scores an indicator with `S = 1 / (1 + (x/x0)^b)`, the dominant
+  scoring form in the SQI literature. Both `x0` (the value scoring 0.5)
+  and `b` (steepness) are parameters. The `b = 2.5` default is a
+  convention inherited from the literature with empirical support for
+  pH/TN/SOC/P only, not a general constant, and the documentation says
+  so.
+- [`sigmoid_scoring()`](https://ccarbajal16.github.io/soilquality/reference/sigmoid_scoring.md) -
+  the matching `scoring_rule` constructor, so the new curve is reachable
+  from
+  [`compute_sqi_properties()`](https://ccarbajal16.github.io/soilquality/reference/compute_sqi_properties.md).
+- [`score_indicators()`](https://ccarbajal16.github.io/soilquality/reference/score_indicators.md)
+  gains a `"sigmoid"` scoring type alongside the existing
+  `higher`/`lower`/`optimum`/`threshold`.
+- [`standard_scoring_rules()`](https://ccarbajal16.github.io/soilquality/reference/standard_scoring_rules.md)
+  gains `scoring = c("linear", "sigmoid")` and `b`. pH deliberately
+  remains an optimum-range rule under `"sigmoid"`: the sigmoidal curve
+  is monotonic and has no optimum form.
+
+##### Area-based (weight-free) aggregation
+
+- [`sqi_area()`](https://ccarbajal16.github.io/soilquality/reference/sqi_area.md) -
+  aggregates scored indicators as the area of the radar diagram they
+  trace, `A = 0.5 * sum(s^2) * sin(2*pi/n)` (Kuzyakov et al. 2020, eq.
+  2). This ignores weights entirely, sidestepping the most contested
+  step in the pipeline. Supplying `reference` reports the result as a
+  ratio against a non-degraded reference soil, which is what makes
+  area-based values comparable across studies – the absolute value is
+  not.
+- [`compute_sqi_df()`](https://ccarbajal16.github.io/soilquality/reference/compute_sqi_df.md)
+  gains `method = c("weighted", "area")` and `reference`. Both flow
+  through
+  [`compute_sqi()`](https://ccarbajal16.github.io/soilquality/reference/compute_sqi.md)
+  and
+  [`compute_sqi_properties()`](https://ccarbajal16.github.io/soilquality/reference/compute_sqi_properties.md)
+  via `...`. The returned `sqi_result` now carries a `method` element.
+
+#### Documentation
+
+- [`score_sigmoid()`](https://ccarbajal16.github.io/soilquality/reference/score_sigmoid.md)
+  documents that the literature contradicts itself on linear vs
+  non-linear scoring (Yuan 2026 finds non-linear better; Bilgili et
+  al. 2017, cited in Yuan’s own introduction, finds the opposite) and
+  recommends computing both.
+- [`sqi_area()`](https://ccarbajal16.github.io/soilquality/reference/sqi_area.md)
+  documents why the formula squares each score rather than multiplying
+  adjacent radii: the square form is order-independent, whereas the true
+  polygon area would depend on the arbitrary order of indicators around
+  the diagram.
+
+#### Internal
+
+- Added a golden-output regression baseline pinning the MDS, PCA
+  variance decomposition, weights and SQI values of the default pipeline
+  against the shipped `soil_data`. Every change from here must leave it
+  green or declare itself a break.
+- Migrated the test suite to `testthat` edition 3
+  (`Config/testthat/edition: 3`). No test changes were required.
+  User-facing behaviour is unaffected.
+
 ## soilquality 1.0.0
 
 *Release Date: 2025-12-07*

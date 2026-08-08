@@ -112,6 +112,7 @@ or related functions 5. **Visualize results**: Use
 
 ## Example Workflow
 
+
     # Load example data
     data(soil_ucayali)
 
@@ -136,6 +137,7 @@ or related functions 5. **Visualize results**: Use
 
 You can define custom scoring rules for each property:
 
+
     # Define scoring rules
     rules <- list(
       pH = optimum_range(optimal = 6.5, tolerance = 1),
@@ -155,6 +157,7 @@ You can define custom scoring rules for each property:
 ## Interactive Mode
 
 For users who prefer a graphical interface:
+
 
     # Launch Shiny application
     run_sqi_app()
@@ -186,3 +189,7 @@ Useful links:
 ## Author
 
 **Maintainer**: Carlos Carbajal <ccarbajal@educagis.com>
+
+Authors:
+
+- Carlos Carbajal <ccarbajal@educagis.com>

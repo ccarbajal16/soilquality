@@ -24,6 +24,7 @@ systematic and reproducible way.
 You can install the development version of soilquality from GitHub:
 
 ``` r
+
 # Install devtools if you haven't already
 install.packages("devtools")
 
@@ -36,6 +37,7 @@ devtools::install_github("username/soilquality")
 Once released on CRAN, you can install the package with:
 
 ``` r
+
 install.packages("soilquality")
 ```
 
@@ -56,6 +58,7 @@ dataset.
 ### Load the Package and Data
 
 ``` r
+
 library(soilquality)
 
 # Load the example dataset
@@ -83,6 +86,7 @@ The simplest way to calculate SQI is using
 with default settings:
 
 ``` r
+
 # Calculate SQI using standard fertility properties
 result <- compute_sqi_properties(
   data = soil_ucayali,
@@ -231,6 +235,9 @@ print(result)
 #> $var_exp
 #> [1] 0.2406911 0.1826722 0.1719140 0.1595846 0.1375316 0.1076065
 #> 
+#> $method
+#> [1] "weighted"
+#> 
 #> attr(,"class")
 #> [1] "sqi_result"
 ```
@@ -248,6 +255,7 @@ This function automatically:
 The result object contains several components:
 
 ``` r
+
 # Selected MDS indicators
 result$mds
 #> [1] "N"  "K"  "P"  "pH" "OM"
@@ -293,6 +301,7 @@ SQI values range from 0 to 1, where:
 - **0.0 - 0.2**: Very poor soil quality
 
 ``` r
+
 # Summary statistics of SQI
 summary(result$results$SQI)
 #>    Min. 1st Qu.  Median    Mean 3rd Qu.    Max. 
@@ -320,6 +329,7 @@ results.
 View the distribution of SQI values across all samples:
 
 ``` r
+
 plot(result, type = "distribution")
 ```
 
@@ -333,6 +343,7 @@ line indicating the mean SQI.
 Compare the scores of different indicators:
 
 ``` r
+
 plot(result, type = "indicators")
 ```
 
@@ -346,6 +357,7 @@ identify which properties are limiting soil quality.
 View the relative importance of each indicator:
 
 ``` r
+
 plot(result, type = "weights")
 ```
 
@@ -359,6 +371,7 @@ Consistency Ratio (CR) is displayed at the top.
 Examine the variance explained by principal components:
 
 ``` r
+
 plot(result, type = "scree")
 ```
 
@@ -372,6 +385,7 @@ principal components.
 Generate all plots at once in a multi-panel layout:
 
 ``` r
+
 plot_sqi_report(result)
 ```
 
@@ -383,6 +397,7 @@ The package includes several pre-defined property sets for common
 analyses:
 
 ``` r
+
 # Available property sets
 names(soil_property_sets)
 #> [1] "basic"         "standard"      "comprehensive" "physical"     
@@ -414,6 +429,7 @@ Available property sets:
 You can also specify your own custom set of properties:
 
 ``` r
+
 # Focus on physical properties
 physical_props <- c("Sand", "Silt", "Clay", "BD")
 

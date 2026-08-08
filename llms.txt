@@ -39,6 +39,7 @@ standardized quality metrics.
 #### Using pak (Recommended)
 
 ``` r
+
 # Install pak if needed
 if (!requireNamespace("pak", quietly = TRUE)) {
   install.packages("pak")
@@ -51,6 +52,7 @@ pak::pak("ccarbajal16/soilquality")
 #### Using devtools
 
 ``` r
+
 # Install devtools if needed
 if (!requireNamespace("devtools", quietly = TRUE)) {
   install.packages("devtools")
@@ -63,6 +65,7 @@ devtools::install_github("ccarbajal16/soilquality")
 ### From CRAN (Stable Release)
 
 ``` r
+
 # Coming soon
 install.packages("soilquality")
 ```
@@ -72,6 +75,7 @@ install.packages("soilquality")
 ### Basic Workflow
 
 ``` r
+
 library(soilquality)
 
 # Load example data
@@ -96,6 +100,7 @@ plot_sqi_report(result)
 ### Using Pre-defined Property Sets
 
 ``` r
+
 # Use standard property set
 result <- compute_sqi_properties(
   data = soil_ucayali,
@@ -106,6 +111,7 @@ result <- compute_sqi_properties(
 ### Custom Scoring Rules
 
 ``` r
+
 # Define custom scoring for specific properties
 custom_rules <- list(
   pH = optimum_range(optimal = 6.5, tolerance = 1),
@@ -127,6 +133,7 @@ result <- compute_sqi_properties(
 ### Interactive AHP Matrix Creation
 
 ``` r
+
 # Create AHP matrix interactively
 indicators <- c("pH", "OM", "P", "K")
 ahp_matrix <- create_ahp_matrix(indicators, mode = "interactive")
@@ -142,6 +149,7 @@ result <- compute_sqi_properties(
 ### Launch Interactive Application
 
 ``` r
+
 # Start Shiny app for GUI-based analysis
 run_sqi_app()
 ```
@@ -248,6 +256,7 @@ Comprehensive documentation is available through:
 If you use this package in your research, please cite it as:
 
 ``` r
+
 citation("soilquality")
 ```
 
@@ -342,6 +351,8 @@ Functions for transforming soil properties into quality scores
   : Score indicator with optimum range
 - [`score_threshold()`](https://ccarbajal16.github.io/soilquality/reference/score_threshold.md)
   : Score indicator with threshold-based piecewise interpolation
+- [`score_sigmoid()`](https://ccarbajal16.github.io/soilquality/reference/score_sigmoid.md)
+  : Score indicator with a non-linear (sigmoidal) curve
 
 ## Scoring Constructors
 
@@ -355,6 +366,15 @@ Object-oriented constructors for scoring rules
   : Create an optimum range scoring rule
 - [`threshold_scoring()`](https://ccarbajal16.github.io/soilquality/reference/threshold_scoring.md)
   : Create a threshold-based scoring rule
+- [`sigmoid_scoring()`](https://ccarbajal16.github.io/soilquality/reference/sigmoid_scoring.md)
+  : Create a non-linear (sigmoidal) scoring rule
+
+## Aggregation
+
+Combining scored indicators into a single index
+
+- [`sqi_area()`](https://ccarbajal16.github.io/soilquality/reference/sqi_area.md)
+  : Aggregate indicator scores by the area of a radar diagram
 
 ## Property Sets and Standard Rules
 

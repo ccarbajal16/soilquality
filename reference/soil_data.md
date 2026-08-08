@@ -137,34 +137,34 @@ str(soil_data)
 
 # Summary statistics
 summary(soil_data)
-#>    SampleID              Sand            Silt            Clay      
-#>  Length:50          Min.   :29.60   Min.   :15.90   Min.   :11.30  
-#>  Class :character   1st Qu.:39.25   1st Qu.:25.52   1st Qu.:18.90  
-#>  Mode  :character   Median :43.45   Median :30.65   Median :23.35  
-#>                     Mean   :45.21   Mean   :31.45   Mean   :23.34  
-#>                     3rd Qu.:50.55   3rd Qu.:36.17   3rd Qu.:27.68  
-#>                     Max.   :64.30   Max.   :46.30   Max.   :38.00  
-#>        BD              pH              OM             SOC       
-#>  Min.   :1.150   Min.   :4.100   Min.   :1.220   Min.   :0.570  
-#>  1st Qu.:1.280   1st Qu.:4.600   1st Qu.:2.507   1st Qu.:1.240  
-#>  Median :1.335   Median :5.050   Median :2.895   Median :1.585  
-#>  Mean   :1.355   Mean   :5.192   Mean   :3.024   Mean   :1.601  
-#>  3rd Qu.:1.430   3rd Qu.:5.600   3rd Qu.:3.643   3rd Qu.:1.972  
-#>  Max.   :1.800   Max.   :7.000   Max.   :4.860   Max.   :2.620  
-#>        N                P                K              CEC       
-#>  Min.   :0.0500   Min.   : 2.000   Min.   : 40.0   Min.   : 5.80  
-#>  1st Qu.:0.1128   1st Qu.: 6.150   1st Qu.: 88.0   1st Qu.:10.22  
-#>  Median :0.1505   Median : 8.050   Median :102.0   Median :11.75  
-#>  Mean   :0.1469   Mean   : 7.860   Mean   :102.2   Mean   :12.08  
-#>  3rd Qu.:0.1755   3rd Qu.: 9.575   3rd Qu.:118.0   3rd Qu.:14.05  
-#>  Max.   :0.2790   Max.   :15.200   Max.   :144.0   Max.   :19.30  
-#>        Ca              Mg              EC               S         
-#>  Min.   :1.130   Min.   :0.240   Min.   :0.0500   Min.   : 5.540  
-#>  1st Qu.:3.560   1st Qu.:1.292   1st Qu.:0.1700   1st Qu.: 8.852  
-#>  Median :4.410   Median :1.700   Median :0.2400   Median : 9.640  
-#>  Mean   :4.366   Mean   :1.701   Mean   :0.2374   Mean   :10.138  
-#>  3rd Qu.:5.178   3rd Qu.:2.180   3rd Qu.:0.3000   3rd Qu.:10.807  
-#>  Max.   :6.730   Max.   :3.050   Max.   :0.5000   Max.   :18.560  
+#>       SampleID       Sand            Silt            Clay             BD       
+#>  Length   :50   Min.   :29.60   Min.   :15.90   Min.   :11.30   Min.   :1.150  
+#>  N.unique :50   1st Qu.:39.25   1st Qu.:25.52   1st Qu.:18.90   1st Qu.:1.280  
+#>  N.blank  : 0   Median :43.45   Median :30.65   Median :23.35   Median :1.335  
+#>  Min.nchar: 6   Mean   :45.21   Mean   :31.45   Mean   :23.34   Mean   :1.355  
+#>  Max.nchar: 6   3rd Qu.:50.55   3rd Qu.:36.17   3rd Qu.:27.68   3rd Qu.:1.430  
+#>                 Max.   :64.30   Max.   :46.30   Max.   :38.00   Max.   :1.800  
+#>        pH              OM             SOC              N         
+#>  Min.   :4.100   Min.   :1.220   Min.   :0.570   Min.   :0.0500  
+#>  1st Qu.:4.600   1st Qu.:2.507   1st Qu.:1.240   1st Qu.:0.1128  
+#>  Median :5.050   Median :2.895   Median :1.585   Median :0.1505  
+#>  Mean   :5.192   Mean   :3.024   Mean   :1.601   Mean   :0.1469  
+#>  3rd Qu.:5.600   3rd Qu.:3.643   3rd Qu.:1.972   3rd Qu.:0.1755  
+#>  Max.   :7.000   Max.   :4.860   Max.   :2.620   Max.   :0.2790  
+#>        P                K              CEC              Ca       
+#>  Min.   : 2.000   Min.   : 40.0   Min.   : 5.80   Min.   :1.130  
+#>  1st Qu.: 6.150   1st Qu.: 88.0   1st Qu.:10.22   1st Qu.:3.560  
+#>  Median : 8.050   Median :102.0   Median :11.75   Median :4.410  
+#>  Mean   : 7.860   Mean   :102.2   Mean   :12.08   Mean   :4.366  
+#>  3rd Qu.: 9.575   3rd Qu.:118.0   3rd Qu.:14.05   3rd Qu.:5.178  
+#>  Max.   :15.200   Max.   :144.0   Max.   :19.30   Max.   :6.730  
+#>        Mg              EC               S         
+#>  Min.   :0.240   Min.   :0.0500   Min.   : 5.540  
+#>  1st Qu.:1.292   1st Qu.:0.1700   1st Qu.: 8.852  
+#>  Median :1.700   Median :0.2400   Median : 9.640  
+#>  Mean   :1.701   Mean   :0.2374   Mean   :10.138  
+#>  3rd Qu.:2.180   3rd Qu.:0.3000   3rd Qu.:10.807  
+#>  Max.   :3.050   Max.   :0.5000   Max.   :18.560  
 
 # Basic SQI calculation with extended properties
 if (FALSE) { # \dontrun{

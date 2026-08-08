@@ -15,6 +15,8 @@ compute_sqi_df(
   directions = NULL,
   var_threshold = 0.05,
   loading_threshold = 0.5,
+  method = c("weighted", "area"),
+  reference = NULL,
   ...
 )
 ```
@@ -49,6 +51,22 @@ compute_sqi_df(
 
   Numeric value for PCA loading threshold (default 0.5).
 
+- method:
+
+  Aggregation method. `"weighted"` (the default, and the historical
+  behaviour) computes the weighted sum of scored indicators. `"area"`
+  computes the area of the radar diagram they trace, which ignores
+  weights entirely – see
+  [`sqi_area`](https://ccarbajal16.github.io/soilquality/reference/sqi_area.md).
+
+- reference:
+
+  Optional named numeric vector of reference scores for the MDS
+  indicators, used only when `method = "area"`. When supplied, the SQI
+  is reported as a ratio against this non-degraded reference soil, which
+  is what makes area-based values comparable across studies. Names must
+  cover every selected MDS indicator.
+
 - ...:
 
   Additional arguments (currently unused).
@@ -63,7 +81,8 @@ An object of class "sqi_result" containing:
 
 - weights:
 
-  Named numeric vector of AHP weights
+  Named numeric vector of AHP weights. Still reported when
+  `method = "area"`, but not used in the aggregation.
 
 - CR:
 
@@ -85,6 +104,10 @@ An object of class "sqi_result" containing:
 
   Numeric vector of variance explained by each PC
 
+- method:
+
+  The aggregation method used
+
 ## Details
 
 The function performs the following steps:
@@ -99,7 +122,16 @@ The function performs the following steps:
 
 5.  Score each MDS indicator
 
-6.  Calculate weighted SQI as sum of (weight \* score)
+6.  Aggregate: weighted sum of (weight \* score), or radar-diagram area
+
+**On `method = "area"`.** The area route is weight-free, which sidesteps
+the most contested step in the pipeline. But an absolute area
+(`reference = NULL`) is standardised against nothing but your own sample
+and is not comparable to any other study; the comparability people cite
+comes from taking the *ratio* against a reference soil, not from the
+formula. Weights are still computed and returned so that the two methods
+can be compared on the same object, but they do not enter the area
+calculation.
 
 ## See also
 
@@ -124,23 +156,23 @@ result <- compute_sqi_df(soil_data, id_column = "SampleID")
 
 # View results
 head(result$results)
-#>   SampleID     Sand     Silt     Clay       pH       OM OM_scored Sand_scored
-#> 1       S1 44.94429 33.68888 23.74258 6.377052 3.278112 0.7394162  0.47286736
-#> 2       S2 51.21553 39.44252 27.22399 5.911218 2.725871 0.4816739  0.63252067
-#> 3       S3 56.48412 29.51277 38.77709 6.012075 3.555267 0.8687703  0.76664847
-#> 4       S4 26.78182 25.32076 25.23266 7.032529 1.693833 0.0000000  0.01048713
-#> 5       S5 42.52675 29.92025 27.88855 6.565835 2.922153 0.5732827  0.41132159
-#> 6       S6 42.55800 25.86606 25.59097 6.744314 3.216945 0.7108681  0.41211733
-#>   pH_scored Silt_scored       SQI
-#> 1 0.4011139   0.6970645 0.5776155
-#> 2 0.1440168   1.0000000 0.5645528
-#> 3 0.1996802   0.4771879 0.5780717
-#> 4 0.7628767   0.2564740 0.2574594
-#> 5 0.5053050   0.4986419 0.4971378
-#> 6 0.6038090   0.2851842 0.5029947
+#>   SampleID     Sand     Silt     Clay       pH       OM Silt_scored OM_scored
+#> 1       S1 30.99956 32.34077 25.35017 7.037173 3.962172   0.6260850 1.0000000
+#> 2       S2 47.55317 31.81476 21.80438 6.167456 3.649196   0.5983897 0.8620245
+#> 3       S3 20.62736 23.47728 24.75018 7.056976 3.374396   0.1594127 0.7408782
+#> 4       S4 44.94429 33.68888 23.74258 6.377052 3.278112   0.6970645 0.6984315
+#> 5       S5 51.21553 39.44252 27.22399 5.911218 2.725871   1.0000000 0.4549755
+#> 6       S6 56.48412 29.51277 38.77709 6.012075 3.555267   0.4771879 0.8206158
+#>   Sand_scored       SQI
+#> 1   0.2303762 0.6188204
+#> 2   0.5980471 0.6861538
+#> 3   0.0000000 0.3000970
+#> 4   0.5401014 0.6451991
+#> 5   0.6793915 0.7114556
+#> 6   0.7964117 0.6980718
 print(result$mds)
-#> [1] "OM"   "Sand" "pH"   "Silt"
+#> [1] "Silt" "OM"   "Sand"
 print(result$weights)
-#>   OM Sand   pH Silt 
-#> 0.25 0.25 0.25 0.25 
+#>      Silt        OM      Sand 
+#> 0.3333333 0.3333333 0.3333333 
 ```

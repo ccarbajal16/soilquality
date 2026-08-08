@@ -12,6 +12,7 @@ including:
 - Working with different data formats
 
 ``` r
+
 library(soilquality)
 data(soil_ucayali)
 ```
@@ -26,6 +27,7 @@ calculation. The package offers several approaches.
 The package includes curated property sets for common scenarios:
 
 ``` r
+
 # View available property sets
 names(soil_property_sets)
 #> [1] "basic"         "standard"      "comprehensive" "physical"     
@@ -61,6 +63,7 @@ cat("Fertility properties - Mean SQI:",
 Select properties based on your research question or management goal:
 
 ``` r
+
 # For erosion risk assessment - focus on physical properties
 erosion_props <- c("Sand", "Silt", "Clay", "BD", "OM")
 
@@ -91,6 +94,7 @@ cat("Nutrient management MDS:", paste(result_nutrient$mds, collapse = ", "), "\n
 Let PCA automatically select the most informative properties:
 
 ``` r
+
 # Use all available numeric properties
 all_numeric <- names(soil_ucayali)[sapply(soil_ucayali, is.numeric)]
 
@@ -113,6 +117,7 @@ print(result_all$mds)
 Remove highly correlated properties before analysis:
 
 ``` r
+
 # Calculate correlation matrix
 numeric_data <- soil_ucayali[, sapply(soil_ucayali, is.numeric)]
 cor_matrix <- cor(numeric_data, use = "complete.obs")
@@ -153,6 +158,7 @@ property behaviors.
 For properties where higher values indicate better soil quality:
 
 ``` r
+
 # Organic matter, nutrients, CEC
 scoring_rules <- list(
   OM = higher_better(),
@@ -175,6 +181,7 @@ result_higher <- compute_sqi_properties(
 For properties where lower values indicate better soil quality:
 
 ``` r
+
 # Bulk density, electrical conductivity
 scoring_rules_lower <- list(
   BD = lower_better(),
@@ -194,6 +201,7 @@ result_lower <- compute_sqi_properties(
 For properties with an ideal target value:
 
 ``` r
+
 # pH has an optimal range around neutral
 scoring_rules_opt <- list(
   pH = optimum_range(optimal = 6.5, tolerance = 1.5),
@@ -235,6 +243,7 @@ cat("Mean SQI with pH optimum 7.0:",
 For properties with specific threshold values:
 
 ``` r
+
 # Example: P availability with agronomic thresholds
 # Low: <10, Medium: 10-20, High: 20-40, Very High: >40
 scoring_rules_thresh <- list(
@@ -263,6 +272,7 @@ result_thresh <- compute_sqi_properties(
 Combine different scoring approaches for comprehensive assessment:
 
 ``` r
+
 # Realistic scoring for tropical agricultural soils
 tropical_scoring <- list(
   pH = optimum_range(optimal = 6.0, tolerance = 1.5),
@@ -304,6 +314,7 @@ indicators.
 Create a pairwise comparison matrix interactively:
 
 ``` r
+
 # This will prompt you for pairwise comparisons
 indicators <- c("pH", "OM", "P", "K")
 ahp_matrix <- create_ahp_matrix(indicators, mode = "interactive")
@@ -322,6 +333,7 @@ result_ahp <- compute_sqi_properties(
 Create a pairwise comparison matrix manually:
 
 ``` r
+
 # Define indicators
 indicators <- c("pH", "OM", "N", "P")
 
@@ -368,6 +380,7 @@ cat("\nMDS indicators selected by PCA:", paste(result_manual_ahp$mds, collapse =
 Use relative importance ratios (simpler than full pairwise matrix):
 
 ``` r
+
 # Specify relative importance (e.g., N is 3x more important than pH)
 indicators <- c("pH", "OM", "N", "P")
 importance_ratios <- c(1, 2, 3, 2)  # Relative importance
@@ -391,6 +404,7 @@ print(round(ahp_from_ratios$weights, 3))
 ### Customizing Plot Appearance
 
 ``` r
+
 # Calculate SQI for visualization examples
 result_viz <- compute_sqi_properties(
   data = soil_ucayali,
@@ -407,6 +421,7 @@ plot(result_viz, type = "distribution")
 ### Comparing Multiple Scenarios
 
 ``` r
+
 # Calculate SQI with different property sets
 result_physical <- compute_sqi_properties(
   data = soil_ucayali,
@@ -439,6 +454,7 @@ abline(v = mean(result_chemical$results$SQI), col = "red", lwd = 2)
 ![](advanced-usage_files/figure-html/compare-scenarios-1.png)
 
 ``` r
+
 par(mfrow = c(1, 1))
 ```
 
@@ -447,6 +463,7 @@ par(mfrow = c(1, 1))
 Visualize relationships between samples and variables:
 
 ``` r
+
 plot(result_viz, type = "biplot")
 ```
 
@@ -457,6 +474,7 @@ plot(result_viz, type = "biplot")
 Identify which indicators contribute most to SQI variation:
 
 ``` r
+
 # Extract scored indicators and weights
 scored_data <- result_viz$results[, paste0(result_viz$mds, "_scored")]
 weights <- result_viz$weights
@@ -479,6 +497,7 @@ boxplot(contributions,
 ### File-Based Workflow
 
 ``` r
+
 # Save data to CSV
 write.csv(soil_ucayali, "soil_data.csv", row.names = FALSE)
 
@@ -495,6 +514,7 @@ result_from_file <- compute_sqi(
 ### Data Frame Workflow
 
 ``` r
+
 # Work directly with data frames (no file I/O)
 result_df <- compute_sqi_df(
   df = soil_ucayali,
@@ -514,6 +534,7 @@ head(sort(sqi_values, decreasing = TRUE), 5)
 ### Batch Processing Multiple Datasets
 
 ``` r
+
 # Process multiple sites or time points
 sites <- c("site1.csv", "site2.csv", "site3.csv")
 

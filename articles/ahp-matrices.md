@@ -16,6 +16,7 @@ This vignette explains:
 - Practical examples for soil quality assessment
 
 ``` r
+
 library(soilquality)
 ```
 
@@ -36,6 +37,7 @@ these context-specific priorities into the SQI calculation.
 ### Equal Weights vs. AHP Weights
 
 ``` r
+
 data(soil_ucayali)
 
 # Define indicators
@@ -91,14 +93,14 @@ cat("\nMean SQI with equal weights:",
 AHP uses the Saaty scale to express relative importance in pairwise
 comparisons:
 
-| Value      | Meaning                | Explanation                                     |
-|------------|------------------------|-------------------------------------------------|
-| 1          | Equal importance       | Both indicators contribute equally              |
-| 3          | Moderate importance    | Experience slightly favors one indicator        |
-| 5          | Strong importance      | Experience strongly favors one indicator        |
-| 7          | Very strong importance | One indicator is strongly favored               |
-| 9          | Extreme importance     | Evidence favoring one indicator is overwhelming |
-| 2, 4, 6, 8 | Intermediate values    | When compromise is needed                       |
+| Value | Meaning | Explanation |
+|----|----|----|
+| 1 | Equal importance | Both indicators contribute equally |
+| 3 | Moderate importance | Experience slightly favors one indicator |
+| 5 | Strong importance | Experience strongly favors one indicator |
+| 7 | Very strong importance | One indicator is strongly favored |
+| 9 | Extreme importance | Evidence favoring one indicator is overwhelming |
+| 2, 4, 6, 8 | Intermediate values | When compromise is needed |
 
 **Reciprocals** (1/3, 1/5, etc.) are used when the second indicator is
 more important than the first.
@@ -122,6 +124,7 @@ for overall soil quality in tropical agricultural soils?”
 The easiest way to create an AHP matrix is interactively:
 
 ``` r
+
 # Define your indicators
 indicators <- c("pH", "OM", "N", "P", "K")
 
@@ -148,6 +151,7 @@ For reproducible analysis or when working with pre-determined expert
 judgments:
 
 ``` r
+
 # Define indicators
 indicators <- c("pH", "OM", "N", "P")
 
@@ -197,6 +201,7 @@ cat("\nConsistency Ratio:", round(ahp_result$CR, 4), "\n")
 A simpler approach when you know relative importance:
 
 ``` r
+
 # Specify relative importance scores
 # Example: pH=1, OM=2, N=3, P=2, K=1.5
 indicators <- c("pH", "OM", "N", "P", "K")
@@ -247,6 +252,7 @@ pairwise comparisons.
 | \> 0.20     | Unacceptable consistency | Revise judgments             |
 
 ``` r
+
 # Example 1: Consistent matrix (CR < 0.1)
 consistent_matrix <- matrix(c(
   1,   3,   5,
@@ -284,6 +290,7 @@ If your CR exceeds 0.10, here are strategies to improve consistency:
 ### Strategy 1: Identify Problematic Comparisons
 
 ``` r
+
 # Create an inconsistent matrix
 indicators <- c("pH", "OM", "N", "P")
 problematic <- matrix(c(
@@ -319,6 +326,7 @@ cat("Ratio:", problematic[1, 3] / (problematic[1, 2] * problematic[2, 3]), "\n\n
 ### Strategy 2: Revise Extreme Comparisons
 
 ``` r
+
 # Revise the problematic comparison
 improved <- problematic
 improved[2, 3] <- 2  # Change OM vs N from 5 to 2
@@ -332,6 +340,7 @@ cat("Improved CR:", round(result_improved$CR, 4), "\n")
 ### Strategy 3: Use Fewer Extreme Values
 
 ``` r
+
 # Original: uses values 1-5
 moderate_matrix <- matrix(c(
   1,   2,   3,   2,
@@ -352,6 +361,7 @@ cat("Moderate values CR:", round(result_moderate$CR, 4), "\n")
 If you have many indicators (\>7), consider grouping them:
 
 ``` r
+
 # Instead of comparing 10 indicators directly:
 # indicators <- c("pH", "OM", "N", "P", "K", "Ca", "Mg", "CEC", "BD", "EC")
 
@@ -379,6 +389,7 @@ physical_indicators <- c("BD", "Sand", "Clay")
 Focus on nutrient availability and organic matter:
 
 ``` r
+
 # Indicators for tropical agriculture
 tropical_indicators <- c("pH", "OM", "N", "P", "CEC")
 
@@ -426,6 +437,7 @@ cat("Mean SQI:", round(mean(result_tropical$results$SQI), 3), "\n")
 Focus on physical properties:
 
 ``` r
+
 # Indicators for erosion risk
 erosion_indicators <- c("Sand", "Clay", "OM", "BD")
 
@@ -458,6 +470,7 @@ cat("\nCR:", round(erosion_ahp$CR, 4), "\n")
 Focus on organic matter and related properties:
 
 ``` r
+
 # Indicators for carbon sequestration
 carbon_indicators <- c("OM", "SOC", "N", "Clay", "CEC")
 
@@ -492,6 +505,7 @@ cat("\nCR:", round(carbon_ahp$CR, 4), "\n")
 ### 1. Involve Multiple Experts
 
 ``` r
+
 # Collect judgments from multiple experts
 expert1_matrix <- create_ahp_matrix(indicators, mode = "interactive")
 expert2_matrix <- create_ahp_matrix(indicators, mode = "interactive")
@@ -512,6 +526,7 @@ final_ahp <- ahp_weights(aggregated_matrix, indicators = indicators)
 Always document why you assigned specific importance values:
 
 ``` r
+
 # Example documentation
 rationale <- list(
   "OM vs pH" = "OM rated 3x more important because it affects multiple 
@@ -530,6 +545,7 @@ rationale <- list(
 Test how results change with different weights:
 
 ``` r
+
 # Compare different AHP weight scenarios
 indicators <- c("pH", "OM", "N", "P")
 
@@ -601,6 +617,7 @@ cat("when applied to the MDS indicators selected by PCA.\n")
 When possible, validate AHP weights against field observations:
 
 ``` r
+
 # Example: Compare SQI with crop yield data
 # Assuming you have yield data
 yield_data <- data.frame(
