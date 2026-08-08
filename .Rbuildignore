@@ -8,3 +8,5 @@
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^\.atl$
+^2026-soilquality-package-upgrade\.md$
