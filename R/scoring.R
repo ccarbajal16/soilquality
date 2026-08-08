@@ -250,6 +250,13 @@ score_indicators <- function(data, mds, directions) {
         thresholds = direction$thresholds,
         scores = direction$scores
       )
+    } else if (direction$type == "sigmoid") {
+      result[[scored_col]] <- score_sigmoid(
+        x,
+        direction = direction$direction %||% "higher",
+        x0 = direction$x0,
+        b = direction$b %||% 2.5
+      )
     } else {
       stop("Invalid scoring type '", direction$type, "' for indicator: ", indicator)
     }
@@ -261,4 +268,154 @@ score_indicators <- function(data, mds, directions) {
 # Helper function for NULL coalescing
 `%||%` <- function(x, y) {
   if (is.null(x)) y else x
+}
+
+#' Score indicator with a non-linear (sigmoidal) curve
+#'
+#' Scores an indicator using the sigmoidal curve that dominates the soil
+#' quality index literature. Unlike the min-max functions in this package,
+#' the curve is anchored on a reference value \code{x0} rather than on the
+#' observed extremes, so a sample that happens to contain no degraded soil
+#' does not automatically produce a score of 1.
+#'
+#' @details
+#' The scoring function is
+#' \deqn{S = \frac{1}{1 + (x / x_0)^b}}
+#' where the sign of the exponent encodes the direction:
+#' \itemize{
+#'   \item \code{direction = "higher"} uses \eqn{-b}, so \eqn{S \to 1} as
+#'     \eqn{x \gg x_0} and \eqn{S \to 0} as \eqn{x \to 0}
+#'   \item \code{direction = "lower"} uses \eqn{+b}, the mirror image
+#' }
+#' In both cases \eqn{S(x_0) = 0.5} exactly, which makes \code{x0} the value
+#' that separates "better than reference" from "worse than reference".
+#'
+#' \strong{On the default \code{b = 2.5}.} This value is a convention, not a
+#' constant of nature. It reaches this package from Yu et al. via Chaudhry
+#' (2024), where it was found to behave reasonably for pH, total nitrogen,
+#' soil organic carbon and phosphorus. It has no general justification for
+#' other indicators, and it is exposed as a parameter precisely so that it can
+#' be changed. Larger \code{b} produces a sharper transition around \code{x0};
+#' smaller \code{b} produces a flatter, more forgiving curve.
+#'
+#' \strong{On the default \code{x0}.} The sample mean is a convenient default
+#' but it inherits the comparability problem it was meant to solve: scores
+#' remain relative to the data you happen to have. Supplying an external
+#' reference value -- a non-degraded reference soil, an agronomic threshold --
+#' is what makes scores comparable across studies.
+#'
+#' \strong{Linear or non-linear?} The literature does not agree. Yuan (2026)
+#' reports the non-linear form fitting better than the linear one
+#' (R-squared 0.65 vs 0.56), while Bilgili et al. (2017) -- cited inside
+#' Yuan's own introduction -- reports the opposite. Compute both and report
+#' whether your conclusions change; see \code{\link{score_higher_better}} and
+#' \code{\link{score_lower_better}} for the linear route.
+#'
+#' @param x Numeric vector of indicator values. Must be non-negative: a
+#'   negative base raised to a fractional exponent is undefined in real
+#'   arithmetic and yields \code{NaN}. Shift the variable or use
+#'   \code{\link{score_threshold}} instead.
+#' @param direction Either \code{"higher"} (more is better, the default) or
+#'   \code{"lower"} (less is better, e.g. bulk density).
+#' @param x0 Reference value at which the score equals 0.5. Defaults to
+#'   \code{mean(x, na.rm = TRUE)}. Must be strictly positive.
+#' @param b Shape parameter controlling the steepness of the curve. Must be
+#'   positive; the direction argument supplies the sign. Defaults to 2.5.
+#' @param na.rm Logical. Passed to the computation of the default \code{x0}.
+#'   Has no effect when \code{x0} is supplied. \code{NA} values in \code{x}
+#'   always propagate to \code{NA} scores.
+#'
+#' @return Numeric vector of scores in the [0,1] range, with \code{NA} where
+#'   \code{x} was \code{NA}.
+#'
+#' @references
+#' Chaudhry, H. et al. (2024), eq. (1).
+#' Yuan, X. and Shi, Y. (2026), eq. (5).
+#' Huera-Lucero, T. et al. (2025), who write it as
+#' \eqn{S = a / (1 + (x/x_0)^b)} with \eqn{a = 1}.
+#'
+#' @examples
+#' # Organic matter: more is better
+#' om <- c(1.5, 2.0, 2.5, 3.0, 3.5)
+#' score_sigmoid(om)
+#'
+#' # The score at the reference value is exactly 0.5
+#' score_sigmoid(om, x0 = 2.5)[3]
+#'
+#' # Bulk density: less is better
+#' bd <- c(1.2, 1.3, 1.4, 1.5, 1.6)
+#' score_sigmoid(bd, direction = "lower")
+#'
+#' # Anchor on an external reference instead of the sample mean
+#' score_sigmoid(om, x0 = 3.0)
+#'
+#' # A sharper transition around the reference
+#' score_sigmoid(om, b = 6)
+#'
+#' @seealso \code{\link{score_higher_better}}, \code{\link{score_lower_better}}
+#'   for the linear alternative; \code{\link{sigmoid_scoring}} to build a
+#'   scoring rule object for use with \code{\link{compute_sqi_properties}}
+#'
+#' @export
+score_sigmoid <- function(x,
+                          direction = c("higher", "lower"),
+                          x0 = NULL,
+                          b = 2.5,
+                          na.rm = TRUE) {
+  direction <- match.arg(direction)
+
+  if (!is.numeric(x)) {
+    stop("x must be numeric")
+  }
+
+  if (!is.numeric(b) || length(b) != 1 || is.na(b) || b <= 0) {
+    stop("b must be a single positive number; the direction argument ",
+         "supplies its sign")
+  }
+
+  # Default reference: the sample mean.
+  if (is.null(x0)) {
+    if (all(is.na(x))) {
+      stop("Cannot derive a default x0: all values in x are NA")
+    }
+    x0 <- mean(x, na.rm = na.rm)
+  }
+
+  if (!is.numeric(x0) || length(x0) != 1 || is.na(x0)) {
+    stop("x0 must be a single non-missing numeric value")
+  }
+
+  if (x0 <= 0) {
+    stop("x0 must be strictly positive (got ", x0, "). The sigmoidal curve ",
+         "is defined on a ratio x/x0, which is meaningless for a ",
+         "non-positive reference. Shift the variable to a positive range or ",
+         "use score_threshold() instead.")
+  }
+
+  # A negative base with a fractional exponent is NaN in real arithmetic.
+  # Fail loudly rather than silently returning NaN scores.
+  if (any(x < 0, na.rm = TRUE)) {
+    stop("x contains negative values, for which the sigmoidal score is ",
+         "undefined ((x/x0)^b is NaN for a negative base and a fractional ",
+         "exponent). Shift the variable to a non-negative range or use ",
+         "score_threshold() instead.")
+  }
+
+  # The direction supplies the sign of the exponent.
+  #   "higher": exponent -b, so large x -> ratio^-b -> 0 -> S -> 1
+  #   "lower":  exponent +b, so large x -> ratio^+b -> Inf -> S -> 0
+  exponent <- if (direction == "higher") -b else b
+
+  ratio <- x / x0
+
+  # x == 0 is well defined as a limit and R computes it correctly:
+  #   0^-b = Inf -> S = 0  (worst, for "higher")
+  #   0^+b = 0   -> S = 1  (best, for "lower")
+  score <- 1 / (1 + ratio^exponent)
+
+  # Guard against floating point drift at the asymptotes.
+  score[!is.na(score) & score < 0] <- 0
+  score[!is.na(score) & score > 1] <- 1
+
+  score
 }

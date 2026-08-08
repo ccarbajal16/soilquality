@@ -4,13 +4,22 @@
 \alias{standard_scoring_rules}
 \title{Generate standard scoring rules for soil properties}
 \usage{
-standard_scoring_rules(properties)
+standard_scoring_rules(properties, scoring = c("linear", "sigmoid"), b = 2.5)
 }
 \arguments{
 \item{properties}{Character vector of property names, or a single string
 naming a pre-defined property set from \code{\link{soil_property_sets}}.
 If a property set name is provided (e.g., "basic", "standard"), the
 corresponding properties from \code{soil_property_sets} will be used.}
+
+\item{scoring}{Either \code{"linear"} (the default, and the historical
+behaviour) or \code{"sigmoid"}. With \code{"sigmoid"}, every
+monotonic rule is emitted as a \code{\link{sigmoid_scoring}} rule
+instead of \code{\link{higher_better}} / \code{\link{lower_better}}.
+Non-monotonic rules are unaffected -- see Details.}
+
+\item{b}{Shape parameter passed to \code{\link{sigmoid_scoring}} when
+\code{scoring = "sigmoid"}. Ignored otherwise. Defaults to 2.5.}
 }
 \value{
 A named list of \code{scoring_rule} objects, one for each
@@ -34,6 +43,24 @@ The function applies the following pattern matching rules (case-insensitive):
   \item Properties containing "cec", "ca", or "mg": \code{\link{higher_better}}()
   \item All other properties: \code{\link{higher_better}}() (default)
 }
+
+With \code{scoring = "sigmoid"} the same pattern matching runs, and then
+every \code{higher_better}/\code{lower_better} rule is replaced by the
+corresponding \code{\link{sigmoid_scoring}} rule. \strong{pH is left as an
+optimum-range rule}: the sigmoidal curve is monotonic and has no
+optimum form, so there is nothing to convert it to. The same applies to any
+threshold rule. This means a "sigmoid" rule set is in practice a mixed set,
+which is what the published recipes actually do.
+
+The reference value \code{x0} is left \code{NULL}, so each indicator is
+scored against its own mean when the rule is applied. Override it per
+indicator with \code{\link{sigmoid_scoring}} where an external reference is
+available.
+
+Because the literature disagrees on whether linear or non-linear scoring is
+preferable (see \code{\link{score_sigmoid}}), the intended use of this
+argument is to build both rule sets from the same property list and check
+whether your conclusions survive the change.
 }
 \examples{
 # Generate rules for basic property set
@@ -50,8 +77,16 @@ rules$pH
 # Use with standard property sets
 rules <- standard_scoring_rules(soil_property_sets$standard)
 
+# Non-linear scoring for the same property set
+nl_rules <- standard_scoring_rules("basic", scoring = "sigmoid")
+nl_rules$OM
+
+# pH stays an optimum rule -- the sigmoid has no optimum form
+nl_rules$pH
+
 }
 \seealso{
 \code{\link{soil_property_sets}}, \code{\link{higher_better}},
-  \code{\link{lower_better}}, \code{\link{optimum_range}}
+  \code{\link{lower_better}}, \code{\link{optimum_range}},
+  \code{\link{sigmoid_scoring}}
 }
