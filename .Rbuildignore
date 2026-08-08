@@ -3,8 +3,10 @@
 ^data-raw$
 ^lib$
 ^coverage_report\.html$
-^Rplots\.pdf$
+Rplots\.pdf$
 ^\.github$
 ^_pkgdown\.yml$
 ^docs$
 ^pkgdown$
+^\.atl$
+^2026-soilquality-package-upgrade\.md$

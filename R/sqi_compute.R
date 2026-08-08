@@ -137,17 +137,28 @@ compute_sqi <- function(input_csv,
 #'   indicator. If NULL, all indicators use higher-is-better scoring.
 #' @param var_threshold Numeric value for PCA variance threshold (default 0.05).
 #' @param loading_threshold Numeric value for PCA loading threshold (default 0.5).
+#' @param method Aggregation method. \code{"weighted"} (the default, and the
+#'   historical behaviour) computes the weighted sum of scored indicators.
+#'   \code{"area"} computes the area of the radar diagram they trace, which
+#'   ignores weights entirely -- see \code{\link{sqi_area}}.
+#' @param reference Optional named numeric vector of reference scores for the
+#'   MDS indicators, used only when \code{method = "area"}. When supplied, the
+#'   SQI is reported as a ratio against this non-degraded reference soil,
+#'   which is what makes area-based values comparable across studies. Names
+#'   must cover every selected MDS indicator.
 #' @param ... Additional arguments (currently unused).
 #'
 #' @return An object of class "sqi_result" containing:
 #'   \describe{
 #'     \item{mds}{Character vector of selected MDS indicators}
-#'     \item{weights}{Named numeric vector of AHP weights}
+#'     \item{weights}{Named numeric vector of AHP weights. Still reported when
+#'       \code{method = "area"}, but not used in the aggregation.}
 #'     \item{CR}{Consistency Ratio from AHP}
 #'     \item{results}{Data frame with original data, scored indicators, and SQI}
 #'     \item{pca}{PCA object from stats::prcomp}
 #'     \item{loadings}{Matrix of variable loadings}
 #'     \item{var_exp}{Numeric vector of variance explained by each PC}
+#'     \item{method}{The aggregation method used}
 #'   }
 #'
 #' @details
@@ -158,8 +169,17 @@ compute_sqi <- function(input_csv,
 #'   \item Perform PCA and select MDS indicators
 #'   \item Calculate AHP weights (from pairwise matrix or equal weights)
 #'   \item Score each MDS indicator
-#'   \item Calculate weighted SQI as sum of (weight * score)
+#'   \item Aggregate: weighted sum of (weight * score), or radar-diagram area
 #' }
+#'
+#' \strong{On \code{method = "area"}.} The area route is weight-free, which
+#' sidesteps the most contested step in the pipeline. But an absolute area
+#' (\code{reference = NULL}) is standardised against nothing but your own
+#' sample and is not comparable to any other study; the comparability people
+#' cite comes from taking the \emph{ratio} against a reference soil, not from
+#' the formula. Weights are still computed and returned so that the two
+#' methods can be compared on the same object, but they do not enter the
+#' area calculation.
 #'
 #' @examples
 #' # Create example data
@@ -189,10 +209,18 @@ compute_sqi_df <- function(df,
                            directions = NULL,
                            var_threshold = 0.05,
                            loading_threshold = 0.5,
+                           method = c("weighted", "area"),
+                           reference = NULL,
                            ...) {
+  method <- match.arg(method)
+
   # Validate input
   if (!is.data.frame(df)) {
     stop("df must be a data frame")
+  }
+
+  if (!is.null(reference) && method != "area") {
+    warning("`reference` is only used when method = \"area\"; ignoring it.")
   }
 
   # Preserve ID column if specified
@@ -246,15 +274,52 @@ compute_sqi_df <- function(df,
   # Score indicators
   scored_data <- score_indicators(df, mds, directions)
 
-  # Calculate SQI as weighted sum of scored indicators
+  # Aggregate the scored indicators into the index
   scored_cols <- paste0(mds, "_scored")
-  sqi_values <- numeric(nrow(scored_data))
 
-  for (i in seq_along(mds)) {
-    indicator <- mds[i]
-    scored_col <- scored_cols[i]
-    weight <- weights[indicator]
-    sqi_values <- sqi_values + (weight * scored_data[[scored_col]])
+  if (method == "weighted") {
+    # Weighted additive: sum of (weight * score)
+    sqi_values <- numeric(nrow(scored_data))
+
+    for (i in seq_along(mds)) {
+      indicator <- mds[i]
+      scored_col <- scored_cols[i]
+      weight <- weights[indicator]
+      sqi_values <- sqi_values + (weight * scored_data[[scored_col]])
+    }
+  } else {
+    # Area of the radar diagram. Weight-free by construction; see sqi_area().
+    if (length(mds) < 3) {
+      stop("The area method needs at least 3 MDS indicators to describe a ",
+           "polygon, but PCA selected ", length(mds), ". Use ",
+           "method = \"weighted\", or relax var_threshold/loading_threshold ",
+           "to select more indicators.")
+    }
+
+    ref_vector <- NULL
+    if (!is.null(reference)) {
+      if (is.null(names(reference))) {
+        stop("`reference` must be a named numeric vector so that its values ",
+             "can be matched to the selected MDS indicators (",
+             paste(mds, collapse = ", "), ").")
+      }
+
+      missing_ref <- setdiff(mds, names(reference))
+      if (length(missing_ref) > 0) {
+        stop("`reference` is missing values for these selected MDS ",
+             "indicators: ", paste(missing_ref, collapse = ", "))
+      }
+
+      # Order the reference to match the MDS so the two vectors line up.
+      ref_vector <- unname(reference[mds])
+    }
+
+    sqi_values <- apply(
+      scored_data[, scored_cols, drop = FALSE],
+      MARGIN = 1,
+      FUN = function(row) sqi_area(as.numeric(row), reference = ref_vector)
+    )
+    sqi_values <- unname(sqi_values)
   }
 
   # Add SQI to results
@@ -268,7 +333,8 @@ compute_sqi_df <- function(df,
     results = scored_data,
     pca = pca_result$pca,
     loadings = pca_result$loadings,
-    var_exp = pca_result$var_exp
+    var_exp = pca_result$var_exp,
+    method = method
   )
 
   class(result) <- "sqi_result"
@@ -297,7 +363,10 @@ compute_sqi_df <- function(df,
 #'   threshold_scoring). If NULL, all indicators use higher-is-better scoring.
 #' @param var_threshold Numeric value for PCA variance threshold (default 0.05).
 #' @param loading_threshold Numeric value for PCA loading threshold (default 0.5).
-#' @param ... Additional arguments (currently unused).
+#' @param ... Additional arguments passed to \code{\link{compute_sqi_df}},
+#'   notably \code{method} to choose between weighted and area aggregation,
+#'   and \code{reference} to report the area as a ratio against a
+#'   non-degraded reference soil.
 #'
 #' @return An object of class "sqi_result" containing:
 #'   \describe{

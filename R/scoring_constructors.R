@@ -170,6 +170,73 @@ threshold_scoring <- function(thresholds, scores) {
   )
 }
 
+#' Create a non-linear (sigmoidal) scoring rule
+#'
+#' Creates a scoring rule object for indicators to be scored with the
+#' sigmoidal curve \eqn{S = 1 / (1 + (x/x_0)^b)} rather than with linear
+#' min-max normalization. See \code{\link{score_sigmoid}} for the full
+#' description of the curve, the meaning of \code{b}, and the caveat that the
+#' literature does not agree on whether the linear or non-linear form is
+#' preferable.
+#'
+#' @param direction Either \code{"higher"} (more is better, the default) or
+#'   \code{"lower"} (less is better).
+#' @param x0 Optional reference value at which the score equals 0.5. If
+#'   \code{NULL}, the mean of the indicator is used when the rule is applied.
+#'   Supplying an external reference is what makes scores comparable across
+#'   studies.
+#' @param b Shape parameter controlling steepness. Must be positive; the
+#'   \code{direction} argument supplies the sign. Defaults to 2.5, a
+#'   convention inherited from the literature rather than a general constant.
+#'
+#' @return A scoring_rule object of class c("scoring_rule", "sigmoid_scoring")
+#'
+#' @examples
+#' # Organic matter, scored non-linearly against the sample mean
+#' om_rule <- sigmoid_scoring()
+#'
+#' # Bulk density, anchored on an external reference value
+#' bd_rule <- sigmoid_scoring(direction = "lower", x0 = 1.4)
+#'
+#' # A sharper curve
+#' om_rule <- sigmoid_scoring(b = 6)
+#'
+#' @seealso \code{\link{score_sigmoid}} for the underlying function;
+#'   \code{\link{higher_better}}, \code{\link{lower_better}} for the linear
+#'   equivalents; \code{\link{standard_scoring_rules}} to generate sigmoidal
+#'   rules for a whole property set at once
+#'
+#' @export
+sigmoid_scoring <- function(direction = c("higher", "lower"),
+                            x0 = NULL,
+                            b = 2.5) {
+  direction <- match.arg(direction)
+
+  if (!is.numeric(b) || length(b) != 1 || is.na(b) || b <= 0) {
+    stop("b must be a single positive number; the direction argument ",
+         "supplies its sign")
+  }
+
+  if (!is.null(x0)) {
+    if (!is.numeric(x0) || length(x0) != 1 || is.na(x0)) {
+      stop("x0 must be a single non-missing numeric value, or NULL")
+    }
+    if (x0 <= 0) {
+      stop("x0 must be strictly positive (got ", x0, ")")
+    }
+  }
+
+  structure(
+    list(
+      type = "sigmoid",
+      direction = direction,
+      x0 = x0,
+      b = b
+    ),
+    class = c("scoring_rule", "sigmoid_scoring")
+  )
+}
+
 #' Print method for scoring_rule objects
 #'
 #' @param x A scoring_rule object
@@ -198,6 +265,14 @@ print.scoring_rule <- function(x, ...) {
     cat("  Type: Threshold-based scoring\n")
     cat("  Thresholds:", paste(x$thresholds, collapse = ", "), "\n")
     cat("  Scores:", paste(x$scores, collapse = ", "), "\n")
+  } else if (inherits(x, "sigmoid_scoring")) {
+    cat("  Type: Non-linear (sigmoidal) scoring\n")
+    cat("  Direction:",
+        if (x$direction == "higher") "Higher values are better"
+        else "Lower values are better", "\n")
+    cat("  Reference (x0):",
+        if (is.null(x$x0)) "mean of the indicator" else x$x0, "\n")
+    cat("  Shape (b):", x$b, "\n")
   }
 
   invisible(x)

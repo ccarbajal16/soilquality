@@ -84,6 +84,7 @@ reference:
   - score_lower_better
   - score_optimum
   - score_threshold
+  - score_sigmoid
 
 - title: Scoring Constructors
   desc: >
@@ -93,6 +94,13 @@ reference:
   - lower_better
   - optimum_range
   - threshold_scoring
+  - sigmoid_scoring
+
+- title: Aggregation
+  desc: >
+    Combining scored indicators into a single index
+  contents:
+  - sqi_area
 
 - title: Property Sets and Standard Rules
   desc: >

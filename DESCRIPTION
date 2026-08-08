@@ -1,7 +1,7 @@
 Package: soilquality
 Type: Package
 Title: Soil Quality Index Calculation with PCA and AHP
-Version: 1.0.0
+Version: 1.1.0
 Authors@R: c(
     person("Carlos Carbajal", email = "ccarbajal@educagis.com", 
            role = c("aut", "cre"))
@@ -26,7 +26,8 @@ Suggests:
     knitr,
     rmarkdown,
     covr
-RoxygenNote: 7.3.3
 VignetteBuilder: knitr
 URL: https://github.com/ccarbajal16/soilquality
 BugReports: https://github.com/ccarbajal16/soilquality/issues
+Config/roxygen2/version: 8.0.0
+Config/testthat/edition: 3

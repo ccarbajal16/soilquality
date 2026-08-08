@@ -36,7 +36,10 @@ threshold_scoring). If NULL, all indicators use higher-is-better scoring.}
 
 \item{loading_threshold}{Numeric value for PCA loading threshold (default 0.5).}
 
-\item{...}{Additional arguments (currently unused).}
+\item{...}{Additional arguments passed to \code{\link{compute_sqi_df}},
+notably \code{method} to choose between weighted and area aggregation,
+and \code{reference} to report the area as a ratio against a
+non-degraded reference soil.}
 }
 \value{
 An object of class "sqi_result" containing:
