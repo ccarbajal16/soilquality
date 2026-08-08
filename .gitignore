@@ -61,3 +61,6 @@ Desktop.ini
 
 # Agent tooling state (skill registry, local scratch)
 .atl/
+
+# Plot device output produced by running the test suite
+Rplots.pdf

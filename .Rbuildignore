@@ -3,7 +3,7 @@
 ^data-raw$
 ^lib$
 ^coverage_report\.html$
-^Rplots\.pdf$
+Rplots\.pdf$
 ^\.github$
 ^_pkgdown\.yml$
 ^docs$
