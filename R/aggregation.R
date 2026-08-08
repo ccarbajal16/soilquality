@@ -1,0 +1,151 @@
+#' Aggregate indicator scores by the area of a radar diagram
+#'
+#' Aggregates a vector of scored soil indicators into a single value using the
+#' area of the polygon they trace on a radar (star) diagram. This is a
+#' \strong{weight-free} alternative to the weighted additive index, and so
+#' sidesteps the most contested step in the whole SQI pipeline: deciding how
+#' important each indicator is.
+#'
+#' @details
+#' The area is computed as
+#' \deqn{A = 0.5 \sum_{i} s_i^2 \sin(2\pi / n)}
+#' where \eqn{s_i} are the scored indicators and \eqn{n} their number.
+#'
+#' \strong{It is the square of each score, not the product of adjacent radii.}
+#' The true area of the polygon would be \eqn{0.5 \sin(2\pi/n) \sum_i s_i
+#' s_{i+1}}, which depends on the \emph{order} in which indicators are placed
+#' around the diagram -- an arbitrary choice that would make the index
+#' arbitrary too. Kuzyakov's square form approximates the polygon as a sum of
+#' individual triangles and is \strong{order-independent}, which is why it is
+#' used here. This is a deliberate deviation from the geometric area, and
+#' reviewers do ask about it.
+#'
+#' \strong{The formula is designed to be used as a ratio.} Kuzyakov
+#' standardises against a non-degraded reference soil (whose scores are all
+#' 1.0) and reports \eqn{A_{degraded} / A_{reference}}; the worked example in
+#' the paper gives 0.47, read as "half the soil function lost". Used
+#' absolutely, with \code{reference = NULL}, the value is standardised against
+#' nothing but your own sample and is \strong{not comparable to any other
+#' study}:
+#'
+#' \tabular{lll}{
+#'   \strong{Use} \tab \strong{Standardised against} \tab \strong{Comparable?} \cr
+#'   \code{reference = NULL} \tab your own sample \tab no \cr
+#'   \code{reference} supplied \tab a non-degraded reference soil \tab claimed yes
+#' }
+#'
+#' The weight-independence that makes this route attractive is a consequence
+#' of \strong{taking a ratio}, not a property of the formula itself.
+#'
+#' Note also that the absolute area depends on \eqn{n} through the
+#' \eqn{\sin(2\pi/n)} term, so areas computed from different numbers of
+#' indicators are not comparable either. The ratio is insensitive to this,
+#' provided both vectors have the same length -- which is why a mismatch
+#' warns.
+#'
+#' @param s Numeric vector of indicator scores, normally in [0,1] as produced
+#'   by \code{\link{score_indicators}}. Must contain at least three values:
+#'   fewer than three indicators do not describe a polygon.
+#' @param reference Optional numeric vector of reference scores, of the same
+#'   length as \code{s}, describing a non-degraded reference soil. When
+#'   supplied, the returned value is the ratio of the two areas. When
+#'   \code{NULL} (the default) the absolute area is returned.
+#' @param na.rm Logical. If \code{TRUE}, missing scores are dropped before
+#'   computing the area. Note that this changes \eqn{n} and therefore the
+#'   area, so it is \code{FALSE} by default: a missing indicator is a fact
+#'   about the data, not something to silently absorb.
+#'
+#' @return A single numeric value: the absolute area when \code{reference} is
+#'   \code{NULL}, otherwise the dimensionless ratio of the two areas. A ratio
+#'   below 1 indicates the sample has lost function relative to the reference.
+#'
+#' @references
+#' Kuzyakov, Y. et al. (2020), eq. (2). Frontiers of Agricultural Science and
+#' Engineering 7(3):282-288. \doi{10.15302/J-FASE-2020338}
+#'
+#' @examples
+#' scores <- c(0.8, 0.6, 0.7, 0.9, 0.5)
+#'
+#' # Absolute area -- not comparable across studies
+#' sqi_area(scores)
+#'
+#' # The maximum attainable area for this number of indicators
+#' sqi_area(rep(1, 5))
+#'
+#' # As a ratio against a non-degraded reference soil
+#' sqi_area(scores, reference = rep(1, 5))
+#'
+#' # Order-independence: the point of the square form
+#' sqi_area(scores) == sqi_area(rev(scores))
+#'
+#' @seealso \code{\link{compute_sqi_df}} to use this as an aggregation method
+#'   for a whole dataset; \code{\link{score_indicators}} to produce the scores
+#'
+#' @export
+sqi_area <- function(s, reference = NULL, na.rm = FALSE) {
+  s <- .validate_area_scores(s, "s", na.rm = na.rm)
+
+  area <- .polygon_area(s)
+
+  if (is.null(reference)) {
+    return(area)
+  }
+
+  reference <- .validate_area_scores(reference, "reference", na.rm = na.rm)
+
+  # The ratio cancels the sin(2*pi/n) term only when both vectors have the
+  # same n. With different n the comparison is between different geometries.
+  if (length(reference) != length(s)) {
+    warning("s has ", length(s), " indicators but reference has ",
+            length(reference), ". The area depends on the number of ",
+            "indicators through sin(2*pi/n), so this ratio compares two ",
+            "different geometries and is not interpretable as loss of ",
+            "function.")
+  }
+
+  ref_area <- .polygon_area(reference)
+
+  if (ref_area == 0) {
+    stop("The reference area is zero (all reference scores are 0), so the ",
+         "ratio is undefined. A reference soil should score near 1 on every ",
+         "indicator.")
+  }
+
+  area / ref_area
+}
+
+
+# Internal: the area itself. Kept separate so that sqi_area() computes the
+# sample and the reference through exactly the same code path.
+.polygon_area <- function(s) {
+  0.5 * sum(s^2) * sin(2 * pi / length(s))
+}
+
+
+# Internal: shared validation for sqi_area()'s two score vectors.
+.validate_area_scores <- function(s, arg_name, na.rm) {
+  if (!is.numeric(s)) {
+    stop(arg_name, " must be a numeric vector")
+  }
+
+  if (anyNA(s)) {
+    if (!na.rm) {
+      stop(arg_name, " contains NA values. The area depends on the number of ",
+           "indicators, so dropping them silently would change the result; ",
+           "pass na.rm = TRUE to drop them deliberately.")
+    }
+    s <- s[!is.na(s)]
+  }
+
+  if (length(s) < 3) {
+    stop(arg_name, " must contain at least 3 scores to describe a polygon ",
+         "(got ", length(s), ")")
+  }
+
+  if (any(s < 0)) {
+    stop(arg_name, " contains negative scores. Indicator scores are expected ",
+         "in [0,1]; a negative radius has no meaning on a radar diagram.")
+  }
+
+  s
+}

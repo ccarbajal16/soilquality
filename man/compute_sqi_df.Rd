@@ -11,6 +11,8 @@ compute_sqi_df(
   directions = NULL,
   var_threshold = 0.05,
   loading_threshold = 0.5,
+  method = c("weighted", "area"),
+  reference = NULL,
   ...
 )
 }
@@ -31,18 +33,31 @@ indicator. If NULL, all indicators use higher-is-better scoring.}
 
 \item{loading_threshold}{Numeric value for PCA loading threshold (default 0.5).}
 
+\item{method}{Aggregation method. \code{"weighted"} (the default, and the
+historical behaviour) computes the weighted sum of scored indicators.
+\code{"area"} computes the area of the radar diagram they trace, which
+ignores weights entirely -- see \code{\link{sqi_area}}.}
+
+\item{reference}{Optional named numeric vector of reference scores for the
+MDS indicators, used only when \code{method = "area"}. When supplied, the
+SQI is reported as a ratio against this non-degraded reference soil,
+which is what makes area-based values comparable across studies. Names
+must cover every selected MDS indicator.}
+
 \item{...}{Additional arguments (currently unused).}
 }
 \value{
 An object of class "sqi_result" containing:
   \describe{
     \item{mds}{Character vector of selected MDS indicators}
-    \item{weights}{Named numeric vector of AHP weights}
+    \item{weights}{Named numeric vector of AHP weights. Still reported when
+      \code{method = "area"}, but not used in the aggregation.}
     \item{CR}{Consistency Ratio from AHP}
     \item{results}{Data frame with original data, scored indicators, and SQI}
     \item{pca}{PCA object from stats::prcomp}
     \item{loadings}{Matrix of variable loadings}
     \item{var_exp}{Numeric vector of variance explained by each PC}
+    \item{method}{The aggregation method used}
   }
 }
 \description{
@@ -59,8 +74,17 @@ The function performs the following steps:
   \item Perform PCA and select MDS indicators
   \item Calculate AHP weights (from pairwise matrix or equal weights)
   \item Score each MDS indicator
-  \item Calculate weighted SQI as sum of (weight * score)
+  \item Aggregate: weighted sum of (weight * score), or radar-diagram area
 }
+
+\strong{On \code{method = "area"}.} The area route is weight-free, which
+sidesteps the most contested step in the pipeline. But an absolute area
+(\code{reference = NULL}) is standardised against nothing but your own
+sample and is not comparable to any other study; the comparability people
+cite comes from taking the \emph{ratio} against a reference soil, not from
+the formula. Weights are still computed and returned so that the two
+methods can be compared on the same object, but they do not enter the
+area calculation.
 }
 \examples{
 # Create example data
