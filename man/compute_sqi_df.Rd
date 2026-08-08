@@ -13,7 +13,8 @@ compute_sqi_df(
   loading_threshold = 0.5,
   method = c("weighted", "area"),
   reference = NULL,
-  select = c("pca", "none"),
+  select = c("pca", "none", "network"),
+  network_args = list(),
   ...
 )
 }
@@ -45,12 +46,24 @@ SQI is reported as a ratio against this non-degraded reference soil,
 which is what makes area-based values comparable across studies. Names
 must cover every selected MDS indicator.}
 
-\item{select}{Indicator selection strategy. \code{"pca"} (the default, and
-the historical behaviour) selects a Minimum Data Set via
-\code{\link{pca_select_mds}}. \code{"none"} skips selection and uses
-\strong{every} numeric indicator -- the "total data set" (TDS) index that
-\code{\link{sqi_validate}} measures fidelity against. PCA is still run
-and reported in either case.}
+\item{select}{Indicator selection strategy.
+\describe{
+  \item{\code{"pca"}}{The default, and the historical behaviour: a
+    Minimum Data Set via \code{\link{pca_select_mds}}, selecting on
+    variance.}
+  \item{\code{"network"}}{Correlation-network selection via
+    \code{\link{na_select_mds}}, selecting on centrality. Its
+    centrality-derived weights are used unless \code{pairwise_df} is
+    supplied. Requires the suggested package \pkg{igraph}.}
+  \item{\code{"none"}}{No selection: every numeric indicator is used, the
+    "total data set" (TDS) index that \code{\link{sqi_validate}} measures
+    fidelity against.}
+}
+PCA is run and reported in all three cases.}
+
+\item{network_args}{A named list of arguments forwarded to
+\code{\link{na_select_mds}} when \code{select = "network"}, for example
+\code{list(r_min = 0.5, component = "all")}. Ignored otherwise.}
 
 \item{...}{Additional arguments (currently unused).}
 }

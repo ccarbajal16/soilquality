@@ -1,7 +1,7 @@
 Package: soilquality
 Type: Package
 Title: Soil Quality Index Calculation with PCA and AHP
-Version: 1.2.0
+Version: 1.3.0
 Authors@R: c(
     person("Carlos Carbajal", email = "ccarbajal@educagis.com", 
            role = c("aut", "cre"))
@@ -22,6 +22,7 @@ Imports:
 Suggests:
     shiny,
     DT,
+    igraph,
     testthat (>= 3.0.0),
     knitr,
     rmarkdown,
