@@ -1,6 +1,6 @@
 # Changelog
 
-## soilquality 2.3.0 (development)
+## soilquality 2.3.0
 
 Second piece of the SEM module, and like the first it needs no SEM.
 
@@ -55,7 +55,7 @@ instead: the `inherent` argument of
 defaults to `NULL`. `"none"` remains available for switching the step
 off programmatically.
 
-## soilquality 2.2.0 (development)
+## soilquality 2.2.0
 
 #### New data
 
@@ -106,7 +106,7 @@ ICC above 0.75 for every indicator: samples within a plot are not
 independent, which invalidates ordinary standard errors, and most soil
 campaigns never check. Tests assert this rather than assuming it.
 
-## soilquality 2.1.0 (development)
+## soilquality 2.1.0
 
 First piece of the SEM module, and the one that needed no SEM at all.
 
@@ -142,7 +142,7 @@ First piece of the SEM module, and the one that needed no SEM at all.
 No new dependencies: this needs
 [`stats::cor()`](https://rdrr.io/r/stats/cor.html) and set arithmetic.
 
-## soilquality 2.0.0 (development)
+## soilquality 2.0.0
 
 ### Breaking change
 
@@ -188,7 +188,7 @@ The major version is bumped because this removes an exported object.
 - The two remaining datasets are now described in the reference index by
   the job each does, rather than as interchangeable alternatives.
 
-## soilquality 1.7.0 (development)
+## soilquality 1.7.0
 
 Completes the upgrade begun in 1.1.0: adequacy testing, the main
 vignette, and the documentation the earlier phases deferred.
@@ -244,7 +244,7 @@ what it is for.
 `R CMD check --as-cran`: 0 errors, 0 warnings, 0 notes, including
 `--run-donttest` and vignette rebuilding.
 
-## soilquality 1.6.0 (development)
+## soilquality 1.6.0
 
 Adds reference-soil standardisation: scoring against an undisturbed soil
 rather than against the sample’s own extremes.
@@ -294,7 +294,7 @@ documents that Kuzyakov’s classification resolved cleanly on a Luvic
 Phaeozem and **failed to separate on a Calcic Chernozem**, so an untidy
 result is a fact about the soil rather than a failure of the analysis.
 
-## soilquality 1.5.0 (development)
+## soilquality 1.5.0
 
 Adds functional (EMDS) grouping: selecting one indicator per soil
 *function* rather than letting the whole pool compete on a single
@@ -367,7 +367,7 @@ peripheral to the graph.
   measure – they are simply not a basis for selecting a minimum data
   set.
 
-## soilquality 1.4.0 (development)
+## soilquality 1.4.0
 
 #### New data
 
@@ -407,7 +407,7 @@ peripheral to the graph.
   and is already reported in `$isolated`; the warning is now raised only
   when more than one component contains actual structure.
 
-## soilquality 1.3.0 (development)
+## soilquality 1.3.0
 
 Adds correlation-network indicator selection, which chooses indicators
 by their centrality in a correlation network rather than by their
@@ -467,7 +467,7 @@ only one pair clears the default threshold. The network route collapses
 to a single indicator on it. That is a property of the fixture, not the
 method.
 
-## soilquality 1.2.0 (development)
+## soilquality 1.2.0
 
 Adds index validation – the ability to ask whether an index actually
 discriminates, rather than assuming it does.
@@ -514,7 +514,7 @@ of samples land in the middle bands and the “very low” and “very high”
 categories are empty. This is not a bug – it is the diagnostic working,
 on exactly the pathology it was built to expose.
 
-## soilquality 1.1.0 (development)
+## soilquality 1.1.0
 
 Broadens the package from a single SQI route (PCA-MDS, AHP/loading
 weights, linear scoring, weighted additive aggregation) toward the
