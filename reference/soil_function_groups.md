@@ -244,4 +244,14 @@ pca_select_mds(standardize_numeric(soil_structured[, props]),
 #> $within
 #> NULL
 #> 
+#> $adequacy
+#> PCA adequacy
+#>   Observations: 120  Indicators: 11 
+#> 
+#> Kaiser-Meyer-Olkin: not computable
+#>   The correlation matrix is singular, so it cannot be inverted and KMO is undefined. This usually means some indicators are exactly collinear -- particle-size fractions summing to 100 is the classic case. Pairs correlating above 0.99: OM/SOC.
+#> 
+#> Bartlett's test of sphericity
+#>   Not computable: the correlation matrix is singular.
+#> 
 ```

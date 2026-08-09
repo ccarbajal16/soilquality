@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">soilquality</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,8 @@
       <ul class="navbar-nav me-auto"><li class="nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/introduction.html">Introduction to soilquality</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/building-and-validating-an-sqi.html">Building and validating a Soil Quality Index</a></li>
+    <li><a class="dropdown-item" href="../articles/introduction.html">Introduction to soilquality</a></li>
     <li><a class="dropdown-item" href="../articles/advanced-usage.html">Advanced Usage</a></li>
     <li><a class="dropdown-item" href="../articles/ahp-matrices.html">AHP Matrices Guide</a></li>
   </ul></li>
@@ -37,6 +38,54 @@
       <small>Source: <a href="https://github.com/ccarbajal16/soilquality/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.7.0" id="soilquality-170-development">soilquality 1.7.0 (development)<a class="anchor" aria-label="anchor" href="#soilquality-170-development"></a></h2>
+<p>Completes the upgrade begun in 1.1.0: adequacy testing, the main vignette, and the documentation the earlier phases deferred.</p>
+<div class="section level4">
+<h4 id="new-features-1-7-0">New features<a class="anchor" aria-label="anchor" href="#new-features-1-7-0"></a></h4>
+<ul><li>
+<code><a href="../reference/pca_adequacy.html">pca_adequacy()</a></code> - the two checks that a correlation matrix is worth factoring at all: the Kaiser-Meyer-Olkin measure of sampling adequacy, with Kaiser’s labels and a per-variable MSA, and Bartlett’s test of sphericity. Most published soil quality work skips both.</li>
+<li>
+<code><a href="../reference/pca_select_mds.html">pca_select_mds()</a></code> gains <code>adequacy = c("report", "warn", "ignore")</code>, reporting by default and warning on request when KMO falls below 0.6 or sphericity is not rejected. It reports rather than gates, because erroring would break every existing call.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="a-limitation-worth-knowing-about-1-7-0">A limitation worth knowing about<a class="anchor" aria-label="anchor" href="#a-limitation-worth-knowing-about-1-7-0"></a></h4>
+<p>KMO requires inverting the correlation matrix, and <strong>soil data routinely makes that impossible</strong>: particle-size fractions sum to 100, so <code>Sand</code>, <code>Silt</code> and <code>Clay</code> together are exactly collinear, and organic matter and organic carbon are related by a fixed factor. When the matrix is singular, <code><a href="../reference/pca_adequacy.html">pca_adequacy()</a></code> returns <code>NA</code> with an explanation naming the offending pairs, rather than erroring or quietly substituting a pseudo-inverse. Bartlett’s statistic is reported as <code>NA</code> for the same reason.</p>
+<p>Bartlett’s test is also close to a formality on real data: with a decent sample size almost any set of soil properties rejects sphericity. Passing it is weak evidence; failing it is strong evidence, and that is what it is for.</p>
+</div>
+<div class="section level4">
+<h4 id="documentation-1-7-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-1-7-0"></a></h4>
+<ul><li>New vignette, <code><a href="../articles/building-and-validating-an-sqi.html">vignette("building-and-validating-an-sqi")</a></code>, walking the full pipeline: adequacy, selection by variance or centrality, functional grouping, the five scoring routes, weighting or not weighting, aggregation, and validation.</li>
+<li>README gains the pipeline decision table and states why validation is the point rather than an optional extra.</li>
+<li>
+<strong>Do not build an index from predicted properties.</strong> Documented on <code><a href="../reference/compute_sqi_df.html">compute_sqi_df()</a></code> and in the README. Chaudhry et al. (2024): computing an SQI from spectrally predicted properties gave R² = 0.23, while predicting the index directly from the same spectra gave R² = 0.90, with individually acceptable property models.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="verification-1-7-0">Verification<a class="anchor" aria-label="anchor" href="#verification-1-7-0"></a></h4>
+<p><code>R CMD check --as-cran</code>: 0 errors, 0 warnings, 0 notes, including <code>--run-donttest</code> and vignette rebuilding.</p>
+</div>
+</div>
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.6.0" id="soilquality-160-development">soilquality 1.6.0 (development)<a class="anchor" aria-label="anchor" href="#soilquality-160-development"></a></h2>
+<p>Adds reference-soil standardisation: scoring against an undisturbed soil rather than against the sample’s own extremes.</p>
+<div class="section level4">
+<h4 id="new-features-1-6-0">New features<a class="anchor" aria-label="anchor" href="#new-features-1-6-0"></a></h4>
+<ul><li>
+<code><a href="../reference/standardize_to_reference.html">standardize_to_reference()</a></code> - scores an indicator relative to the same indicator in a non-degraded reference soil, which takes the value 1 while degraded samples fall toward 0. Three directions: <code>"higher"</code> gives <code>x / reference</code>; <code>"lower"</code> inverts to <code>reference / x</code>, because the undisturbed soil holds the <strong>minimum</strong> for bulk density and its like; and <code>"optimum"</code> uses the <strong>distance from the optimum</strong>, since a monotone scale would rank pH 8.0 above pH 6.5.</li>
+<li>
+<code><a href="../reference/reference_scoring.html">reference_scoring()</a></code> - the matching <code>scoring_rule</code> constructor, so the route is reachable from <code><a href="../reference/compute_sqi_properties.html">compute_sqi_properties()</a></code>.</li>
+<li>
+<code><a href="../reference/score_indicators.html">score_indicators()</a></code> gains a <code>"reference"</code> type.</li>
+<li>
+<code><a href="../reference/sensitivity_resistance.html">sensitivity_resistance()</a></code> - Kuzyakov’s second and much less used approach: each indicator’s relative change divided by the change in soil organic carbon. Below 1 the indicator degrades faster than carbon and is sensitive; above 1 it is resistant.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="why-it-matters-and-what-it-costs-1-6-0">Why it matters, and what it costs<a class="anchor" aria-label="anchor" href="#why-it-matters-and-what-it-costs-1-6-0"></a></h4>
+<p>Every other scoring function normalises against the sample’s own extremes, which guarantees the best site scores about 1 <strong>by construction</strong> – whether it is pristine or merely the least ruined of a bad set. Two studies can both report 0.8 and mean entirely different soils.</p>
+<p>The price is a defensible reference: same soil type, parent material and climate, undisturbed. Kuzyakov et al. call this the approach’s key disadvantage, and a fully converted landscape often has no such site left. A badly chosen reference does not add noise, it silently rescales every index built on it. The documentation says so rather than selling the method.</p>
+<p>Two honest touches: a sample that <strong>beats</strong> the reference is capped at 1 with a warning naming how many did, because that usually means the reference is not the least disturbed soil available; and <code><a href="../reference/sensitivity_resistance.html">sensitivity_resistance()</a></code> documents that Kuzyakov’s classification resolved cleanly on a Luvic Phaeozem and <strong>failed to separate on a Calcic Chernozem</strong>, so an untidy result is a fact about the soil rather than a failure of the analysis.</p>
+</div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.5.0" id="soilquality-150-development">soilquality 1.5.0 (development)<a class="anchor" aria-label="anchor" href="#soilquality-150-development"></a></h2>
 <p>Adds functional (EMDS) grouping: selecting one indicator per soil <em>function</em> rather than letting the whole pool compete on a single criterion.</p>

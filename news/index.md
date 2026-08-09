@@ -1,5 +1,111 @@
 # Changelog
 
+## soilquality 1.7.0 (development)
+
+Completes the upgrade begun in 1.1.0: adequacy testing, the main
+vignette, and the documentation the earlier phases deferred.
+
+#### New features
+
+- [`pca_adequacy()`](https://ccarbajal16.github.io/soilquality/reference/pca_adequacy.md) -
+  the two checks that a correlation matrix is worth factoring at all:
+  the Kaiser-Meyer-Olkin measure of sampling adequacy, with Kaiser’s
+  labels and a per-variable MSA, and Bartlett’s test of sphericity. Most
+  published soil quality work skips both.
+- [`pca_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/pca_select_mds.md)
+  gains `adequacy = c("report", "warn", "ignore")`, reporting by default
+  and warning on request when KMO falls below 0.6 or sphericity is not
+  rejected. It reports rather than gates, because erroring would break
+  every existing call.
+
+#### A limitation worth knowing about
+
+KMO requires inverting the correlation matrix, and **soil data routinely
+makes that impossible**: particle-size fractions sum to 100, so `Sand`,
+`Silt` and `Clay` together are exactly collinear, and organic matter and
+organic carbon are related by a fixed factor. When the matrix is
+singular,
+[`pca_adequacy()`](https://ccarbajal16.github.io/soilquality/reference/pca_adequacy.md)
+returns `NA` with an explanation naming the offending pairs, rather than
+erroring or quietly substituting a pseudo-inverse. Bartlett’s statistic
+is reported as `NA` for the same reason.
+
+Bartlett’s test is also close to a formality on real data: with a decent
+sample size almost any set of soil properties rejects sphericity.
+Passing it is weak evidence; failing it is strong evidence, and that is
+what it is for.
+
+#### Documentation
+
+- New vignette,
+  [`vignette("building-and-validating-an-sqi")`](https://ccarbajal16.github.io/soilquality/articles/building-and-validating-an-sqi.md),
+  walking the full pipeline: adequacy, selection by variance or
+  centrality, functional grouping, the five scoring routes, weighting or
+  not weighting, aggregation, and validation.
+- README gains the pipeline decision table and states why validation is
+  the point rather than an optional extra.
+- **Do not build an index from predicted properties.** Documented on
+  [`compute_sqi_df()`](https://ccarbajal16.github.io/soilquality/reference/compute_sqi_df.md)
+  and in the README. Chaudhry et al. (2024): computing an SQI from
+  spectrally predicted properties gave R² = 0.23, while predicting the
+  index directly from the same spectra gave R² = 0.90, with individually
+  acceptable property models.
+
+#### Verification
+
+`R CMD check --as-cran`: 0 errors, 0 warnings, 0 notes, including
+`--run-donttest` and vignette rebuilding.
+
+## soilquality 1.6.0 (development)
+
+Adds reference-soil standardisation: scoring against an undisturbed soil
+rather than against the sample’s own extremes.
+
+#### New features
+
+- [`standardize_to_reference()`](https://ccarbajal16.github.io/soilquality/reference/standardize_to_reference.md) -
+  scores an indicator relative to the same indicator in a non-degraded
+  reference soil, which takes the value 1 while degraded samples fall
+  toward 0. Three directions: `"higher"` gives `x / reference`;
+  `"lower"` inverts to `reference / x`, because the undisturbed soil
+  holds the **minimum** for bulk density and its like; and `"optimum"`
+  uses the **distance from the optimum**, since a monotone scale would
+  rank pH 8.0 above pH 6.5.
+- [`reference_scoring()`](https://ccarbajal16.github.io/soilquality/reference/reference_scoring.md) -
+  the matching `scoring_rule` constructor, so the route is reachable
+  from
+  [`compute_sqi_properties()`](https://ccarbajal16.github.io/soilquality/reference/compute_sqi_properties.md).
+- [`score_indicators()`](https://ccarbajal16.github.io/soilquality/reference/score_indicators.md)
+  gains a `"reference"` type.
+- [`sensitivity_resistance()`](https://ccarbajal16.github.io/soilquality/reference/sensitivity_resistance.md) -
+  Kuzyakov’s second and much less used approach: each indicator’s
+  relative change divided by the change in soil organic carbon. Below 1
+  the indicator degrades faster than carbon and is sensitive; above 1 it
+  is resistant.
+
+#### Why it matters, and what it costs
+
+Every other scoring function normalises against the sample’s own
+extremes, which guarantees the best site scores about 1 **by
+construction** – whether it is pristine or merely the least ruined of a
+bad set. Two studies can both report 0.8 and mean entirely different
+soils.
+
+The price is a defensible reference: same soil type, parent material and
+climate, undisturbed. Kuzyakov et al. call this the approach’s key
+disadvantage, and a fully converted landscape often has no such site
+left. A badly chosen reference does not add noise, it silently rescales
+every index built on it. The documentation says so rather than selling
+the method.
+
+Two honest touches: a sample that **beats** the reference is capped at 1
+with a warning naming how many did, because that usually means the
+reference is not the least disturbed soil available; and
+[`sensitivity_resistance()`](https://ccarbajal16.github.io/soilquality/reference/sensitivity_resistance.md)
+documents that Kuzyakov’s classification resolved cleanly on a Luvic
+Phaeozem and **failed to separate on a Calcic Chernozem**, so an untidy
+result is a fact about the soil rather than a failure of the analysis.
+
 ## soilquality 1.5.0 (development)
 
 Adds functional (EMDS) grouping: selecting one indicator per soil

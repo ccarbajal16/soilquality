@@ -278,7 +278,7 @@ app is explicitly frozen at the current feature set, and note it in
 Without it the package cannot reproduce Chaudhry, Huera-Lucero, or
 Yuan’s non-linear arm.
 
-**1.1 Implement
+✅ **1.1 Implement
 [`score_sigmoid()`](https://ccarbajal16.github.io/soilquality/reference/score_sigmoid.md).**
 
     S = 1 / (1 + (x / x0)^b)        b = -2.5  "more is better"
@@ -306,11 +306,12 @@ score_sigmoid <- function(x, direction = c("higher", "lower"),
   [`score_threshold()`](https://ccarbajal16.github.io/soilquality/reference/score_threshold.md)
   instead).
 
-**1.2 Sanity tests.** `direction="higher"` → S increases monotonically
-with x, S→1 as x≫x0, S→0 as x→0; `direction="lower"` → the mirror;
-`S(x0) == 0.5` exactly for both directions; output always in \[0,1\].
+✅ **1.2 Sanity tests.** `direction="higher"` → S increases
+monotonically with x, S→1 as x≫x0, S→0 as x→0; `direction="lower"` → the
+mirror; `S(x0) == 0.5` exactly for both directions; output always in
+\[0,1\].
 
-**1.3 Wire into
+✅ **1.3 Wire into
 [`score_indicators()`](https://ccarbajal16.github.io/soilquality/reference/score_indicators.md)**
 as a selectable method, without changing existing behaviour. ⚠️
 **Verified mechanics** (`R/scoring.R:199-259`):
@@ -321,7 +322,7 @@ dispatches on `direction$type` through an if/else chain over
 [`stop()`](https://rdrr.io/r/base/stop.html)s on an unknown type. Add a
 `"sigmoid"` branch — this is purely additive, no existing default moves.
 
-**1.3b ⚠️ NEW — add the
+✅ **1.3b ⚠️ NEW — add the
 [`sigmoid_scoring()`](https://ccarbajal16.github.io/soilquality/reference/sigmoid_scoring.md)
 constructor.** Verified in Task 0.1: users specify scoring through
 exported `scoring_rule` constructor objects
@@ -340,11 +341,11 @@ with an opt-in argument to emit sigmoid rules instead of linear ones —
 that is what makes Task 1.4’s “compute both and compare” a one-line
 change for a user.
 
-**1.4 Document the linear/non-linear choice honestly.** The literature
-**contradicts itself**: Yuan 2026 finds NL \> L (fit R² 0.65 vs 0.56);
-Bilgili et al. 2017 — cited *inside Yuan’s own introduction* — finds L
-\> NL. Add a vignette note recommending **computing both** and reporting
-whether conclusions change.
+✅ **1.4 Document the linear/non-linear choice honestly.** The
+literature **contradicts itself**: Yuan 2026 finds NL \> L (fit R² 0.65
+vs 0.56); Bilgili et al. 2017 — cited *inside Yuan’s own introduction* —
+finds L \> NL. Add a vignette note recommending **computing both** and
+reporting whether conclusions change.
 
 ### Phase 2 — Area aggregation, with the reference-soil ratio ⭐
 
@@ -352,7 +353,7 @@ whether conclusions change.
 sidestepping the most contested step in the pipeline. See Phase 3’s
 rationale for why weights are contested.
 
-**2.1 Implement
+✅ **2.1 Implement
 [`sqi_area()`](https://ccarbajal16.github.io/soilquality/reference/sqi_area.md).**
 
     Area = 0.5 * sum(stP_i^2) * sin(2*pi / n)
@@ -382,7 +383,7 @@ sqi_area <- function(s, reference = NULL) {
   = “half the function lost”. *“Comparison with non-degraded soil is
   required.”*
 
-**2.2 Document the two uses and their consequence.** The
+✅ **2.2 Document the two uses and their consequence.** The
 weight-independence people cite is a consequence of **taking a ratio**,
 not a property of the formula.
 
@@ -391,16 +392,16 @@ not a property of the formula.
 | Absolute (`reference = NULL`) | your own sample | **no** |
 | Ratio (`reference = <ref soil>`) | a non-degraded reference soil | **claimed yes** |
 
-**2.3 Tests.** Area is invariant to the order of `s` (this is the point
-of the square form); all-1.0 scores give the maximum area for that `n`;
-ratio of a vector with itself is exactly 1; ratio \< 1 for a uniformly
-degraded vector.
+✅ **2.3 Tests.** Area is invariant to the order of `s` (this is the
+point of the square form); all-1.0 scores give the maximum area for that
+`n`; ratio of a vector with itself is exactly 1; ratio \< 1 for a
+uniformly degraded vector.
 
-**2.4 Add `n`-dependence warning.** Kuzyakov notes total area depends
+✅ **2.4 Add `n`-dependence warning.** Kuzyakov notes total area depends
 slightly on `n`, but the *ratio* does not. Warn if
 `length(s) != length(reference)`.
 
-**2.5 Wire into
+✅ **2.5 Wire into
 [`compute_sqi_df()`](https://ccarbajal16.github.io/soilquality/reference/compute_sqi_df.md)**
 as `method = c("weighted", "area")`, default unchanged. ⚠️ Corrected
 target: the plan said
@@ -682,10 +683,11 @@ Scoring against your own sample extremes makes the best site score ≈ 1.0
 by construction, which is why published SQI values cannot be compared
 across studies.
 
-**6.1 Implement `standardize_to_reference()`.** Standardise each
-indicator against the same indicator measured in a **non-degraded
-reference soil** (reference = 1.0, values decrease toward 0). Source:
-**Kuzyakov 2020**.
+**6.1 ✅ DONE —
+[`standardize_to_reference()`](https://ccarbajal16.github.io/soilquality/reference/standardize_to_reference.md).**
+Standardise each indicator against the same indicator measured in a
+**non-degraded reference soil** (reference = 1.0, values decrease toward
+0). Source: **Kuzyakov 2020**.
 
 - **more is better** (default) → reference gets the maximum
 - **less is better** (e.g. bulk density) → the **minimum** is assigned
@@ -693,19 +695,24 @@ reference soil** (reference = 1.0, values decrease toward 0). Source:
 - **optimum** (pH, water/air permeability, hydrophobicity) → use the
   **difference from the optimum**, not a monotone scale
 
-**6.2 Wire it as an option throughout** the scoring functions (an
-alternative to sample-relative `X/X_max`), and document the trade-off:
-comparability in exchange for **needing a defensible non-degraded
-reference soil** — which Kuzyakov calls the approach’s key disadvantage,
-and which a fully converted landscape often lacks.
+**6.2 ✅ DONE — wired via
+[`reference_scoring()`](https://ccarbajal16.github.io/soilquality/reference/reference_scoring.md)
+and a `"reference"` type in
+[`score_indicators()`](https://ccarbajal16.github.io/soilquality/reference/score_indicators.md).**
+Available as an option throughout the scoring functions (an alternative
+to sample-relative `X/X_max`), and document the trade-off: comparability
+in exchange for **needing a defensible non-degraded reference soil** —
+which Kuzyakov calls the approach’s key disadvantage, and which a fully
+converted landscape often lacks.
 
-**6.3 (Optional) Implement `sensitivity_resistance()`.** Kuzyakov’s
-under-used second approach: plot each parameter’s standardised change
-against the **SOC** change. On the 1:1 identity line the parameter
-degrades at SOC’s rate; **faster = sensitive**, **slower = resistant**.
-Generally (micro)biological properties are sensitive, physical
-properties resistant. ⚠️ Kuzyakov reports it separated cleanly on a
-Luvic Phaeozem but **not** on a Calcic Chernozem — document the
+**6.3 ✅ DONE (was optional) —
+[`sensitivity_resistance()`](https://ccarbajal16.github.io/soilquality/reference/sensitivity_resistance.md).**
+Kuzyakov’s under-used second approach: plot each parameter’s
+standardised change against the **SOC** change. On the 1:1 identity line
+the parameter degrades at SOC’s rate; **faster = sensitive**, **slower =
+resistant**. Generally (micro)biological properties are sensitive,
+physical properties resistant. ⚠️ Kuzyakov reports it separated cleanly
+on a Luvic Phaeozem but **not** on a Calcic Chernozem — document the
 limitation.
 
 ### Phase 7 — Documentation, vignette, correctness fixes
@@ -761,20 +768,25 @@ Two divergences from the literature, not one:
   [`pca_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/pca_select_mds.md)
   in Phase 7 after Phase 5 already rewrote it.
 
-**7.2 Add PCA adequacy testing** to
+**7.2 ✅ DONE —
+[`pca_adequacy()`](https://ccarbajal16.github.io/soilquality/reference/pca_adequacy.md),
+reported by `pca_select_mds(adequacy=)`.** Adds PCA adequacy testing to
 [`pca_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/pca_select_mds.md)
 — **KMO** and **Bartlett’s sphericity**, reported (and optionally
 enforced). Most papers skip it; **Theresa 2026** does not (KMO 0.81,
 Bartlett χ² 425.37, df 136, p \< 0.001).
 
-**7.3 Write the main vignette** — “Building and validating a Soil
-Quality Index” — walking the full pipeline: select (PCA \| network \|
-expert) → group by function → score (linear \| sigmoid \| optimum) →
-weight (AHP \| loading \| centrality \| none) → aggregate (weighted \|
-area) → **validate**.
+**7.3 ✅ DONE —
+[`vignette("building-and-validating-an-sqi")`](https://ccarbajal16.github.io/soilquality/articles/building-and-validating-an-sqi.md).**
+The main vignette, — “Building and validating a Soil Quality Index” —
+walking the full pipeline: select (PCA \| network \| expert) → group by
+function → score (linear \| sigmoid \| optimum) → weight (AHP \| loading
+\| centrality \| none) → aggregate (weighted \| area) → **validate**.
 
-**7.4 Add the “don’t chain predictions” warning** wherever the docs
-touch predicted inputs. **Chaudhry 2024**: computing an SQI from
+**7.4 ✅ DONE — on
+[`compute_sqi_df()`](https://ccarbajal16.github.io/soilquality/reference/compute_sqi_df.md)
+and in the README.** The “don’t chain predictions” warning, wherever the
+docs touch predicted inputs. **Chaudhry 2024**: computing an SQI from
 *predicted* properties gave **R² = 0.23**; predicting the index
 *directly* gave **R² = 0.90** — on the same spectra, with individually
 acceptable property models (Cubist R² 0.35–0.93). If a user feeds
@@ -782,9 +794,11 @@ predicted properties into
 [`compute_sqi_properties()`](https://ccarbajal16.github.io/soilquality/reference/compute_sqi_properties.md),
 the resulting index is far less reliable than its inputs.
 
-**7.5 Update README** with the new routes and a decision table.
+**7.5 ✅ DONE — README** updated with the new routes and a decision
+table.
 
-**7.6 `R CMD check --as-cran`** clean; bump version; NEWS.md entry per
+**7.6 ✅ DONE — `R CMD check --as-cran` clean** (0/0/0, including
+`--run-donttest` and vignette rebuild), version 1.7.0, NEWS.md entry per
 phase.
 
 ------------------------------------------------------------------------
@@ -812,9 +826,10 @@ phase.
     ≈0.36–0.70, putting **100 % of samples in the middle bands** — the
     “very low” and “very high” categories are empty. Maaz’s pathology,
     live, in this package. Pinned by a test.
-4.  **Scope of Phase 6.3** (`sensitivity_resistance()`) — genuinely
-    useful but the least-used method in the corpus. Defer if time is
-    short. *(still open)*
+4.  **Scope of Phase 6.3**
+    ([`sensitivity_resistance()`](https://ccarbajal16.github.io/soilquality/reference/sensitivity_resistance.md))
+    — genuinely useful but the least-used method in the corpus. Defer if
+    time is short. *(still open)*
 5.  ✅ **RESOLVED — `testthat` edition 3.** Migrated in Phase 0; cost
     one line in `DESCRIPTION` because the suite used no removed idioms.
     Write every new test to 3e. See Task 0.4.
@@ -904,10 +919,40 @@ phase.
   [`sqi_stability()`](https://ccarbajal16.github.io/soilquality/reference/sqi_stability.md)
   throughout — except where the text deliberately refers to
   `SQIpro::sqi_compare()`, which keeps its own name.
-- **Next:** Phase 5 (functional/EMDS grouping, carrying the relocated
-  Task 7.1), then Phase 6 (reference-soil standardisation). Both are
-  differentiators per the strategic section. Phase 7 is documentation
-  and hardening. Still open: Task 0.5, the Shiny sync policy.
+- **2026-08-08** — **Phases 5, 6 and 7 delivered.** Phase 5:
+  `soil_function_groups`,
+  [`assign_function_groups()`](https://ccarbajal16.github.io/soilquality/reference/assign_function_groups.md),
+  `groups =` on both selection routes, `selector = "norm"`, and the
+  relocated Task 7.1 as `within =`. Phase 6:
+  [`standardize_to_reference()`](https://ccarbajal16.github.io/soilquality/reference/standardize_to_reference.md),
+  [`reference_scoring()`](https://ccarbajal16.github.io/soilquality/reference/reference_scoring.md),
+  [`sensitivity_resistance()`](https://ccarbajal16.github.io/soilquality/reference/sensitivity_resistance.md).
+  Phase 7:
+  [`pca_adequacy()`](https://ccarbajal16.github.io/soilquality/reference/pca_adequacy.md)
+  (KMO + Bartlett), the main vignette, the don’t-chain-predictions
+  warning, README decision table, and a clean `R CMD check --as-cran`
+  (0/0/0 including `--run-donttest` and vignette rebuild) at **v1.7.0**.
+- **2026-08-08** — ⚠️ **Two more measured findings.**
+  1.  **Ungrouped selection leaves entire soil functions
+      unrepresented.** On `soil_structured` with all 15 indicators: the
+      network route returns `OM, CEC` (2 of 4 functions) and PCA returns
+      `pH, Silt` (2 of 4); grouped, they return `OM, P, N, Clay, EC` and
+      `SOC, P, Sand, EC` respectively — **4 of 4** each. This is the
+      concrete case for EMDS.
+  2.  **KMO cannot be computed on a standard soil data set.**
+      Particle-size fractions sum to 100, so `Sand`/`Silt`/`Clay` are
+      exactly collinear and the correlation matrix is singular;
+      `OM`/`SOC` at ρ 0.99 push it further.
+      [`pca_adequacy()`](https://ccarbajal16.github.io/soilquality/reference/pca_adequacy.md)
+      returns `NA` with an explanation naming the offending pairs rather
+      than erroring or silently using a pseudo-inverse.
+- **⚠️ STILL OPEN — Task 0.5, the Shiny sync policy.** Seven phases
+  added routes the app does not expose: sigmoid and reference scoring,
+  area aggregation, network and grouped MDS selection, validation.
+  [`run_sqi_app()`](https://ccarbajal16.github.io/soilquality/reference/run_sqi_app.md)
+  is now materially behind the package. Decide whether it catches up or
+  is explicitly frozen, and say which in `NEWS.md` — the plan warned at
+  Task 0.5 that deciding per-phase guarantees drift, and it did.
 
 ## Provenance
 

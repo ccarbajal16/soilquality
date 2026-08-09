@@ -160,6 +160,23 @@ The function performs the following steps:
 
 6.  Aggregate: weighted sum of (weight \* score), or radar-diagram area
 
+## Do not build an index from predicted properties
+
+If your inputs are **predictions** – soil properties inferred from
+spectra, remote sensing or a digital soil map – computing an index from
+them is far less reliable than the individual predictions suggest,
+because the errors compound through the scoring and aggregation.
+
+Chaudhry et al. (2024) measured this directly. On the same spectra, with
+property models that were individually acceptable (Cubist R-squared 0.35
+to 0.93), computing the SQI from predicted properties gave **R-squared
+0.23**, while predicting the index **directly** from the same spectra
+gave **R-squared 0.90**.
+
+If you have measured properties, use them. If you only have predictions
+and you want an index, train a model on the index itself rather than
+assembling one from predicted parts.
+
 **On `method = "area"`.** The area route is weight-free, which sidesteps
 the most contested step in the pipeline. But an absolute area
 (`reference = NULL`) is standardised against nothing but your own sample

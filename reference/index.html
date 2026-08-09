@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">soilquality</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -18,7 +18,8 @@
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/introduction.html">Introduction to soilquality</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/building-and-validating-an-sqi.html">Building and validating a Soil Quality Index</a></li>
+    <li><a class="dropdown-item" href="../articles/introduction.html">Introduction to soilquality</a></li>
     <li><a class="dropdown-item" href="../articles/advanced-usage.html">Advanced Usage</a></li>
     <li><a class="dropdown-item" href="../articles/ahp-matrices.html">AHP Matrices Guide</a></li>
   </ul></li>
@@ -112,6 +113,13 @@
 
         </dt>
         <dd>Select Minimum Data Set (MDS) Using PCA</dd>
+
+        <dt>
+
+          <code><a href="pca_adequacy.html">pca_adequacy()</a></code>
+
+        </dt>
+        <dd>Test whether data is adequate for PCA</dd>
 
         <dt>
 
@@ -274,6 +282,36 @@
 
         </dt>
         <dd>Create a non-linear (sigmoidal) scoring rule</dd>
+
+        <dt>
+
+          <code><a href="reference_scoring.html">reference_scoring()</a></code>
+
+        </dt>
+        <dd>Create a reference-soil scoring rule</dd>
+      </dl></div><div class="section level2">
+      <h2 id="reference-soil-standardisation">Reference-Soil Standardisation<a class="anchor" aria-label="anchor" href="#reference-soil-standardisation"></a></h2>
+
+      <div class="section-desc"><p>Scoring against an undisturbed reference soil, the documented escape from index incomparability</p></div>
+
+      <dl></dl></div><div class="section level2">
+
+
+
+
+      <dl><dt>
+
+          <code><a href="standardize_to_reference.html">standardize_to_reference()</a></code>
+
+        </dt>
+        <dd>Standardise an indicator against a non-degraded reference soil</dd>
+
+        <dt>
+
+          <code><a href="sensitivity_resistance.html">sensitivity_resistance()</a></code>
+
+        </dt>
+        <dd>Classify indicators as sensitive or resistant to degradation</dd>
       </dl></div><div class="section level2">
       <h2 id="aggregation">Aggregation<a class="anchor" aria-label="anchor" href="#aggregation"></a></h2>
 
@@ -449,6 +487,13 @@
 
         </dt>
         <dd>Print method for sqi_stability objects</dd>
+
+        <dt>
+
+          <code><a href="print.pca_adequacy.html">print(<i>&lt;pca_adequacy&gt;</i>)</a></code>
+
+        </dt>
+        <dd>Print method for pca_adequacy objects</dd>
       </dl></div>
   </main><aside class="col-md-3"><nav id="toc" aria-label="Table of contents"><h2>On this page</h2>
     </nav></aside></div>

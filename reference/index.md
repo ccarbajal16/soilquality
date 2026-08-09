@@ -29,6 +29,8 @@ Selecting a Minimum Data Set, by variance (PCA) or by centrality
 
 - [`pca_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/pca_select_mds.md)
   : Select Minimum Data Set (MDS) Using PCA
+- [`pca_adequacy()`](https://ccarbajal16.github.io/soilquality/reference/pca_adequacy.md)
+  : Test whether data is adequate for PCA
 - [`na_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/na_select_mds.md)
   : Select a Minimum Data Set by correlation-network analysis
 - [`mds_consensus()`](https://ccarbajal16.github.io/soilquality/reference/mds_consensus.md)
@@ -86,6 +88,18 @@ Object-oriented constructors for scoring rules
   : Create a threshold-based scoring rule
 - [`sigmoid_scoring()`](https://ccarbajal16.github.io/soilquality/reference/sigmoid_scoring.md)
   : Create a non-linear (sigmoidal) scoring rule
+- [`reference_scoring()`](https://ccarbajal16.github.io/soilquality/reference/reference_scoring.md)
+  : Create a reference-soil scoring rule
+
+## Reference-Soil Standardisation
+
+Scoring against an undisturbed reference soil, the documented escape
+from index incomparability
+
+- [`standardize_to_reference()`](https://ccarbajal16.github.io/soilquality/reference/standardize_to_reference.md)
+  : Standardise an indicator against a non-degraded reference soil
+- [`sensitivity_resistance()`](https://ccarbajal16.github.io/soilquality/reference/sensitivity_resistance.md)
+  : Classify indicators as sensitive or resistant to degradation
 
 ## Aggregation
 
@@ -154,3 +168,5 @@ S3 print methods for custom objects
   : Print method for sqi_validation objects
 - [`print(`*`<sqi_stability>`*`)`](https://ccarbajal16.github.io/soilquality/reference/print.sqi_stability.md)
   : Print method for sqi_stability objects
+- [`print(`*`<pca_adequacy>`*`)`](https://ccarbajal16.github.io/soilquality/reference/print.pca_adequacy.md)
+  : Print method for pca_adequacy objects

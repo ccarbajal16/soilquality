@@ -13,7 +13,7 @@ the final Soil Quality Index."><meta property="og:image" content="https://ccarba
 
     <a class="navbar-brand me-2" href="../index.html">soilquality</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.7.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -24,7 +24,8 @@ the final Soil Quality Index."><meta property="og:image" content="https://ccarba
       <ul class="navbar-nav me-auto"><li class="active nav-item"><a class="nav-link" href="../reference/index.html">Reference</a></li>
 <li class="nav-item dropdown">
   <button class="nav-link dropdown-toggle" type="button" id="dropdown-articles" data-bs-toggle="dropdown" aria-expanded="false" aria-haspopup="true">Articles</button>
-  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/introduction.html">Introduction to soilquality</a></li>
+  <ul class="dropdown-menu" aria-labelledby="dropdown-articles"><li><a class="dropdown-item" href="../articles/building-and-validating-an-sqi.html">Building and validating a Soil Quality Index</a></li>
+    <li><a class="dropdown-item" href="../articles/introduction.html">Introduction to soilquality</a></li>
     <li><a class="dropdown-item" href="../articles/advanced-usage.html">Advanced Usage</a></li>
     <li><a class="dropdown-item" href="../articles/ahp-matrices.html">AHP Matrices Guide</a></li>
   </ul></li>
@@ -183,7 +184,24 @@ must cover every selected MDS indicator.</p></dd>
 <li><p>Calculate AHP weights (from pairwise matrix or equal weights)</p></li>
 <li><p>Score each MDS indicator</p></li>
 <li><p>Aggregate: weighted sum of (weight * score), or radar-diagram area</p></li>
-</ol><p><strong>On <code>method = "area"</code>.</strong> The area route is weight-free, which
+</ol></div>
+    <div class="section level2">
+    <h2 id="do-not-build-an-index-from-predicted-properties">Do not build an index from predicted properties<a class="anchor" aria-label="anchor" href="#do-not-build-an-index-from-predicted-properties"></a></h2>
+
+
+<p>If your inputs are <strong>predictions</strong> – soil properties inferred from
+spectra, remote sensing or a digital soil map – computing an index from
+them is far less reliable than the individual predictions suggest, because
+the errors compound through the scoring and aggregation.</p>
+<p>Chaudhry et al. (2024) measured this directly. On the same spectra, with
+property models that were individually acceptable (Cubist R-squared 0.35 to
+0.93), computing the SQI from predicted properties gave
+<strong>R-squared 0.23</strong>, while predicting the index <strong>directly</strong> from
+the same spectra gave <strong>R-squared 0.90</strong>.</p>
+<p>If you have measured properties, use them. If you only have predictions and
+you want an index, train a model on the index itself rather than assembling
+one from predicted parts.</p>
+<p><strong>On <code>method = "area"</code>.</strong> The area route is weight-free, which
 sidesteps the most contested step in the pipeline. But an absolute area
 (<code>reference = NULL</code>) is standardised against nothing but your own
 sample and is not comparable to any other study; the comparability people

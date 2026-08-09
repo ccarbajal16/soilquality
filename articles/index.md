@@ -2,6 +2,8 @@
 
 ### Getting Started
 
+- [Building and validating a Soil Quality
+  Index](https://ccarbajal16.github.io/soilquality/articles/building-and-validating-an-sqi.md):
 - [Introduction to
   soilquality](https://ccarbajal16.github.io/soilquality/articles/introduction.md):
 

@@ -14,7 +14,8 @@ pca_select_mds(
   loading_threshold = 0.5,
   within = NULL,
   groups = NULL,
-  selector = c("loading", "norm")
+  selector = c("loading", "norm"),
+  adequacy = c("report", "warn", "ignore")
 )
 ```
 
@@ -69,6 +70,17 @@ pca_select_mds(
   time; it is designed for the grouped route and returns the
   highest-norm indicator per group.
 
+- adequacy:
+
+  Whether to test that the data is worth factoring at all. `"report"`
+  (the default) attaches a
+  [`pca_adequacy`](https://ccarbajal16.github.io/soilquality/reference/pca_adequacy.md)
+  result to the output; `"warn"` additionally raises a warning when KMO
+  falls below 0.6 or Bartlett's test fails to reject sphericity;
+  `"ignore"` skips the computation. It reports rather than gates by
+  default, because most published SQI work does not test adequacy at all
+  and erroring would break every existing call.
+
 ## Value
 
 A list with the following components:
@@ -107,6 +119,12 @@ A list with the following components:
 - selector, within:
 
   The settings used.
+
+- adequacy:
+
+  A
+  [`pca_adequacy`](https://ccarbajal16.github.io/soilquality/reference/pca_adequacy.md)
+  result, or `NULL`.
 
 ## Details
 

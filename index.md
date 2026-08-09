@@ -32,6 +32,52 @@ standardized quality metrics.
 - **Complete Documentation**: Vignettes, examples, and function
   references
 
+## The pipeline, and the choice at every step
+
+An index is five decisions, and this package offers alternatives at each
+of them — plus the step most work skips.
+
+    select  →  group  →  score  →  weight  →  aggregate  →  VALIDATE
+
+| Step | Options | Default | When to change it |
+|----|----|----|----|
+| **Select** | [`pca_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/pca_select_mds.md) (variance), [`na_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/na_select_mds.md) (network centrality), expert list | PCA | Network when ecological hubs matter more than variance, or when normality is doubtful |
+| **Group** | `groups = NULL`, `soil_function_groups` | none | Whenever more than one soil function matters — ungrouped selection can leave whole functions unrepresented |
+| **Score** | linear, sigmoid, optimum, threshold, reference-soil | linear | Sigmoid to reproduce most published work; reference-soil for comparability across studies |
+| **Weight** | AHP, PCA loading, network centrality, equal | equal | AHP when you have defensible expert judgement |
+| **Aggregate** | `method = "weighted"`, `method = "area"` | weighted | Area to sidestep weighting entirely |
+| **Validate** | [`sqi_validate()`](https://ccarbajal16.github.io/soilquality/reference/sqi_validate.md), [`sqi_stability()`](https://ccarbajal16.github.io/soilquality/reference/sqi_stability.md) | — | **Always** |
+
+### Why validation is the point
+
+A soil quality index has **no ground truth**. Nothing tells you whether
+yours is correct. What you can establish is whether it *discriminates*,
+and whether your conclusion survives building it a different way.
+
+[`sqi_validate()`](https://ccarbajal16.github.io/soilquality/reference/sqi_validate.md)
+leads with the distribution across decision categories, not with a
+correlation. Maaz et al. (2023) found two indices correlating at **r =
+0.96** while one placed **94 %** of plots in the middle band and the
+other **61 %**. An index that calls almost everything “medium” cannot
+inform a decision, however well it correlates with anything else.
+
+[`sqi_stability()`](https://ccarbajal16.github.io/soilquality/reference/sqi_stability.md)
+runs the same samples through several recipes and reports whether the
+ranking survives. A high rank correlation does not rescue a changed
+extreme, if the extreme is what you act on.
+
+### One warning worth repeating
+
+**Do not build an index from predicted soil properties.** Chaudhry et
+al. (2024) found that computing an SQI from spectrally predicted
+properties gave R² = 0.23, while predicting the index *directly* from
+the same spectra gave R² = 0.90 — with individually acceptable property
+models. If you only have predictions, model the index itself.
+
+See
+[`vignette("building-and-validating-an-sqi")`](https://ccarbajal16.github.io/soilquality/articles/building-and-validating-an-sqi.md)
+for the pipeline end to end.
+
 ## Installation
 
 ### From GitHub (Development Version)
