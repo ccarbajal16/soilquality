@@ -8,7 +8,14 @@ methodology commonly used in soil quality assessment.
 ## Usage
 
 ``` r
-pca_select_mds(data, var_threshold = 0.05, loading_threshold = 0.5)
+pca_select_mds(
+  data,
+  var_threshold = 0.05,
+  loading_threshold = 0.5,
+  within = NULL,
+  groups = NULL,
+  selector = c("loading", "norm")
+)
 ```
 
 ## Arguments
@@ -30,10 +37,37 @@ pca_select_mds(data, var_threshold = 0.05, loading_threshold = 0.5)
 
 - loading_threshold:
 
-  Numeric value specifying the minimum absolute loading value for a
-  variable to be considered for selection within a principal component.
-  Variables with absolute loadings below this threshold are not
-  selected. Default is 0.5.
+  Numeric value specifying the minimum **absolute** loading a variable
+  must reach to be considered. This is a floor on the loading itself,
+  not the relative "within 10 percent" rule of the literature – see
+  `within`. Default is 0.5.
+
+- within:
+
+  Relative tolerance below the maximum absolute loading on a retained
+  component, within which **every** variable is selected. `NULL` (the
+  default) keeps the historical behaviour of taking only the single
+  highest-loading variable per component. Set `0.10` for the published
+  rule. See Details – this changes the size of the MDS.
+
+- groups:
+
+  Optional named list of character vectors assigning indicators to
+  functional groups, as produced by
+  [`assign_function_groups`](https://ccarbajal16.github.io/soilquality/reference/assign_function_groups.md).
+  When supplied, selection runs **within each group** rather than across
+  the whole pool, which is the expanded minimum data set (EMDS) of the
+  literature. Empty groups are skipped. Defaults to `NULL` (no
+  grouping).
+
+- selector:
+
+  How to choose within a component or group. `"loading"` (the default)
+  uses absolute loadings per retained component. `"norm"` uses the norm
+  value of Yuan and Shi (2026) eq. (2), which aggregates an indicator's
+  loadings across components rather than judging it one component at a
+  time; it is designed for the grouped route and returns the
+  highest-norm indicator per group.
 
 ## Value
 
@@ -47,9 +81,9 @@ A list with the following components:
 - pca:
 
   The PCA object returned by
-  [`stats::prcomp`](https://rdrr.io/r/stats/prcomp.html), containing the
-  full PCA results including rotation matrix, scores, and other
-  components.
+  [`stats::prcomp`](https://rdrr.io/r/stats/prcomp.html), computed over
+  the whole pool regardless of grouping, containing the full PCA results
+  including rotation matrix, scores, and other components.
 
 - loadings:
 
@@ -60,6 +94,19 @@ A list with the following components:
 
   Numeric vector containing the proportion of variance explained by each
   principal component.
+
+- groups:
+
+  The validated grouping, or `NULL`.
+
+- group_results:
+
+  Per-group selection detail, including the norm values when
+  `selector = "norm"`, or `NULL`.
+
+- selector, within:
+
+  The settings used.
 
 ## Details
 
@@ -80,6 +127,64 @@ The MDS selection algorithm follows these steps:
 
 If no variables meet the selection criteria, an empty character vector
 is returned for the MDS component.
+
+## The two loading rules, and why the default is the narrow one
+
+Step 4 above takes **one** indicator per retained component, the one
+with the largest absolute loading. The rule stated in the soil quality
+literature is broader: keep **every** indicator whose absolute loading
+is within 10 percent of that maximum, i.e.
+`abs(loading) >= 0.9 * max(abs(loading))`. That generally yields a
+*larger* minimum data set.
+
+Both are available. `within = NULL` keeps the narrow rule, which is what
+this function has always done and what the package's regression baseline
+pins; `within = 0.10` implements the published rule. The default does
+not move, because widening the MDS changes every downstream weight and
+every SQI value.
+
+Note that `loading_threshold` and `within` are different mechanisms and
+can be combined: the first is an **absolute** floor on the loading, the
+second a **relative** band below the maximum.
+
+**A warning for anyone implementing from Yuan and Shi (2026).** Its
+section 2.3.1 states this rule *inverted* – as retaining loadings
+"within 10 percent" in the sense of being *less than* 10 percent of the
+highest, which would select the least informative variables. The paper's
+own section 2.3.2, and every other source, state it correctly. Read it
+as `>= 0.9 * max`.
+
+## Grouped (EMDS) selection
+
+With `groups`, the selection runs separately inside each functional
+group and the results are combined. This is the expanded minimum data
+set: every function contributes an indicator, instead of the whole pool
+competing on a single criterion where one dominant function can crowd
+the others out.
+
+That failure mode is not hypothetical in this package. On
+[`soil_structured`](https://ccarbajal16.github.io/soilquality/reference/soil_structured.md),
+with all fifteen indicators offered:
+
+|                    |                    |                       |
+|--------------------|--------------------|-----------------------|
+| **Route**          | **Selected**       | **Functions covered** |
+| network, ungrouped | OM, CEC            | 2 of 4                |
+| network, grouped   | OM, P, N, Clay, EC | **4 of 4**            |
+| PCA, ungrouped     | pH, Silt           | 2 of 4                |
+| PCA, grouped       | SOC, P, Sand, EC   | **4 of 4**            |
+
+Ungrouped, both routes leave **entire functions with no representative**
+– nutrient cycling and physical structure vanish from the network
+selection, and the base-status indicators `pH`, `Ca`, `Mg` and `EC` are
+dropped wholesale because their module is peripheral to the network.
+Grouping is the fix, and it is why fidelity improves with grouping
+detail in Yuan's measurements.
+
+See
+[`soil_function_groups`](https://ccarbajal16.github.io/soilquality/reference/soil_function_groups.md)
+for why the grouping should be functional rather than the familiar
+physical/chemical split.
 
 ## See also
 

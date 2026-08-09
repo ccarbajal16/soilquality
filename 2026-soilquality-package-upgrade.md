@@ -627,26 +627,27 @@ confirmatory factor analysis that the physical/chemical/biological split
 has **no statistical support**. Two methods, two continents, same
 verdict: group by **function**.
 
-**5.1 Add a `groups =` argument** to
+**5.1 ✅ DONE — `groups =` argument** added to
 [`pca_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/pca_select_mds.md)
 and
 [`na_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/na_select_mds.md)
 — select within each group rather than across the whole pool. Must
 default to `NULL` (current behaviour).
 
-**5.2 Ship the five-function default grouping** as exported data, per
-Yuan (after Li et al. 2023): **carbon cycling · nutrient cycling ·
-physical structure stability · buffering and filtration capacity · soil
-biodiversity maintenance**. Provide a mapping helper for the common
-indicator names already in `soil_property_sets`. ⚠️ **Verified in Task
-0.1 — this answers Open decision 1, and the answer is worse than “no”.**
-`soil_property_sets` (`R/property_sets.R:44-57`) carries **no**
-indicator→function mapping. Its six sets are `basic`, `standard`,
-`comprehensive`, `physical`, `chemical`, `fertility` — i.e. the
-package’s only existing grouping vocabulary is exactly the
-**physical/chemical split that Maaz 2023 shows has no statistical
-support** (Task 5.4). So Task 5.2 is a full curation pass, and it lands
-next to a contradicting default that ships today.
+**5.2 ✅ DONE — shipped as `soil_function_groups`, with
+[`assign_function_groups()`](https://ccarbajal16.github.io/soilquality/reference/assign_function_groups.md)
+as the mapping helper.** Exported data, per Yuan (after Li et al. 2023):
+**carbon cycling · nutrient cycling · physical structure stability ·
+buffering and filtration capacity · soil biodiversity maintenance**.
+Provide a mapping helper for the common indicator names already in
+`soil_property_sets`. ⚠️ **Verified in Task 0.1 — this answers Open
+decision 1, and the answer is worse than “no”.** `soil_property_sets`
+(`R/property_sets.R:44-57`) carries **no** indicator→function mapping.
+Its six sets are `basic`, `standard`, `comprehensive`, `physical`,
+`chemical`, `fertility` — i.e. the package’s only existing grouping
+vocabulary is exactly the **physical/chemical split that Maaz 2023 shows
+has no statistical support** (Task 5.4). So Task 5.2 is a full curation
+pass, and it lands next to a contradicting default that ships today.
 
 - Do **not** delete or repurpose `physical`/`chemical` — they are
   exported, documented and tested
@@ -661,8 +662,9 @@ next to a contradicting default that ships today.
   indicator in this vocabulary** — ship the group, document that it is
   unpopulated by the example data, and do not fabricate a proxy.
 
-**5.3 Implement the norm-value selector** for the grouped PCA route —
-pick the indicator with the highest **norm value** per group:
+**5.3 ✅ DONE — norm-value selector** available as `selector = "norm"`,
+for the grouped PCA route — pick the indicator with the highest **norm
+value** per group:
 
     N_ik = sqrt( sum( u_ik^2 * lambda_k ) )
 
@@ -670,8 +672,8 @@ where `u_ik` is the loading of indicator *i* on PC *k* and `lambda_k`
 the eigenvalue of PC *k*, summed over the PCs with eigenvalue ≥ 1.
 Source: **Yuan 2026 eq. (2)**.
 
-**5.4 Document why not to group by physical/chemical/biological**,
-citing Maaz’s CFA result.
+**5.4 ✅ DONE — documented in `soil_function_groups`** why not to group
+by physical/chemical/biological, citing Maaz’s CFA result.
 
 ### Phase 6 — Reference-soil standardisation
 
@@ -708,9 +710,10 @@ limitation.
 
 ### Phase 7 — Documentation, vignette, correctness fixes
 
-**7.1 ❌ CORRECTED — the “within 10 %” rule is NOT implemented. This is
-a code task, not a doc task, and it does not belong in Phase 7.** The
-original task said “document that
+**7.1 ✅ DONE in Phase 5, as the `within =` argument. ❌ The original
+task was CORRECTED first: the “within 10 %” rule was NOT implemented. It
+was a code task, not a doc task, and it does not belong in Phase 7.**
+The original task said “document that
 [`pca_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/pca_select_mds.md)
 implements *within 10 % of the maximum loading*”. Task 0.1 read the
 source: **it does not.** `R/pca_mds.R:152-171` does this instead:

@@ -13,7 +13,7 @@ methodology commonly used in soil quality assessment."><meta property="og:image"
 
     <a class="navbar-brand me-2" href="../index.html">soilquality</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -53,7 +53,14 @@ methodology commonly used in soil quality assessment.</p>
 
     <div class="section level2">
     <h2 id="ref-usage">Usage<a class="anchor" aria-label="anchor" href="#ref-usage"></a></h2>
-    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pca_select_mds</span><span class="op">(</span><span class="va">data</span>, var_threshold <span class="op">=</span> <span class="fl">0.05</span>, loading_threshold <span class="op">=</span> <span class="fl">0.5</span><span class="op">)</span></span></code></pre></div>
+    <div class="sourceCode"><pre class="sourceCode r"><code><span><span class="fu">pca_select_mds</span><span class="op">(</span></span>
+<span>  <span class="va">data</span>,</span>
+<span>  var_threshold <span class="op">=</span> <span class="fl">0.05</span>,</span>
+<span>  loading_threshold <span class="op">=</span> <span class="fl">0.5</span>,</span>
+<span>  within <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  groups <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  selector <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"loading"</span>, <span class="st">"norm"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span></code></pre></div>
     </div>
 
     <div class="section level2">
@@ -74,10 +81,36 @@ Default is 0.05 (5%).</p></dd>
 
 
 <dt id="arg-loading-threshold">loading_threshold<a class="anchor" aria-label="anchor" href="#arg-loading-threshold"></a></dt>
-<dd><p>Numeric value specifying the minimum absolute
-loading value for a variable to be considered for selection within a
-principal component. Variables with absolute loadings below this threshold
-are not selected. Default is 0.5.</p></dd>
+<dd><p>Numeric value specifying the minimum <strong>absolute</strong>
+loading a variable must reach to be considered. This is a floor on the
+loading itself, not the relative "within 10 percent" rule of the
+literature – see <code>within</code>. Default is 0.5.</p></dd>
+
+
+<dt id="arg-within">within<a class="anchor" aria-label="anchor" href="#arg-within"></a></dt>
+<dd><p>Relative tolerance below the maximum absolute loading on a
+retained component, within which <strong>every</strong> variable is selected.
+<code>NULL</code> (the default) keeps the historical behaviour of taking only
+the single highest-loading variable per component. Set <code>0.10</code> for the
+published rule. See Details – this changes the size of the MDS.</p></dd>
+
+
+<dt id="arg-groups">groups<a class="anchor" aria-label="anchor" href="#arg-groups"></a></dt>
+<dd><p>Optional named list of character vectors assigning indicators
+to functional groups, as produced by
+<code><a href="assign_function_groups.html">assign_function_groups</a></code>. When supplied, selection runs
+<strong>within each group</strong> rather than across the whole pool, which is the
+expanded minimum data set (EMDS) of the literature. Empty groups are
+skipped. Defaults to <code>NULL</code> (no grouping).</p></dd>
+
+
+<dt id="arg-selector">selector<a class="anchor" aria-label="anchor" href="#arg-selector"></a></dt>
+<dd><p>How to choose within a component or group.
+<code>"loading"</code> (the default) uses absolute loadings per retained
+component. <code>"norm"</code> uses the norm value of Yuan and Shi (2026)
+eq. (2), which aggregates an indicator's loadings across components rather
+than judging it one component at a time; it is designed for the grouped
+route and returns the highest-norm indicator per group.</p></dd>
 
 </dl></div>
     <div class="section level2">
@@ -87,9 +120,9 @@ are not selected. Default is 0.5.</p></dd>
       the minimum data set.</p></dd>
 
     <dt>pca</dt>
-<dd><p>The PCA object returned by <code><a href="https://rdrr.io/r/stats/prcomp.html" class="external-link">stats::prcomp</a></code>, containing
-      the full PCA results including rotation matrix, scores, and other
-      components.</p></dd>
+<dd><p>The PCA object returned by <code><a href="https://rdrr.io/r/stats/prcomp.html" class="external-link">stats::prcomp</a></code>, computed
+      over the whole pool regardless of grouping, containing the full PCA
+      results including rotation matrix, scores, and other components.</p></dd>
 
     <dt>loadings</dt>
 <dd><p>Numeric matrix of variable loadings (rotation matrix)
@@ -98,6 +131,16 @@ are not selected. Default is 0.5.</p></dd>
     <dt>var_exp</dt>
 <dd><p>Numeric vector containing the proportion of variance
       explained by each principal component.</p></dd>
+
+    <dt>groups</dt>
+<dd><p>The validated grouping, or <code>NULL</code>.</p></dd>
+
+    <dt>group_results</dt>
+<dd><p>Per-group selection detail, including the norm
+      values when <code>selector = "norm"</code>, or <code>NULL</code>.</p></dd>
+
+    <dt>selector, within</dt>
+<dd><p>The settings used.</p></dd>
 
 
 </dl></div>
@@ -112,6 +155,51 @@ are not selected. Default is 0.5.</p></dd>
 <li><p>Return the unique set of selected variables as the MDS.</p></li>
 </ol><p>If no variables meet the selection criteria, an empty character vector
 is returned for the MDS component.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="the-two-loading-rules-and-why-the-default-is-the-narrow-one">The two loading rules, and why the default is the narrow one<a class="anchor" aria-label="anchor" href="#the-two-loading-rules-and-why-the-default-is-the-narrow-one"></a></h2>
+
+
+<p>Step 4 above takes <strong>one</strong> indicator per retained component, the one
+with the largest absolute loading. The rule stated in the soil quality
+literature is broader: keep <strong>every</strong> indicator whose absolute loading
+is within 10 percent of that maximum, i.e.
+<code>abs(loading) &gt;= 0.9 * max(abs(loading))</code>. That generally yields a
+<em>larger</em> minimum data set.</p>
+<p>Both are available. <code>within = NULL</code> keeps the narrow rule, which is
+what this function has always done and what the package's regression
+baseline pins; <code>within = 0.10</code> implements the published rule. The
+default does not move, because widening the MDS changes every downstream
+weight and every SQI value.</p>
+<p>Note that <code>loading_threshold</code> and <code>within</code> are different
+mechanisms and can be combined: the first is an <strong>absolute</strong> floor on
+the loading, the second a <strong>relative</strong> band below the maximum.</p>
+<p><strong>A warning for anyone implementing from Yuan and Shi (2026).</strong> Its
+section 2.3.1 states this rule <em>inverted</em> – as retaining loadings
+"within 10 percent" in the sense of being <em>less than</em> 10 percent of the
+highest, which would select the least informative variables. The paper's own
+section 2.3.2, and every other source, state it correctly. Read it as
+<code>&gt;= 0.9 * max</code>.</p>
+    </div>
+    <div class="section level2">
+    <h2 id="grouped-emds-selection">Grouped (EMDS) selection<a class="anchor" aria-label="anchor" href="#grouped-emds-selection"></a></h2>
+
+
+<p>With <code>groups</code>, the selection runs separately inside each functional
+group and the results are combined. This is the expanded minimum data set:
+every function contributes an indicator, instead of the whole pool
+competing on a single criterion where one dominant function can crowd the
+others out.</p>
+<p>That failure mode is not hypothetical in this package. On
+<code><a href="soil_structured.html">soil_structured</a></code>, with all fifteen indicators offered:</p>
+<table class="table table"><tr><td><strong>Route</strong></td><td><strong>Selected</strong></td><td><strong>Functions covered</strong></td></tr><tr><td>network, ungrouped</td><td>OM, CEC</td><td>2 of 4</td></tr><tr><td>network, grouped</td><td>OM, P, N, Clay, EC</td><td><strong>4 of 4</strong></td></tr><tr><td>PCA, ungrouped</td><td>pH, Silt</td><td>2 of 4</td></tr><tr><td>PCA, grouped</td><td>SOC, P, Sand, EC</td><td><strong>4 of 4</strong></td></tr></table><p>Ungrouped, both routes leave <strong>entire functions with no
+representative</strong> – nutrient cycling and physical structure vanish from the
+network selection, and the base-status indicators <code>pH</code>, <code>Ca</code>,
+<code>Mg</code> and <code>EC</code> are dropped wholesale because their module is
+peripheral to the network. Grouping is the fix, and it is why fidelity
+improves with grouping detail in Yuan's measurements.</p>
+<p>See <code><a href="soil_function_groups.html">soil_function_groups</a></code> for why the grouping should be
+functional rather than the familiar physical/chemical split.</p>
     </div>
     <div class="section level2">
     <h2 id="see-also">See also<a class="anchor" aria-label="anchor" href="#see-also"></a></h2>

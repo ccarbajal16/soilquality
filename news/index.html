@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">soilquality</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.5.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,53 @@
       <small>Source: <a href="https://github.com/ccarbajal16/soilquality/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.5.0" id="soilquality-150-development">soilquality 1.5.0 (development)<a class="anchor" aria-label="anchor" href="#soilquality-150-development"></a></h2>
+<p>Adds functional (EMDS) grouping: selecting one indicator per soil <em>function</em> rather than letting the whole pool compete on a single criterion.</p>
+<div class="section level4">
+<h4 id="new-features-1-5-0">New features<a class="anchor" aria-label="anchor" href="#new-features-1-5-0"></a></h4>
+<ul><li>
+<code>soil_function_groups</code> - the five functions of Yuan and Shi (2026), after Li et al. (2023): carbon cycling, nutrient cycling, physical structure, buffering and filtration, and soil biodiversity. The biodiversity group ships <strong>empty on purpose</strong> – nothing in this package’s indicator vocabulary measures it, and a plausible-looking proxy would misrepresent which functions an index actually covers.</li>
+<li>
+<code><a href="../reference/assign_function_groups.html">assign_function_groups()</a></code> - maps a set of property names onto those functions. Names that match nothing are reported in an <code>"unassigned"</code> element rather than silently dropped.</li>
+<li>
+<code><a href="../reference/pca_select_mds.html">pca_select_mds()</a></code> and <code><a href="../reference/na_select_mds.html">na_select_mds()</a></code> gain <code>groups =</code>, running selection independently inside each function. Default <code>NULL</code> keeps pool-wide selection. In the network route a group too small for a graph (carbon cycling is two indicators) falls back to the most within-group correlated indicator, <strong>with a warning</strong>, recorded per group in <code>$group_results</code>.</li>
+<li>
+<code><a href="../reference/pca_select_mds.html">pca_select_mds()</a></code> gains <code>selector = c("loading", "norm")</code>. The norm value is Yuan eq. (2), <code>N_i = sqrt(sum_k u_ik^2 * lambda_k)</code> over components with eigenvalue &gt;= 1, which judges an indicator across components instead of one at a time.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="the-relative-loading-rule-finally-implemented-1-5-0">The relative loading rule, finally implemented<a class="anchor" aria-label="anchor" href="#the-relative-loading-rule-finally-implemented-1-5-0"></a></h4>
+<ul><li>
+<code><a href="../reference/pca_select_mds.html">pca_select_mds()</a></code> gains <code>within =</code>. The function has always taken the single highest-loading indicator per retained component; the rule stated in the literature keeps <strong>every</strong> indicator within 10% of that maximum, which generally yields a larger data set. <code>within = NULL</code> (the default) keeps the historical behaviour and the regression baseline; <code>within = 0.10</code> is the published rule. <code>loading_threshold</code> is an absolute floor and <code>within</code> a relative band – different mechanisms, combinable.</li>
+<li>Documented that Yuan and Shi (2026) section 2.3.1 states this rule <strong>inverted</strong>, which would select the least informative variables. Their own section 2.3.2 states it correctly.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="why-this-matters-measured-on-soil_structured-1-5-0">Why this matters, measured on <code>soil_structured</code>
+<a class="anchor" aria-label="anchor" href="#why-this-matters-measured-on-soil_structured-1-5-0"></a></h4>
+<p>Offered all fifteen indicators, ungrouped selection leaves <strong>entire functions with no representative</strong>:</p>
+<table class="table"><thead><tr><th>Route</th>
+<th>Selected</th>
+<th>Functions covered</th>
+</tr></thead><tbody><tr><td>network, ungrouped</td>
+<td>OM, CEC</td>
+<td>2 of 4</td>
+</tr><tr><td>network, grouped</td>
+<td>OM, P, N, Clay, EC</td>
+<td><strong>4 of 4</strong></td>
+</tr><tr><td>PCA, ungrouped</td>
+<td>pH, Silt</td>
+<td>2 of 4</td>
+</tr><tr><td>PCA, grouped</td>
+<td>SOC, P, Sand, EC</td>
+<td><strong>4 of 4</strong></td>
+</tr></tbody></table><p>The base-status indicators <code>pH</code>, <code>Ca</code>, <code>Mg</code> and <code>EC</code> are dropped wholesale by the ungrouped network route, because their module is peripheral to the graph.</p>
+</div>
+<div class="section level4">
+<h4 id="documentation-1-5-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-1-5-0"></a></h4>
+<ul><li>
+<code>soil_function_groups</code> documents why grouping should be functional rather than by the familiar physical/chemical split: Maaz et al. (2023) tested that split by confirmatory factor analysis and found it has <strong>no statistical support</strong>. <code>soil_property_sets$physical</code> and <code>$chemical</code> are unchanged and remain useful for choosing what to measure – they are simply not a basis for selecting a minimum data set.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.4.0" id="soilquality-140-development">soilquality 1.4.0 (development)<a class="anchor" aria-label="anchor" href="#soilquality-140-development"></a></h2>
 <div class="section level4">

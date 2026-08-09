@@ -1,5 +1,78 @@
 # Changelog
 
+## soilquality 1.5.0 (development)
+
+Adds functional (EMDS) grouping: selecting one indicator per soil
+*function* rather than letting the whole pool compete on a single
+criterion.
+
+#### New features
+
+- `soil_function_groups` - the five functions of Yuan and Shi (2026),
+  after Li et al. (2023): carbon cycling, nutrient cycling, physical
+  structure, buffering and filtration, and soil biodiversity. The
+  biodiversity group ships **empty on purpose** – nothing in this
+  package’s indicator vocabulary measures it, and a plausible-looking
+  proxy would misrepresent which functions an index actually covers.
+- [`assign_function_groups()`](https://ccarbajal16.github.io/soilquality/reference/assign_function_groups.md) -
+  maps a set of property names onto those functions. Names that match
+  nothing are reported in an `"unassigned"` element rather than silently
+  dropped.
+- [`pca_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/pca_select_mds.md)
+  and
+  [`na_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/na_select_mds.md)
+  gain `groups =`, running selection independently inside each function.
+  Default `NULL` keeps pool-wide selection. In the network route a group
+  too small for a graph (carbon cycling is two indicators) falls back to
+  the most within-group correlated indicator, **with a warning**,
+  recorded per group in `$group_results`.
+- [`pca_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/pca_select_mds.md)
+  gains `selector = c("loading", "norm")`. The norm value is Yuan eq.
+  (2), `N_i = sqrt(sum_k u_ik^2 * lambda_k)` over components with
+  eigenvalue \>= 1, which judges an indicator across components instead
+  of one at a time.
+
+#### The relative loading rule, finally implemented
+
+- [`pca_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/pca_select_mds.md)
+  gains `within =`. The function has always taken the single
+  highest-loading indicator per retained component; the rule stated in
+  the literature keeps **every** indicator within 10% of that maximum,
+  which generally yields a larger data set. `within = NULL` (the
+  default) keeps the historical behaviour and the regression baseline;
+  `within = 0.10` is the published rule. `loading_threshold` is an
+  absolute floor and `within` a relative band – different mechanisms,
+  combinable.
+- Documented that Yuan and Shi (2026) section 2.3.1 states this rule
+  **inverted**, which would select the least informative variables.
+  Their own section 2.3.2 states it correctly.
+
+#### Why this matters, measured on `soil_structured`
+
+Offered all fifteen indicators, ungrouped selection leaves **entire
+functions with no representative**:
+
+| Route              | Selected           | Functions covered |
+|--------------------|--------------------|-------------------|
+| network, ungrouped | OM, CEC            | 2 of 4            |
+| network, grouped   | OM, P, N, Clay, EC | **4 of 4**        |
+| PCA, ungrouped     | pH, Silt           | 2 of 4            |
+| PCA, grouped       | SOC, P, Sand, EC   | **4 of 4**        |
+
+The base-status indicators `pH`, `Ca`, `Mg` and `EC` are dropped
+wholesale by the ungrouped network route, because their module is
+peripheral to the graph.
+
+#### Documentation
+
+- `soil_function_groups` documents why grouping should be functional
+  rather than by the familiar physical/chemical split: Maaz et
+  al. (2023) tested that split by confirmatory factor analysis and found
+  it has **no statistical support**. `soil_property_sets$physical` and
+  `$chemical` are unchanged and remain useful for choosing what to
+  measure – they are simply not a basis for selecting a minimum data
+  set.
+
 ## soilquality 1.4.0 (development)
 
 #### New data

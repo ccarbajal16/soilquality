@@ -34,6 +34,16 @@ Selecting a Minimum Data Set, by variance (PCA) or by centrality
 - [`mds_consensus()`](https://ccarbajal16.github.io/soilquality/reference/mds_consensus.md)
   : Take the consensus of two Minimum Data Set selection routes
 
+## Functional Grouping
+
+Selecting one indicator per soil function (EMDS) rather than across the
+whole pool
+
+- [`soil_function_groups`](https://ccarbajal16.github.io/soilquality/reference/soil_function_groups.md)
+  : Soil indicators grouped by ecosystem function
+- [`assign_function_groups()`](https://ccarbajal16.github.io/soilquality/reference/assign_function_groups.md)
+  : Map property names onto soil function groups
+
 ## AHP Weighting
 
 Analytic Hierarchy Process for expert-based indicator weighting

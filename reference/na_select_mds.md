@@ -17,6 +17,7 @@ na_select_mds(
   within = 0.1,
   screen = TRUE,
   component = c("largest", "all"),
+  groups = NULL,
   seed = 1L
 )
 ```
@@ -73,6 +74,28 @@ na_select_mds(
   separately within each connected component, normalised per component,
   so that a well-structured but disconnected group of indicators can
   still be selected. Has no effect on a connected network.
+
+- groups:
+
+  Optional named list of character vectors assigning indicators to
+  functional groups, as produced by
+  [`assign_function_groups`](https://ccarbajal16.github.io/soilquality/reference/assign_function_groups.md).
+  When supplied, the whole procedure runs **independently inside each
+  group** and the results are combined, so that every function
+  contributes an indicator instead of one dominant function crowding the
+  others out.
+
+  A group can be too small for a correlation network – carbon cycling is
+  two indicators, and three is the minimum for a graph worth clustering.
+  Such a group falls back to keeping the indicator most strongly
+  correlated with the rest of its group, which is the same principle
+  degraded to something computable. **The fallback warns and is recorded
+  per group in `$group_results`**, because it is not the published
+  method.
+
+  With `groups` supplied the return value carries `$mds`, `$weights`,
+  `$groups`, `$group_results` and `$grouped`; the pool-level graph and
+  centrality have no single meaning across groups and are absent.
 
 - seed:
 
