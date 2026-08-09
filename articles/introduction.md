@@ -238,6 +238,12 @@ print(result)
 #> $method
 #> [1] "weighted"
 #> 
+#> $select
+#> [1] "pca"
+#> 
+#> $network
+#> NULL
+#> 
 #> attr(,"class")
 #> [1] "sqi_result"
 ```

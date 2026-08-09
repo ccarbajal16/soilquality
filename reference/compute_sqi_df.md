@@ -17,7 +17,8 @@ compute_sqi_df(
   loading_threshold = 0.5,
   method = c("weighted", "area"),
   reference = NULL,
-  select = c("pca", "none"),
+  select = c("pca", "none", "network"),
+  network_args = list(),
   ...
 )
 ```
@@ -70,14 +71,37 @@ compute_sqi_df(
 
 - select:
 
-  Indicator selection strategy. `"pca"` (the default, and the historical
-  behaviour) selects a Minimum Data Set via
-  [`pca_select_mds`](https://ccarbajal16.github.io/soilquality/reference/pca_select_mds.md).
-  `"none"` skips selection and uses **every** numeric indicator – the
-  "total data set" (TDS) index that
-  [`sqi_validate`](https://ccarbajal16.github.io/soilquality/reference/sqi_validate.md)
-  measures fidelity against. PCA is still run and reported in either
-  case.
+  Indicator selection strategy.
+
+  `"pca"`
+
+  :   The default, and the historical behaviour: a Minimum Data Set via
+      [`pca_select_mds`](https://ccarbajal16.github.io/soilquality/reference/pca_select_mds.md),
+      selecting on variance.
+
+  `"network"`
+
+  :   Correlation-network selection via
+      [`na_select_mds`](https://ccarbajal16.github.io/soilquality/reference/na_select_mds.md),
+      selecting on centrality. Its centrality-derived weights are used
+      unless `pairwise_df` is supplied. Requires the suggested package
+      igraph.
+
+  `"none"`
+
+  :   No selection: every numeric indicator is used, the "total data
+      set" (TDS) index that
+      [`sqi_validate`](https://ccarbajal16.github.io/soilquality/reference/sqi_validate.md)
+      measures fidelity against.
+
+  PCA is run and reported in all three cases.
+
+- network_args:
+
+  A named list of arguments forwarded to
+  [`na_select_mds`](https://ccarbajal16.github.io/soilquality/reference/na_select_mds.md)
+  when `select = "network"`, for example
+  `list(r_min = 0.5, component = "all")`. Ignored otherwise.
 
 - ...:
 

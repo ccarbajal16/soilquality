@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">soilquality</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -37,6 +37,32 @@
       <small>Source: <a href="https://github.com/ccarbajal16/soilquality/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="1.3.0" id="soilquality-130-development">soilquality 1.3.0 (development)<a class="anchor" aria-label="anchor" href="#soilquality-130-development"></a></h2>
+<p>Adds correlation-network indicator selection, which chooses indicators by their centrality in a correlation network rather than by their contribution to variance.</p>
+<div class="section level4">
+<h4 id="new-features-1-3-0">New features<a class="anchor" aria-label="anchor" href="#new-features-1-3-0"></a></h4>
+<ul><li>
+<code><a href="../reference/na_select_mds.html">na_select_mds()</a></code> - Minimum Data Set selection following Yuan and Shi (2026) section 2.3.2: a Spearman correlation network, Louvain communities, an eigenvector-centrality module filter, within-10% retention, weighted-degree tie-breaking, an optional redundancy screen, and centrality-derived weights.</li>
+<li>
+<code><a href="../reference/mds_consensus.html">mds_consensus()</a></code> - runs the PCA and network routes over the same data and returns the indicators both agree on.</li>
+<li>
+<code><a href="../reference/compute_sqi_df.html">compute_sqi_df()</a></code> gains <code>select = "network"</code> and a <code>network_args</code> list, so the route reaches <code><a href="../reference/compute_sqi.html">compute_sqi()</a></code> and <code><a href="../reference/compute_sqi_properties.html">compute_sqi_properties()</a></code> too. The centrality weights are used unless a pairwise matrix is supplied.</li>
+<li>
+<code>igraph</code> is a <strong>suggested</strong> dependency, guarded by <code><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace()</a></code>. This package is MIT-licensed and igraph is GPL-2+; a hard dependency in Imports would pull the combined work into GPL territory on distribution. Everything in this section degrades gracefully when igraph is absent.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="two-defects-in-the-published-procedure-and-what-was-done-about-them-1-3-0">Two defects in the published procedure, and what was done about them<a class="anchor" aria-label="anchor" href="#two-defects-in-the-published-procedure-and-what-was-done-about-them-1-3-0"></a></h4>
+<ul><li>
+<strong>Louvain is randomised, so the method is not deterministic.</strong> Six runs over identical input returned two different Minimum Data Sets during development. <code><a href="../reference/na_select_mds.html">na_select_mds()</a></code> therefore takes a <code>seed</code>, defaulting to 1 and applied in a local scope that leaves the caller’s random stream untouched. Vary it to find out whether a selection is genuinely robust; stability at one seed is not evidence.</li>
+<li>
+<strong>On a disconnected network, eigenvector centrality goes to zero outside the dominant component</strong> – exactly zero under the reference BLAS, around 1e-17 under macOS Accelerate; the distinction is immaterial, since neither passes a usable threshold. A clique of three indicators correlating at 0.98 was discarded entire, and no <code>centrality_min</code> could rescue it. The new <code>component = "all"</code> computes centrality within each connected component so each sub-network is judged on its own terms; the default reproduces the published behaviour, and a warning now states the consequence.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="note-on-the-example-data-1-3-0">Note on the example data<a class="anchor" aria-label="anchor" href="#note-on-the-example-data-1-3-0"></a></h4>
+<p><code>soil_data</code> is simulated from independent draws and carries almost no correlation structure: the largest off-diagonal Spearman rho is 0.66 and only one pair clears the default threshold. The network route collapses to a single indicator on it. That is a property of the fixture, not the method.</p>
+</div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.2.0" id="soilquality-120-development">soilquality 1.2.0 (development)<a class="anchor" aria-label="anchor" href="#soilquality-120-development"></a></h2>
 <p>Adds index validation – the ability to ask whether an index actually discriminates, rather than assuming it does.</p>

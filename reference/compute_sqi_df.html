@@ -13,7 +13,7 @@ the final Soil Quality Index."><meta property="og:image" content="https://ccarba
 
     <a class="navbar-brand me-2" href="../index.html">soilquality</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,7 +62,8 @@ the final Soil Quality Index.</p>
 <span>  loading_threshold <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"weighted"</span>, <span class="st">"area"</span><span class="op">)</span>,</span>
 <span>  reference <span class="op">=</span> <span class="cn">NULL</span>,</span>
-<span>  select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pca"</span>, <span class="st">"none"</span><span class="op">)</span>,</span>
+<span>  select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pca"</span>, <span class="st">"none"</span>, <span class="st">"network"</span><span class="op">)</span>,</span>
+<span>  network_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -115,12 +116,30 @@ must cover every selected MDS indicator.</p></dd>
 
 
 <dt id="arg-select">select<a class="anchor" aria-label="anchor" href="#arg-select"></a></dt>
-<dd><p>Indicator selection strategy. <code>"pca"</code> (the default, and
-the historical behaviour) selects a Minimum Data Set via
-<code><a href="pca_select_mds.html">pca_select_mds</a></code>. <code>"none"</code> skips selection and uses
-<strong>every</strong> numeric indicator – the "total data set" (TDS) index that
-<code><a href="sqi_validate.html">sqi_validate</a></code> measures fidelity against. PCA is still run
-and reported in either case.</p></dd>
+<dd><p>Indicator selection strategy.</p><dl><dt><code>"pca"</code></dt>
+<dd><p>The default, and the historical behaviour: a
+    Minimum Data Set via <code><a href="pca_select_mds.html">pca_select_mds</a></code>, selecting on
+    variance.</p></dd>
+
+  <dt><code>"network"</code></dt>
+<dd><p>Correlation-network selection via
+    <code><a href="na_select_mds.html">na_select_mds</a></code>, selecting on centrality. Its
+    centrality-derived weights are used unless <code>pairwise_df</code> is
+    supplied. Requires the suggested package <span class="pkg">igraph</span>.</p></dd>
+
+  <dt><code>"none"</code></dt>
+<dd><p>No selection: every numeric indicator is used, the
+    "total data set" (TDS) index that <code><a href="sqi_validate.html">sqi_validate</a></code> measures
+    fidelity against.</p></dd>
+
+
+</dl><p>PCA is run and reported in all three cases.</p></dd>
+
+
+<dt id="arg-network-args">network_args<a class="anchor" aria-label="anchor" href="#arg-network-args"></a></dt>
+<dd><p>A named list of arguments forwarded to
+<code><a href="na_select_mds.html">na_select_mds</a></code> when <code>select = "network"</code>, for example
+<code>list(r_min = 0.5, component = "all")</code>. Ignored otherwise.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

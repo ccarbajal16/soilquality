@@ -319,12 +319,17 @@ Functions for importing and preprocessing soil data
 - [`to_numeric()`](https://ccarbajal16.github.io/soilquality/reference/to_numeric.md)
   : Convert Values to Numeric
 
-## PCA and MDS Selection
+## MDS Selection
 
-Principal Component Analysis for Minimum Data Set selection
+Selecting a Minimum Data Set, by variance (PCA) or by centrality
+(correlation network)
 
 - [`pca_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/pca_select_mds.md)
   : Select Minimum Data Set (MDS) Using PCA
+- [`na_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/na_select_mds.md)
+  : Select a Minimum Data Set by correlation-network analysis
+- [`mds_consensus()`](https://ccarbajal16.github.io/soilquality/reference/mds_consensus.md)
+  : Take the consensus of two Minimum Data Set selection routes
 
 ## AHP Weighting
 

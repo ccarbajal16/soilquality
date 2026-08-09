@@ -417,13 +417,13 @@ selects **fewer** indicators, and makes **no normality assumption**. It
 also selects on a different principle: PCA favours **variance**, network
 analysis favours **centrality** (ecological hubs).
 
-**4.1 ❌ CORRECTED — add `igraph` to `Suggests`, not `Imports`.** The
-original instruction (“`Imports`, GPL-2+ is compatible with GPL-3”)
-rested on a false premise: **this package is MIT** (`DESCRIPTION:14`),
-not GPL-3. A GPL package in `Imports` is a mandatory load-time
-dependency of a combined work and drags an MIT package into GPL
-obligations on distribution. Put `igraph` in `Suggests` and guard every
-use:
+**4.1 ✅ Done. ❌ CORRECTED — add `igraph` to `Suggests`, not
+`Imports`.** The original instruction (“`Imports`, GPL-2+ is compatible
+with GPL-3”) rested on a false premise: **this package is MIT**
+(`DESCRIPTION:14`), not GPL-3. A GPL package in `Imports` is a mandatory
+load-time dependency of a combined work and drags an MIT package into
+GPL obligations on distribution. Put `igraph` in `Suggests` and guard
+every use:
 
 ``` r
 
@@ -440,19 +440,23 @@ every example and test in Phase 4 is wrapped in a
 a machine without it; Phase 4 becomes optional at load time, which is
 the desired outcome anyway.
 
-**4.2 Implement `na_select_mds()`** following Yuan 2026 §2.3.2
-**exactly**:
+**4.2 Implement
+[`na_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/na_select_mds.md)**
+✅ Done, following Yuan 2026 §2.3.2 **exactly**:
 
 1.  Correlation network: nodes = indicators; edge where **Spearman \|r\|
     ≥ 0.60 and p \< 0.01**.
 2.  Communities by **Louvain/Blondel** modularity —
-    `igraph::cluster_louvain()` (Blondel et al. 2008).
+    [`igraph::cluster_louvain()`](https://r.igraph.org/reference/cluster_louvain.html)
+    (Blondel et al. 2008).
 3.  Keep only modules whose **maximum eigenvector centrality \> 0.6** —
-    `igraph::eigen_centrality()`. (Yuan states this is the analogue of
-    retaining PCs that explain ≥ 5 % of variance.)
+    [`igraph::eigen_centrality()`](https://r.igraph.org/reference/eigen_centrality.html).
+    (Yuan states this is the analogue of retaining PCs that explain ≥ 5
+    % of variance.)
 4.  Within each kept module, retain indicators **within 10 % of the
     maximum centrality** (i.e. `centrality >= 0.9 * max(centrality)`).
-5.  Break ties by highest **weighted degree** — `igraph::strength()`.
+5.  Break ties by highest **weighted degree** —
+    [`igraph::strength()`](https://r.igraph.org/reference/strength.html).
 6.  Screen surviving correlated indicators as in the PCA route.
 7.  **Weights** = eigenvector centrality / sum of centralities within
     the module.
@@ -465,19 +469,60 @@ na_select_mds <- function(data, r_min = 0.60, p_max = 0.01,
 
 All four thresholds must be parameters with these defaults.
 
-**4.3 Return the same shape as
+**4.3 ✅ Done, with a caveat — see below. Return the same shape as
 [`pca_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/pca_select_mds.md)**
 so the two are drop-in interchangeable downstream.
 
-**4.4 Implement `mds_consensus()`** — run both routes and return the
-**intersection**. Cheap, underused robustness check: on Yuan’s 40-year
-tillage data, **SOC, dissolved organic carbon and soil compaction** were
-selected by **all six** MDS variants.
+**4.4 Implement
+[`mds_consensus()`](https://ccarbajal16.github.io/soilquality/reference/mds_consensus.md)**
+✅ Done — run both routes and return the **intersection**. Cheap,
+underused robustness check: on Yuan’s 40-year tillage data, **SOC,
+dissolved organic carbon and soil compaction** were selected by **all
+six** MDS variants.
 
-**4.5 Document the caveat.** Correlation networks **cannot establish
-causality**, and shared environmental drivers create **spurious edges**
-(Yuan cites Connor et al. 2017; Deutschmann et al. 2021). Yuan
-recommends verifying with random forest or SEM.
+**⚠️ 4.6 NEW — two defects found in Yuan’s procedure while implementing
+it.** Neither is in the plan; both were measured, not inferred.
+
+1.  **Louvain is randomised, so the method is not deterministic.**
+    [`igraph::cluster_louvain()`](https://r.igraph.org/reference/cluster_louvain.html)
+    explores node orderings at random. Six runs over an *identical*
+    matrix returned **two different Minimum Data Sets**. A selection
+    that changes between runs cannot be reproduced from a published
+    method section. Fixed with a `seed` argument, defaulting to 1,
+    applied in a local scope that restores the caller’s RNG stream on
+    exit. Ordering also gained a final tie-break on indicator name,
+    since centrality and weighted degree can both tie. **The stability
+    is a convenience, not evidence** — the docs tell users to vary the
+    seed to find out whether their selection is actually robust.
+2.  **On a disconnected network, eigenvector centrality is EXACTLY zero
+    outside the dominant component** — not small, exactly 0. A clique of
+    three indicators correlating with each other at **0.98** was
+    discarded in full, and **no value of `centrality_min` can rescue
+    it**, because nothing is above zero. Yuan’s procedure implicitly
+    assumes a connected network. Added
+    `component = c("largest", "all")`: the default reproduces Yuan
+    literally, while `"all"` computes centrality within each connected
+    component so each sub-network is judged on its own terms. The
+    disconnection warning now states the consequence exactly rather than
+    saying indicators are “likely” to be dropped.
+
+**⚠️ 4.7 NEW — `soil_data` cannot exercise this route.** The shipped
+example data is simulated from **independent draws**, so it has no
+realistic covariance: the largest off-diagonal Spearman \|ρ\| is
+**0.66**, exactly **one** pair clears the default `r_min = 0.6`, and 12
+of 14 indicators end up isolated. The network route therefore collapses
+to a single indicator on it. This is a property of the fixture, not the
+method — real soil data has compositional texture (Sand+Silt+Clay = 100)
+and near-collinear OM/SOC. Tests use purpose-built synthetic fixtures
+with genuine correlation structure; the collapse on `soil_data` is
+pinned by its own test so nobody concludes the method is broken.
+**Consider replacing or supplementing `soil_data` with a realistically
+correlated dataset** — it also affects Phase 5’s grouping work.
+
+**4.5 Document the caveat.** ✅ Done. Correlation networks **cannot
+establish causality**, and shared environmental drivers create
+**spurious edges** (Yuan cites Connor et al. 2017; Deutschmann et al.
+2021). Yuan recommends verifying with random forest or SEM.
 
 ### Phase 5 — Functional (EMDS) grouping
 
@@ -490,8 +535,10 @@ verdict: group by **function**.
 
 **5.1 Add a `groups =` argument** to
 [`pca_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/pca_select_mds.md)
-and `na_select_mds()` — select within each group rather than across the
-whole pool. Must default to `NULL` (current behaviour).
+and
+[`na_select_mds()`](https://ccarbajal16.github.io/soilquality/reference/na_select_mds.md)
+— select within each group rather than across the whole pool. Must
+default to `NULL` (current behaviour).
 
 **5.2 Ship the five-function default grouping** as exported data, per
 Yuan (after Li et al. 2023): **carbon cycling · nutrient cycling ·
