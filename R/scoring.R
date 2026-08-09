@@ -250,6 +250,18 @@ score_indicators <- function(data, mds, directions) {
         thresholds = direction$thresholds,
         scores = direction$scores
       )
+    } else if (direction$type == "reference") {
+      if (is.null(direction$reference)) {
+        stop("reference required for type 'reference' for indicator: ",
+             indicator)
+      }
+      result[[scored_col]] <- standardize_to_reference(
+        x,
+        reference = direction$reference,
+        direction = direction$direction %||% "higher",
+        tolerance = direction$tolerance,
+        clamp = direction$clamp %||% TRUE
+      )
     } else if (direction$type == "sigmoid") {
       result[[scored_col]] <- score_sigmoid(
         x,

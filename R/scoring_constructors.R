@@ -265,6 +265,16 @@ print.scoring_rule <- function(x, ...) {
     cat("  Type: Threshold-based scoring\n")
     cat("  Thresholds:", paste(x$thresholds, collapse = ", "), "\n")
     cat("  Scores:", paste(x$scores, collapse = ", "), "\n")
+  } else if (inherits(x, "reference_scoring")) {
+    cat("  Type: Standardised against a reference soil\n")
+    cat("  Direction:",
+        switch(x$direction,
+               higher = "Higher values are better",
+               lower = "Lower values are better",
+               optimum = "Distance from the optimum"), "\n")
+    cat("  Reference:", x$reference,
+        if (x$direction == "optimum") "(the optimal value)" else "", "\n")
+    if (!is.null(x$tolerance)) cat("  Tolerance:", x$tolerance, "\n")
   } else if (inherits(x, "sigmoid_scoring")) {
     cat("  Type: Non-linear (sigmoidal) scoring\n")
     cat("  Direction:",

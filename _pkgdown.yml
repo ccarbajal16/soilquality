@@ -106,6 +106,15 @@ reference:
   - optimum_range
   - threshold_scoring
   - sigmoid_scoring
+  - reference_scoring
+
+- title: Reference-Soil Standardisation
+  desc: >
+    Scoring against an undisturbed reference soil, the documented escape from
+    index incomparability
+  contents:
+  - standardize_to_reference
+  - sensitivity_resistance
 
 - title: Aggregation
   desc: >
