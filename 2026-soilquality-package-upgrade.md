@@ -155,15 +155,18 @@ verification step.
 `testthat` edition, the `loading_threshold` rule) and the exported
 surface expanded.
 
-**0.2 Establish a regression baseline.** Run the existing test suite;
-record pass/fail per file. Nine test files already exist (~2 070 lines)
-covering ahp, data-handling, interactive, pca-mds, property-sets,
-scoring, scoring-constructors, sqi-compute, visualization. If coverage
-of
-[`compute_sqi_df()`](https://ccarbajal16.github.io/soilquality/reference/compute_sqi_df.md)
-(the engine, not just the wrapper) is thin, add a golden-output test on
-`soil_data` **before** touching anything — every phase below must leave
-it green.
+**0.2 Establish a regression baseline.** ✅ Done. All nine pre-existing
+test files passed. ⚠️ **Coverage of the engine was indeed thin — and
+worse than “thin”: it was entirely structural.** Every existing test
+asserted component presence, weights summing to 1, or within-session
+reproducibility. **Nothing pinned a single numeric value**, so a change
+to selection or aggregation could have moved every SQI in the package
+and left the suite green. Added
+`tests/testthat/test-regression-baseline.R`, pinning the selected MDS,
+the PCA variance decomposition, the weights and the SQI values against
+`soil_data`. Baseline: MDS = `BD, P, K, OM, pH, EC, N` (7 of 10 offered;
+Sand/Clay/CEC never selected); SQI mean 0.4737929, sd 0.0778799, range
+\[0.3551346, 0.6955874\].
 
 **0.3 ~~Create~~ Verify the shared fixture.** ✅ No new fixture needed —
 `soil_data` (50 × 16) already satisfies every stated requirement. All
@@ -339,7 +342,9 @@ without the new route.
 in most of the literature — answers “does this index actually work?”.
 This is where the package can lead rather than follow.
 
-**3.1 Implement `sqi_validate()`** returning a structured object with:
+**3.1 Implement
+[`sqi_validate()`](https://ccarbajal16.github.io/soilquality/reference/sqi_validate.md)**
+✅ Done returning a structured object with:
 
 - **Sensitivity index** `SI = max(SQI) / min(SQI)`. Source: **Yuan
   2026**, after Rezaee et al. Yuan’s observed ranges: Area 1.12–2.92,
@@ -350,16 +355,27 @@ This is where the package can lead rather than follow.
   truth** — it is just the index with everything in it. High fidelity
   means *faithful to your full measurement set*, not *correct*.
 - ⭐ **Quantile distribution** — the count of samples falling in each of
-  the **0–20 / 20–40 / 40–60 / 60–80 / 80–100 %** bands of the empirical
-  CDF ([`ecdf()`](https://rdrr.io/r/stats/ecdf.html) then
-  [`cut()`](https://rdrr.io/r/base/cut.html)). These are the
+  the **0–20 / 20–40 / 40–60 / 60–80 / 80–100 %** bands. These are the
   conventional “very low → very high” soil-health categories (CSHT
-  convention, used by **Maaz 2023**).
+  convention, used by **Maaz 2023**). ❌ **CORRECTED — do NOT use
+  [`ecdf()`](https://rdrr.io/r/stats/ecdf.html).** This page originally
+  specified “bands of the empirical CDF
+  ([`ecdf()`](https://rdrr.io/r/stats/ecdf.html) then
+  [`cut()`](https://rdrr.io/r/base/cut.html))”. That is mathematically
+  degenerate: `ecdf(x)(x)` returns rank/*n*, which is **uniform by
+  construction**, so cutting it into five equal bands returns exactly
+  *n*/5 in every band for **every** index. Verified numerically before
+  implementing — an index compressed into \[0.45, 0.55\] and one spread
+  across \[0.05, 0.95\] both return `20 20 20 20 20`. It could never
+  reproduce the 94 % vs 61 % contrast this diagnostic exists to reveal.
+  **The bands are cut on the index VALUE scale.** The same two vectors
+  then return `0 0 100 0 0` and `11 23 28 20 18` — which is the
+  diagnostic working.
 - **External criterion** (optional): correlation with a supplied vector
   (yield, a known contrast). Source: **Theresa 2026** validates against
   four seasons of rice yield.
 
-**3.2 Make the distribution the headline.** This is the corpus’s
+**3.2 Make the distribution the headline.** ✅ Done This is the corpus’s
 strongest methodological finding and it must not be buried. **Maaz
 2023**: an SEM index and an additive index correlated at **r = 0.96** —
 apparent agreement — yet the additive index put **94 %** of plots in the
@@ -372,17 +388,26 @@ decision.
   prominently and **warn above a documented threshold** (suggest \> 80
   %).
 
-**3.3 Implement `sqi_compare()`** — run the same data through ≥ 2
-recipes (e.g. linear vs sigmoid, weighted vs area) and report whether
+**3.3 Implement `sqi_compare()`** ✅ Done — run the same data through ≥
+2 recipes (e.g. linear vs sigmoid, weighted vs area) and report whether
 the **ranking of samples/groups** survives (Spearman rank correlation +
 a flag when the top/bottom group changes). Source: **Yuan 2026** found
 EMDS achieved fit R² 0.74–0.77 with *no p \> 0.05 across any
 scoring/aggregation combination* — i.e. it was **stable**, not merely
 accurate.
 
-**3.4 Extend
-[`plot_sqi_report()`](https://ccarbajal16.github.io/soilquality/reference/plot_sqi_report.md)**
-with the quantile-distribution plot, or add `plot_sqi_validation()`.
+**3.4 ✅ Done — added
+[`plot_sqi_validation()`](https://ccarbajal16.github.io/soilquality/reference/plot_sqi_validation.md).**
+The plan offered a choice between extending
+[`plot_sqi_report()`](https://ccarbajal16.github.io/soilquality/reference/plot_sqi_report.md)
+and adding a standalone function; took the second.
+[`plot_sqi_report()`](https://ccarbajal16.github.io/soilquality/reference/plot_sqi_report.md)
+lays out a fixed 2×2 grid (`par(mfrow = c(2, 2))`) that is already full
+with distribution/indicators/weights/scree, so adding a fifth panel
+would have meant re-laying it out and changing what existing users see.
+The new function accepts an `sqi_validation`, an `sqi_result` or a bare
+numeric vector, and prints the middle-band share on the plot rather than
+only in the console.
 
 ### Phase 4 — Network-analysis MDS selection
 
@@ -633,9 +658,16 @@ phase.
     original recommendation was wrong: the package is **MIT**, not
     GPL-3, so `Imports` is not merely a convenience question, it is a
     licensing one. See revised Task 4.1.
-3.  **Should `sqi_validate()` hard-warn or just report** when the
-    middle-band share exceeds the threshold? Recommend a **warning** — a
-    silent number will be ignored. *(still open)*
+3.  ✅ **RESOLVED — a real
+    [`warning()`](https://rdrr.io/r/base/warning.html).** Implemented
+    with `middle_band_threshold = 0.8`, settable, and `NA` to disable
+    while still reporting the number. The print method repeats it in the
+    body. ⚠️ **This immediately fired on the package’s own example
+    data**: the default recipe (PCA-MDS → equal weights → linear scoring
+    → weighted additive) on `soil_data` produces an SQI spanning
+    ≈0.36–0.70, putting **100 % of samples in the middle bands** — the
+    “very low” and “very high” categories are empty. Maaz’s pathology,
+    live, in this package. Pinned by a test.
 4.  **Scope of Phase 6.3** (`sensitivity_resistance()`) — genuinely
     useful but the least-used method in the corpus. Defer if time is
     short. *(still open)*

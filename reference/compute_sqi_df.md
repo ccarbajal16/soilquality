@@ -17,6 +17,7 @@ compute_sqi_df(
   loading_threshold = 0.5,
   method = c("weighted", "area"),
   reference = NULL,
+  select = c("pca", "none"),
   ...
 )
 ```
@@ -66,6 +67,17 @@ compute_sqi_df(
   is reported as a ratio against this non-degraded reference soil, which
   is what makes area-based values comparable across studies. Names must
   cover every selected MDS indicator.
+
+- select:
+
+  Indicator selection strategy. `"pca"` (the default, and the historical
+  behaviour) selects a Minimum Data Set via
+  [`pca_select_mds`](https://ccarbajal16.github.io/soilquality/reference/pca_select_mds.md).
+  `"none"` skips selection and uses **every** numeric indicator – the
+  "total data set" (TDS) index that
+  [`sqi_validate`](https://ccarbajal16.github.io/soilquality/reference/sqi_validate.md)
+  measures fidelity against. PCA is still run and reported in either
+  case.
 
 - ...:
 

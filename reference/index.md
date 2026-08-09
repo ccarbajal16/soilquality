@@ -79,6 +79,16 @@ Combining scored indicators into a single index
 - [`sqi_area()`](https://ccarbajal16.github.io/soilquality/reference/sqi_area.md)
   : Aggregate indicator scores by the area of a radar diagram
 
+## Validation
+
+Assessing whether an index actually discriminates, and whether a
+conclusion survives a change of recipe
+
+- [`sqi_validate()`](https://ccarbajal16.github.io/soilquality/reference/sqi_validate.md)
+  : Validate a Soil Quality Index
+- [`sqi_stability()`](https://ccarbajal16.github.io/soilquality/reference/sqi_stability.md)
+  : Test whether a conclusion survives a change of index recipe
+
 ## Property Sets and Standard Rules
 
 Pre-defined property collections and automatic scoring rules
@@ -96,6 +106,8 @@ Functions for plotting and visualizing SQI results
   : Plot SQI Results
 - [`plot_sqi_report()`](https://ccarbajal16.github.io/soilquality/reference/plot_sqi_report.md)
   : Create Multi-Panel SQI Report
+- [`plot_sqi_validation()`](https://ccarbajal16.github.io/soilquality/reference/plot_sqi_validation.md)
+  : Plot the distribution of an index across decision categories
 
 ## Interactive Tools
 
@@ -121,3 +133,7 @@ S3 print methods for custom objects
   : Print method for ahp_matrix objects
 - [`print(`*`<scoring_rule>`*`)`](https://ccarbajal16.github.io/soilquality/reference/print.scoring_rule.md)
   : Print method for scoring_rule objects
+- [`print(`*`<sqi_validation>`*`)`](https://ccarbajal16.github.io/soilquality/reference/print.sqi_validation.md)
+  : Print method for sqi_validation objects
+- [`print(`*`<sqi_stability>`*`)`](https://ccarbajal16.github.io/soilquality/reference/print.sqi_stability.md)
+  : Print method for sqi_stability objects

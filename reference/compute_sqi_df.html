@@ -13,7 +13,7 @@ the final Soil Quality Index."><meta property="og:image" content="https://ccarba
 
     <a class="navbar-brand me-2" href="../index.html">soilquality</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -62,6 +62,7 @@ the final Soil Quality Index.</p>
 <span>  loading_threshold <span class="op">=</span> <span class="fl">0.5</span>,</span>
 <span>  method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"weighted"</span>, <span class="st">"area"</span><span class="op">)</span>,</span>
 <span>  reference <span class="op">=</span> <span class="cn">NULL</span>,</span>
+<span>  select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pca"</span>, <span class="st">"none"</span><span class="op">)</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -111,6 +112,15 @@ MDS indicators, used only when <code>method = "area"</code>. When supplied, the
 SQI is reported as a ratio against this non-degraded reference soil,
 which is what makes area-based values comparable across studies. Names
 must cover every selected MDS indicator.</p></dd>
+
+
+<dt id="arg-select">select<a class="anchor" aria-label="anchor" href="#arg-select"></a></dt>
+<dd><p>Indicator selection strategy. <code>"pca"</code> (the default, and
+the historical behaviour) selects a Minimum Data Set via
+<code><a href="pca_select_mds.html">pca_select_mds</a></code>. <code>"none"</code> skips selection and uses
+<strong>every</strong> numeric indicator – the "total data set" (TDS) index that
+<code><a href="sqi_validate.html">sqi_validate</a></code> measures fidelity against. PCA is still run
+and reported in either case.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>
