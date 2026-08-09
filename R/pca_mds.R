@@ -33,6 +33,13 @@
 #'   eq. (2), which aggregates an indicator's loadings across components rather
 #'   than judging it one component at a time; it is designed for the grouped
 #'   route and returns the highest-norm indicator per group.
+#' @param adequacy Whether to test that the data is worth factoring at all.
+#'   \code{"report"} (the default) attaches a \code{\link{pca_adequacy}} result
+#'   to the output; \code{"warn"} additionally raises a warning when KMO falls
+#'   below 0.6 or Bartlett's test fails to reject sphericity; \code{"ignore"}
+#'   skips the computation. It reports rather than gates by default, because
+#'   most published SQI work does not test adequacy at all and erroring would
+#'   break every existing call.
 #'
 #' @return A list with the following components:
 #'   \describe{
@@ -49,6 +56,7 @@
 #'     \item{group_results}{Per-group selection detail, including the norm
 #'       values when \code{selector = "norm"}, or \code{NULL}.}
 #'     \item{selector, within}{The settings used.}
+#'     \item{adequacy}{A \code{\link{pca_adequacy}} result, or \code{NULL}.}
 #'   }
 #'
 #' @details
@@ -154,8 +162,10 @@ pca_select_mds <- function(data,
                            loading_threshold = 0.5,
                            within = NULL,
                            groups = NULL,
-                           selector = c("loading", "norm")) {
+                           selector = c("loading", "norm"),
+                           adequacy = c("report", "warn", "ignore")) {
   selector <- match.arg(selector)
+  adequacy <- match.arg(adequacy)
 
   # Input validation
   if (!is.data.frame(data)) {
@@ -219,6 +229,35 @@ pca_select_mds <- function(data,
     }
   }
 
+  # Adequacy is reported alongside the result rather than gating it, because
+  # most published SQI work does not test it at all and erroring would break
+  # every existing call. `adequacy = "warn"` raises the check to something the
+  # user cannot miss.
+  adequacy_result <- NULL
+  if (adequacy != "ignore") {
+    adequacy_result <- try(pca_adequacy(numeric_data), silent = TRUE)
+
+    if (inherits(adequacy_result, "try-error")) {
+      adequacy_result <- NULL
+    } else if (adequacy == "warn") {
+      if (!is.na(adequacy_result$kmo) && adequacy_result$kmo < 0.6) {
+        warning(sprintf(
+          paste0("KMO is %.3f (%s). The indicators share too little common ",
+                 "structure for PCA to reduce them meaningfully; inspect ",
+                 "$adequacy$msa for the worst offenders."),
+          adequacy_result$kmo, adequacy_result$kmo_interpretation
+        ), call. = FALSE)
+      }
+      if (!is.na(adequacy_result$bartlett$p_value) &&
+          adequacy_result$bartlett$p_value >= 0.05) {
+        warning("Bartlett's test does not reject sphericity (p = ",
+                format(adequacy_result$bartlett$p_value, digits = 3),
+                "). The correlation matrix is close to an identity, so there ",
+                "is essentially nothing for PCA to find.", call. = FALSE)
+      }
+    }
+  }
+
   # A pool-wide PCA is always computed and reported, so that $pca, $loadings
   # and $var_exp keep the same meaning whether or not groups are supplied.
   pca_result <- stats::prcomp(numeric_data, scale. = FALSE)
@@ -263,7 +302,8 @@ pca_select_mds <- function(data,
     groups = groups,
     group_results = group_results,
     selector = selector,
-    within = within
+    within = within,
+    adequacy = adequacy_result
   )
 }
 

@@ -10,7 +10,8 @@ pca_select_mds(
   loading_threshold = 0.5,
   within = NULL,
   groups = NULL,
-  selector = c("loading", "norm")
+  selector = c("loading", "norm"),
+  adequacy = c("report", "warn", "ignore")
 )
 }
 \arguments{
@@ -47,6 +48,14 @@ component. \code{"norm"} uses the norm value of Yuan and Shi (2026)
 eq. (2), which aggregates an indicator's loadings across components rather
 than judging it one component at a time; it is designed for the grouped
 route and returns the highest-norm indicator per group.}
+
+\item{adequacy}{Whether to test that the data is worth factoring at all.
+\code{"report"} (the default) attaches a \code{\link{pca_adequacy}} result
+to the output; \code{"warn"} additionally raises a warning when KMO falls
+below 0.6 or Bartlett's test fails to reject sphericity; \code{"ignore"}
+skips the computation. It reports rather than gates by default, because
+most published SQI work does not test adequacy at all and erroring would
+break every existing call.}
 }
 \value{
 A list with the following components:
@@ -64,6 +73,7 @@ A list with the following components:
     \item{group_results}{Per-group selection detail, including the norm
       values when \code{selector = "norm"}, or \code{NULL}.}
     \item{selector, within}{The settings used.}
+    \item{adequacy}{A \code{\link{pca_adequacy}} result, or \code{NULL}.}
   }
 }
 \description{

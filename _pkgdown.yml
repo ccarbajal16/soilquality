@@ -31,6 +31,8 @@ navbar:
     articles:
       text: Articles
       menu:
+      - text: Building and validating a Soil Quality Index
+        href: articles/building-and-validating-an-sqi.html
       - text: Introduction to soilquality
         href: articles/introduction.html
       - text: Advanced Usage
@@ -67,6 +69,7 @@ reference:
     (correlation network)
   contents:
   - pca_select_mds
+  - pca_adequacy
   - na_select_mds
   - mds_consensus
 
@@ -167,11 +170,13 @@ reference:
   - print.scoring_rule
   - print.sqi_validation
   - print.sqi_stability
+  - print.pca_adequacy
 
 articles:
 - title: Getting Started
   navbar: ~
   contents:
+  - building-and-validating-an-sqi
   - introduction
 
 - title: Advanced Topics

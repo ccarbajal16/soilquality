@@ -4,7 +4,7 @@ title: soilquality R package — upgrade to cover the full SQI corpus
 domains: [soil-quality, vnv, ml]
 based_on_skills: ["[[skills-forge/soil-quality-index/SKILL]]"]
 study_area: n/a — software (github.com/ccarbajal16/soilquality)
-status: in-progress
+status: complete — all seven phases delivered
 created: 2026-08-08
 updated: 2026-08-08
 audited_against: bc1838e
@@ -204,7 +204,7 @@ and Open decision 2.
 **Why:** this is the **dominant scoring form in the SQI literature**. Without it the package cannot
 reproduce Chaudhry, Huera-Lucero, or Yuan's non-linear arm.
 
-- [ ] **1.1 Implement `score_sigmoid()`.**
+- [x] ✅ **1.1 Implement `score_sigmoid()`.**
   ```
   S = 1 / (1 + (x / x0)^b)        b = -2.5  "more is better"
                                   b = +2.5  "less is better"
@@ -223,22 +223,22 @@ reproduce Chaudhry, Huera-Lucero, or Yuan's non-linear arm.
     reference value instead (see Phase 6).
   - Handle `NA` (`na.rm`), zero and negative `x` (a negative base with a fractional exponent is
     `NaN` in R — document and guard; suggest shifting or using `score_threshold()` instead).
-- [ ] **1.2 Sanity tests.** `direction="higher"` → S increases monotonically with x, S→1 as x≫x0,
+- [x] ✅ **1.2 Sanity tests.** `direction="higher"` → S increases monotonically with x, S→1 as x≫x0,
   S→0 as x→0; `direction="lower"` → the mirror; `S(x0) == 0.5` exactly for both directions;
   output always in [0,1].
-- [ ] **1.3 Wire into `score_indicators()`** as a selectable method, without changing existing
+- [x] ✅ **1.3 Wire into `score_indicators()`** as a selectable method, without changing existing
   behaviour. ⚠️ **Verified mechanics** (`R/scoring.R:199-259`): `score_indicators()` dispatches on
   `direction$type` through an if/else chain over `"higher" | "lower" | "optimum" | "threshold"`,
   writing `paste0(indicator, "_scored")` columns, and `stop()`s on an unknown type. Add a
   `"sigmoid"` branch — this is purely additive, no existing default moves.
-- [ ] **1.3b ⚠️ NEW — add the `sigmoid_scoring()` constructor.** Verified in Task 0.1: users specify
+- [x] ✅ **1.3b ⚠️ NEW — add the `sigmoid_scoring()` constructor.** Verified in Task 0.1: users specify
   scoring through exported `scoring_rule` constructor objects (`higher_better()`, `lower_better()`,
   `optimum_range()`, `threshold_scoring()` in `R/scoring_constructors.R`), which
   `compute_sqi_properties()` converts to `directions` via `as.list(rule)` (`R/sqi_compute.R:428-436`).
   Without a matching constructor, `score_sigmoid()` is unreachable from the documented entry point.
   Also extend `standard_scoring_rules()` with an opt-in argument to emit sigmoid rules instead of
   linear ones — that is what makes Task 1.4's "compute both and compare" a one-line change for a user.
-- [ ] **1.4 Document the linear/non-linear choice honestly.** The literature **contradicts itself**:
+- [x] ✅ **1.4 Document the linear/non-linear choice honestly.** The literature **contradicts itself**:
   Yuan 2026 finds NL > L (fit R² 0.65 vs 0.56); Bilgili et al. 2017 — cited *inside Yuan's own
   introduction* — finds L > NL. Add a vignette note recommending **computing both** and reporting
   whether conclusions change.
@@ -247,7 +247,7 @@ reproduce Chaudhry, Huera-Lucero, or Yuan's non-linear arm.
 **Why:** gives the package a **weight-free** aggregation route, sidestepping the most contested step
 in the pipeline. See Phase 3's rationale for why weights are contested.
 
-- [ ] **2.1 Implement `sqi_area()`.**
+- [x] ✅ **2.1 Implement `sqi_area()`.**
   ```
   Area = 0.5 * sum(stP_i^2) * sin(2*pi / n)
   ```
@@ -268,7 +268,7 @@ in the pipeline. See Phase 3's rationale for why weights are contested.
   - ⚠️ **As designed it is a RATIO.** Kuzyakov standardises against a **non-degraded reference soil**
     (reference = 1.0) and reports `Area_degraded / Area_non_degraded`; the worked figure gives
     **0.47** = "half the function lost". *"Comparison with non-degraded soil is required."*
-- [ ] **2.2 Document the two uses and their consequence.** The weight-independence people cite is a
+- [x] ✅ **2.2 Document the two uses and their consequence.** The weight-independence people cite is a
   consequence of **taking a ratio**, not a property of the formula.
 
   | Use | Standardised against | Comparable across studies? |
@@ -276,12 +276,12 @@ in the pipeline. See Phase 3's rationale for why weights are contested.
   | Absolute (`reference = NULL`) | your own sample | **no** |
   | Ratio (`reference = <ref soil>`) | a non-degraded reference soil | **claimed yes** |
 
-- [ ] **2.3 Tests.** Area is invariant to the order of `s` (this is the point of the square form);
+- [x] ✅ **2.3 Tests.** Area is invariant to the order of `s` (this is the point of the square form);
   all-1.0 scores give the maximum area for that `n`; ratio of a vector with itself is exactly 1;
   ratio < 1 for a uniformly degraded vector.
-- [ ] **2.4 Add `n`-dependence warning.** Kuzyakov notes total area depends slightly on `n`, but the
+- [x] ✅ **2.4 Add `n`-dependence warning.** Kuzyakov notes total area depends slightly on `n`, but the
   *ratio* does not. Warn if `length(s) != length(reference)`.
-- [ ] **2.5 Wire into `compute_sqi_df()`** as `method = c("weighted", "area")`, default unchanged.
+- [x] ✅ **2.5 Wire into `compute_sqi_df()`** as `method = c("weighted", "area")`, default unchanged.
   ⚠️ Corrected target: the plan said `compute_sqi_properties()`, but Task 0.1 verified that function
   is a wrapper that forwards to `compute_sqi_df()` (`R/sqi_compute.R:440-448`). Add the argument to
   the engine and let it flow through the wrapper's `...`; wiring only the wrapper would leave
@@ -509,19 +509,19 @@ cannot be compared across studies.
   **Sequencing:** Phase 5.1 adds `groups =` to this same function and Phase 5.3 adds the norm-value
   selector — all three touch the same selection loop. **Move this task into Phase 5** and do the
   three together, rather than reopening `pca_select_mds()` in Phase 7 after Phase 5 already rewrote it.
-- [ ] **7.2 Add PCA adequacy testing** to `pca_select_mds()` — **KMO** and **Bartlett's sphericity**,
+- [x] **7.2 ✅ DONE — `pca_adequacy()`, reported by `pca_select_mds(adequacy=)`.** Adds PCA adequacy testing to `pca_select_mds()` — **KMO** and **Bartlett's sphericity**,
   reported (and optionally enforced). Most papers skip it; **Theresa 2026** does not
   (KMO 0.81, Bartlett χ² 425.37, df 136, p < 0.001).
-- [ ] **7.3 Write the main vignette** — "Building and validating a Soil Quality Index" — walking the
+- [x] **7.3 ✅ DONE — `vignette("building-and-validating-an-sqi")`.** The main vignette, — "Building and validating a Soil Quality Index" — walking the
   full pipeline: select (PCA | network | expert) → group by function → score (linear | sigmoid |
   optimum) → weight (AHP | loading | centrality | none) → aggregate (weighted | area) → **validate**.
-- [ ] **7.4 Add the "don't chain predictions" warning** wherever the docs touch predicted inputs.
+- [x] **7.4 ✅ DONE — on `compute_sqi_df()` and in the README.** The "don't chain predictions" warning, wherever the docs touch predicted inputs.
   **Chaudhry 2024**: computing an SQI from *predicted* properties gave **R² = 0.23**; predicting the
   index *directly* gave **R² = 0.90** — on the same spectra, with individually acceptable property
   models (Cubist R² 0.35–0.93). If a user feeds predicted properties into `compute_sqi_properties()`,
   the resulting index is far less reliable than its inputs.
-- [ ] **7.5 Update README** with the new routes and a decision table.
-- [ ] **7.6 `R CMD check --as-cran`** clean; bump version; NEWS.md entry per phase.
+- [x] **7.5 ✅ DONE — README** updated with the new routes and a decision table.
+- [x] **7.6 ✅ DONE — `R CMD check --as-cran` clean** (0/0/0, including `--run-donttest` and vignette rebuild), version 1.7.0, NEWS.md entry per phase.
 
 ---
 
@@ -597,9 +597,26 @@ cannot be compared across studies.
   reinstated, a duplicated `## Scope` heading removed, and `sqi_compare()` renamed to
   `sqi_stability()` throughout — except where the text deliberately refers to `SQIpro::sqi_compare()`,
   which keeps its own name.
-- **Next:** Phase 5 (functional/EMDS grouping, carrying the relocated Task 7.1), then Phase 6
-  (reference-soil standardisation). Both are differentiators per the strategic section. Phase 7 is
-  documentation and hardening. Still open: Task 0.5, the Shiny sync policy.
+- **2026-08-08** — **Phases 5, 6 and 7 delivered.** Phase 5: `soil_function_groups`,
+  `assign_function_groups()`, `groups =` on both selection routes, `selector = "norm"`, and the
+  relocated Task 7.1 as `within =`. Phase 6: `standardize_to_reference()`, `reference_scoring()`,
+  `sensitivity_resistance()`. Phase 7: `pca_adequacy()` (KMO + Bartlett), the main vignette, the
+  don't-chain-predictions warning, README decision table, and a clean
+  `R CMD check --as-cran` (0/0/0 including `--run-donttest` and vignette rebuild) at **v1.7.0**.
+- **2026-08-08** — ⚠️ **Two more measured findings.**
+  1. **Ungrouped selection leaves entire soil functions unrepresented.** On `soil_structured` with
+     all 15 indicators: the network route returns `OM, CEC` (2 of 4 functions) and PCA returns
+     `pH, Silt` (2 of 4); grouped, they return `OM, P, N, Clay, EC` and `SOC, P, Sand, EC`
+     respectively — **4 of 4** each. This is the concrete case for EMDS.
+  2. **KMO cannot be computed on a standard soil data set.** Particle-size fractions sum to 100, so
+     `Sand`/`Silt`/`Clay` are exactly collinear and the correlation matrix is singular; `OM`/`SOC`
+     at ρ 0.99 push it further. `pca_adequacy()` returns `NA` with an explanation naming the
+     offending pairs rather than erroring or silently using a pseudo-inverse.
+- **⚠️ STILL OPEN — Task 0.5, the Shiny sync policy.** Seven phases added routes the app does not
+  expose: sigmoid and reference scoring, area aggregation, network and grouped MDS selection,
+  validation. `run_sqi_app()` is now materially behind the package. Decide whether it catches up or
+  is explicitly frozen, and say which in `NEWS.md` — the plan warned at Task 0.5 that deciding
+  per-phase guarantees drift, and it did.
 
 ## Provenance
 Executes [[skills-forge/soil-quality-index/SKILL]]. Key sources — full citations in the wiki:

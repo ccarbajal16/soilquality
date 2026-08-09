@@ -1,3 +1,52 @@
+# soilquality 1.7.0 (development)
+
+Completes the upgrade begun in 1.1.0: adequacy testing, the main vignette, and
+the documentation the earlier phases deferred.
+
+### New features
+
+- `pca_adequacy()` - the two checks that a correlation matrix is worth
+  factoring at all: the Kaiser-Meyer-Olkin measure of sampling adequacy, with
+  Kaiser's labels and a per-variable MSA, and Bartlett's test of sphericity.
+  Most published soil quality work skips both.
+- `pca_select_mds()` gains `adequacy = c("report", "warn", "ignore")`,
+  reporting by default and warning on request when KMO falls below 0.6 or
+  sphericity is not rejected. It reports rather than gates, because erroring
+  would break every existing call.
+
+### A limitation worth knowing about
+
+KMO requires inverting the correlation matrix, and **soil data routinely makes
+that impossible**: particle-size fractions sum to 100, so `Sand`, `Silt` and
+`Clay` together are exactly collinear, and organic matter and organic carbon
+are related by a fixed factor. When the matrix is singular, `pca_adequacy()`
+returns `NA` with an explanation naming the offending pairs, rather than
+erroring or quietly substituting a pseudo-inverse. Bartlett's statistic is
+reported as `NA` for the same reason.
+
+Bartlett's test is also close to a formality on real data: with a decent
+sample size almost any set of soil properties rejects sphericity. Passing it
+is weak evidence; failing it is strong evidence, and that is what it is for.
+
+### Documentation
+
+- New vignette, `vignette("building-and-validating-an-sqi")`, walking the full
+  pipeline: adequacy, selection by variance or centrality, functional
+  grouping, the five scoring routes, weighting or not weighting, aggregation,
+  and validation.
+- README gains the pipeline decision table and states why validation is the
+  point rather than an optional extra.
+- **Do not build an index from predicted properties.** Documented on
+  `compute_sqi_df()` and in the README. Chaudhry et al. (2024): computing an
+  SQI from spectrally predicted properties gave R² = 0.23, while predicting
+  the index directly from the same spectra gave R² = 0.90, with individually
+  acceptable property models.
+
+### Verification
+
+`R CMD check --as-cran`: 0 errors, 0 warnings, 0 notes, including
+`--run-donttest` and vignette rebuilding.
+
 # soilquality 1.6.0 (development)
 
 Adds reference-soil standardisation: scoring against an undisturbed soil
