@@ -1,3 +1,45 @@
+# soilquality 1.6.0 (development)
+
+Adds reference-soil standardisation: scoring against an undisturbed soil
+rather than against the sample's own extremes.
+
+### New features
+
+- `standardize_to_reference()` - scores an indicator relative to the same
+  indicator in a non-degraded reference soil, which takes the value 1 while
+  degraded samples fall toward 0. Three directions: `"higher"` gives
+  `x / reference`; `"lower"` inverts to `reference / x`, because the
+  undisturbed soil holds the **minimum** for bulk density and its like; and
+  `"optimum"` uses the **distance from the optimum**, since a monotone scale
+  would rank pH 8.0 above pH 6.5.
+- `reference_scoring()` - the matching `scoring_rule` constructor, so the
+  route is reachable from `compute_sqi_properties()`.
+- `score_indicators()` gains a `"reference"` type.
+- `sensitivity_resistance()` - Kuzyakov's second and much less used approach:
+  each indicator's relative change divided by the change in soil organic
+  carbon. Below 1 the indicator degrades faster than carbon and is sensitive;
+  above 1 it is resistant.
+
+### Why it matters, and what it costs
+
+Every other scoring function normalises against the sample's own extremes,
+which guarantees the best site scores about 1 **by construction** -- whether
+it is pristine or merely the least ruined of a bad set. Two studies can both
+report 0.8 and mean entirely different soils.
+
+The price is a defensible reference: same soil type, parent material and
+climate, undisturbed. Kuzyakov et al. call this the approach's key
+disadvantage, and a fully converted landscape often has no such site left. A
+badly chosen reference does not add noise, it silently rescales every index
+built on it. The documentation says so rather than selling the method.
+
+Two honest touches: a sample that **beats** the reference is capped at 1 with
+a warning naming how many did, because that usually means the reference is not
+the least disturbed soil available; and `sensitivity_resistance()` documents
+that Kuzyakov's classification resolved cleanly on a Luvic Phaeozem and
+**failed to separate on a Calcic Chernozem**, so an untidy result is a fact
+about the soil rather than a failure of the analysis.
+
 # soilquality 1.5.0 (development)
 
 Adds functional (EMDS) grouping: selecting one indicator per soil *function*

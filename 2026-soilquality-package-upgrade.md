@@ -457,18 +457,18 @@ favours **centrality** (ecological hubs).
 sample extremes makes the best site score ≈ 1.0 by construction, which is why published SQI values
 cannot be compared across studies.
 
-- [ ] **6.1 Implement `standardize_to_reference()`.** Standardise each indicator against the same
+- [x] **6.1 ✅ DONE — `standardize_to_reference()`.** Standardise each indicator against the same
   indicator measured in a **non-degraded reference soil** (reference = 1.0, values decrease toward
   0). Source: **Kuzyakov 2020**.
   - **more is better** (default) → reference gets the maximum
   - **less is better** (e.g. bulk density) → the **minimum** is assigned to the undisturbed soil
   - **optimum** (pH, water/air permeability, hydrophobicity) → use the **difference from the
     optimum**, not a monotone scale
-- [ ] **6.2 Wire it as an option throughout** the scoring functions (an alternative to sample-relative
+- [x] **6.2 ✅ DONE — wired via `reference_scoring()` and a `"reference"` type in `score_indicators()`.** Available as an option throughout the scoring functions (an alternative to sample-relative
   `X/X_max`), and document the trade-off: comparability in exchange for **needing a defensible
   non-degraded reference soil** — which Kuzyakov calls the approach's key disadvantage, and which a
   fully converted landscape often lacks.
-- [ ] **6.3 (Optional) Implement `sensitivity_resistance()`.** Kuzyakov's under-used second approach:
+- [x] **6.3 ✅ DONE (was optional) — `sensitivity_resistance()`.** Kuzyakov's under-used second approach:
   plot each parameter's standardised change against the **SOC** change. On the 1:1 identity line the
   parameter degrades at SOC's rate; **faster = sensitive**, **slower = resistant**. Generally
   (micro)biological properties are sensitive, physical properties resistant. ⚠️ Kuzyakov reports it
