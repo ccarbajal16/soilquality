@@ -156,9 +156,10 @@ reference:
 
 - title: Example Data
   desc: >
-    Built-in datasets for examples and testing
+    Two datasets, for two different jobs. `soil_data` for scoring, weighting
+    and aggregation; `soil_structured` for anything that reads the structure
+    between indicators.
   contents:
-  - soil_ucayali
   - soil_data
   - soil_structured
 

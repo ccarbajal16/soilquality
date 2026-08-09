@@ -93,11 +93,11 @@ utils::globalVariables("soil_function_groups")
 #'
 #' \preformatted{
 #' # Load example data
-#' data(soil_ucayali)
+#' data(soil_data)
 #'
 #' # Calculate SQI with standard properties
 #' result <- compute_sqi_properties(
-#'   data = soil_ucayali,
+#'   data = soil_data,
 #'   properties = c("pH", "OM", "N", "P", "K", "CEC"),
 #'   id_column = "SampleID"
 #' )
@@ -128,7 +128,7 @@ utils::globalVariables("soil_function_groups")
 #'
 #' # Calculate SQI with custom rules
 #' result <- compute_sqi_properties(
-#'   data = soil_ucayali,
+#'   data = soil_data,
 #'   properties = names(rules),
 #'   scoring_rules = rules,
 #'   id_column = "SampleID"

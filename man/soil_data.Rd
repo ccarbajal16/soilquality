@@ -3,7 +3,7 @@
 \docType{data}
 \name{soil_data}
 \alias{soil_data}
-\title{Extended Soil Data from Ucayali, Peru}
+\title{Soil Data from Ucayali, Peru}
 \format{
 A data frame with 50 rows and 16 columns:
 \describe{
@@ -33,24 +33,36 @@ Simulated data based on typical soil properties from the Ucayali
 soil_data
 }
 \description{
-An extended dataset containing soil physical, chemical, and fertility properties
-from 50 soil samples collected in the Ucayali region of Peru. This dataset includes
-all properties from \code{\link{soil_ucayali}} plus an additional sulfur (S) measurement.
+Soil physical, chemical and fertility properties from 50 samples in the
+Ucayali region of Peru. This is the package's general-purpose example
+dataset, used throughout the documentation and vignettes.
 }
 \details{
-This dataset extends \code{\link{soil_ucayali}} with sulfur measurements, providing
-a more comprehensive view of soil fertility properties. The soils are generally
-acidic (pH 4-7.5), with moderate organic matter content and variable nutrient levels
-typical of tropical agricultural soils in the Ucayali region.
+The soils are generally acidic (pH 4-7.5), with moderate organic matter and
+variable nutrient levels typical of tropical agricultural soils in the
+Ucayali region.
 
-This dataset can be used to:
-\itemize{
-  \item Demonstrate SQI calculations with an extended set of soil properties
-  \item Test property selection with additional nutrient parameters
-  \item Compare results between standard and extended property sets
-  \item Explore the impact of sulfur in soil quality assessment
+\strong{Choosing between the two example datasets.} The values here are
+simulated with each property drawn independently, so the dataset has almost
+no covariance structure: the largest off-diagonal Spearman correlation is
+0.66 and exactly one pair of indicators clears a 0.6 threshold. That is
+fine, and realistic enough, for demonstrating scoring, weighting and
+aggregation, which treat indicators one at a time.
+
+It is \strong{not} suitable for any method that reads the structure
+\emph{between} indicators -- correlation-network selection, functional
+grouping, redundancy screening. Use \code{\link{soil_structured}} for those.
 }
+\section{A note on this dataset's own soil quality index}{
+
+Running \code{\link{sqi_validate}} on the default recipe applied to this
+data fires the middle-band warning: the resulting index spans roughly
+0.36 to 0.70, so every sample lands in the middle bands and both extreme
+categories are empty. That is the diagnostic working, not a defect, and it
+is a useful thing to see before trusting an index built the same way on
+real data.
 }
+
 \examples{
 # Load the dataset
 data(soil_data)
@@ -73,6 +85,7 @@ print(result)
 
 }
 \seealso{
-\code{\link{soil_ucayali}} for the standard dataset without sulfur
+\code{\link{soil_structured}}, which carries realistic covariance
+  and is the one to use for indicator-selection methods
 }
 \keyword{datasets}

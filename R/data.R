@@ -1,72 +1,8 @@
-#' Example Soil Data from Ucayali, Peru
+#' Soil Data from Ucayali, Peru
 #'
-#' A dataset containing soil physical, chemical, and fertility properties from
-#' 50 soil samples collected in the Ucayali region of Peru. This dataset is
-#' provided as an example for demonstrating the soil quality index (SQI)
-#' calculation workflow.
-#'
-#' @format A data frame with 50 rows and 15 columns:
-#' \describe{
-#'   \item{SampleID}{Character. Unique identifier for each soil sample (UCY001-UCY050)}
-#'   \item{Sand}{Numeric. Sand content as percentage of soil texture (0-100)}
-#'   \item{Silt}{Numeric. Silt content as percentage of soil texture (0-100)}
-#'   \item{Clay}{Numeric. Clay content as percentage of soil texture (0-100)}
-#'   \item{BD}{Numeric. Bulk density in g/cm³}
-#'   \item{pH}{Numeric. Soil pH measured in water (1:1)}
-#'   \item{OM}{Numeric. Organic matter content as percentage}
-#'   \item{SOC}{Numeric. Soil organic carbon content as percentage}
-#'   \item{N}{Numeric. Total nitrogen content as percentage}
-#'   \item{P}{Numeric. Available phosphorus in mg/kg (Olsen method)}
-#'   \item{K}{Numeric. Exchangeable potassium in mg/kg}
-#'   \item{CEC}{Numeric. Cation exchange capacity in cmol/kg}
-#'   \item{Ca}{Numeric. Exchangeable calcium in cmol/kg}
-#'   \item{Mg}{Numeric. Exchangeable magnesium in cmol/kg}
-#'   \item{EC}{Numeric. Electrical conductivity in dS/m}
-#' }
-#'
-#' @details
-#' The dataset represents typical soil properties found in tropical agricultural
-#' soils of the Ucayali region. Values are simulated but based on realistic
-#' ranges for this region. The soils are generally acidic (pH 4-7.5), with
-#' moderate organic matter content and variable nutrient levels.
-#'
-#' This dataset can be used to:
-#' \itemize{
-#'   \item Demonstrate the complete SQI calculation workflow
-#'   \item Test different property selection strategies
-#'   \item Explore various scoring rules and weighting methods
-#'   \item Generate example visualizations
-#' }
-#'
-#' @source Simulated data based on typical soil properties from the Ucayali
-#'   region of Peru.
-#'
-#' @examples
-#' # Load the dataset
-#' data(soil_ucayali)
-#'
-#' # View structure
-#' str(soil_ucayali)
-#'
-#' # Summary statistics
-#' summary(soil_ucayali)
-#'
-#' # Basic SQI calculation with standard properties
-#' \dontrun{
-#' result <- compute_sqi_properties(
-#'   data = soil_ucayali,
-#'   properties = c("pH", "OM", "N", "P", "K", "CEC"),
-#'   id_column = "SampleID"
-#' )
-#' print(result)
-#' }
-"soil_ucayali"
-
-#' Extended Soil Data from Ucayali, Peru
-#'
-#' An extended dataset containing soil physical, chemical, and fertility properties
-#' from 50 soil samples collected in the Ucayali region of Peru. This dataset includes
-#' all properties from \code{\link{soil_ucayali}} plus an additional sulfur (S) measurement.
+#' Soil physical, chemical and fertility properties from 50 samples in the
+#' Ucayali region of Peru. This is the package's general-purpose example
+#' dataset, used throughout the documentation and vignettes.
 #'
 #' @format A data frame with 50 rows and 16 columns:
 #' \describe{
@@ -89,18 +25,28 @@
 #' }
 #'
 #' @details
-#' This dataset extends \code{\link{soil_ucayali}} with sulfur measurements, providing
-#' a more comprehensive view of soil fertility properties. The soils are generally
-#' acidic (pH 4-7.5), with moderate organic matter content and variable nutrient levels
-#' typical of tropical agricultural soils in the Ucayali region.
+#' The soils are generally acidic (pH 4-7.5), with moderate organic matter and
+#' variable nutrient levels typical of tropical agricultural soils in the
+#' Ucayali region.
 #'
-#' This dataset can be used to:
-#' \itemize{
-#'   \item Demonstrate SQI calculations with an extended set of soil properties
-#'   \item Test property selection with additional nutrient parameters
-#'   \item Compare results between standard and extended property sets
-#'   \item Explore the impact of sulfur in soil quality assessment
-#' }
+#' \strong{Choosing between the two example datasets.} The values here are
+#' simulated with each property drawn independently, so the dataset has almost
+#' no covariance structure: the largest off-diagonal Spearman correlation is
+#' 0.66 and exactly one pair of indicators clears a 0.6 threshold. That is
+#' fine, and realistic enough, for demonstrating scoring, weighting and
+#' aggregation, which treat indicators one at a time.
+#'
+#' It is \strong{not} suitable for any method that reads the structure
+#' \emph{between} indicators -- correlation-network selection, functional
+#' grouping, redundancy screening. Use \code{\link{soil_structured}} for those.
+#'
+#' @section A note on this dataset's own soil quality index:
+#' Running \code{\link{sqi_validate}} on the default recipe applied to this
+#' data fires the middle-band warning: the resulting index spans roughly
+#' 0.36 to 0.70, so every sample lands in the middle bands and both extreme
+#' categories are empty. That is the diagnostic working, not a defect, and it
+#' is a useful thing to see before trusting an index built the same way on
+#' real data.
 #'
 #' @source Simulated data based on typical soil properties from the Ucayali
 #'   region of Peru.
@@ -125,17 +71,17 @@
 #' print(result)
 #' }
 #'
-#' @seealso \code{\link{soil_ucayali}} for the standard dataset without sulfur
+#' @seealso \code{\link{soil_structured}}, which carries realistic covariance
+#'   and is the one to use for indicator-selection methods
 "soil_data"
 
 #' Simulated Soil Data with Realistic Covariance Structure
 #'
 #' A dataset of 120 simulated soil samples in which the properties are
 #' \strong{related to one another the way real soil properties are}. It exists
-#' because \code{\link{soil_data}} and \code{\link{soil_ucayali}} do not:
-#' those draw every property independently, so they carry almost no covariance
-#' and cannot exercise any method that works on the relationships
-#' \emph{between} indicators.
+#' because \code{\link{soil_data}} does not: it draws every property
+#' independently, so it carries almost no covariance and cannot exercise any
+#' method that works on the relationships \emph{between} indicators.
 #'
 #' @format A data frame with 120 rows and 16 columns:
 #' \describe{
@@ -222,6 +168,6 @@
 #' }
 #' }
 #'
-#' @seealso \code{\link{soil_data}} and \code{\link{soil_ucayali}}, which are
-#'   simpler but carry no covariance structure
+#' @seealso \code{\link{soil_data}}, which is simpler but carries no
+#'   covariance structure
 "soil_structured"

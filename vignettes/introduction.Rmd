@@ -65,7 +65,7 @@ The typical workflow for calculating SQI involves these steps:
 5. Compute the SQI
 6. Visualize and interpret results
 
-Let's walk through a complete example using the included `soil_ucayali` dataset.
+Let's walk through a complete example using the included `soil_data` dataset.
 
 ### Load the Package and Data
 
@@ -73,13 +73,13 @@ Let's walk through a complete example using the included `soil_ucayali` dataset.
 library(soilquality)
 
 # Load the example dataset
-data(soil_ucayali)
+data(soil_data)
 
 # View the first few rows
-head(soil_ucayali)
+head(soil_data)
 ```
 
-The `soil_ucayali` dataset contains 50 soil samples from the Ucayali region of 
+The `soil_data` dataset contains 50 soil samples from the Ucayali region of 
 Peru, with 14 soil properties including physical, chemical, and fertility 
 indicators.
 
@@ -91,7 +91,7 @@ default settings:
 ```{r basic-sqi}
 # Calculate SQI using standard fertility properties
 result <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = c("pH", "OM", "N", "P", "K", "CEC"),
   id_column = "SampleID"
 )
@@ -225,7 +225,7 @@ soil_property_sets$standard
 
 # Use a pre-defined property set
 result_standard <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = soil_property_sets$standard,
   id_column = "SampleID"
 )
@@ -249,7 +249,7 @@ You can also specify your own custom set of properties:
 physical_props <- c("Sand", "Silt", "Clay", "BD")
 
 result_physical <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = physical_props,
   id_column = "SampleID"
 )
