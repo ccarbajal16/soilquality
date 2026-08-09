@@ -1,3 +1,35 @@
+# soilquality 2.1.0 (development)
+
+First piece of the SEM module, and the one that needed no SEM at all.
+
+### New features
+
+- `check_circularity()` - refuses to let you regress a soil quality index on
+  the indicators that **built** it. An index is a weighted sum of its
+  components, so a model predicting it from those components must fit well:
+  the R-squared is arithmetic, not evidence about soil. Sarapatka et al.
+  (2026) report R-squared = 0.99 from exactly this arrangement and name the
+  cause themselves; Wang et al. (2025) conclude that carbon "affects" an index
+  carbon helped build.
+- Two modes, and the function distinguishes them. **Explanation** uses
+  predictors from outside the index; overlap is an error. **Decomposition** --
+  "which of my components dominates this index?" -- is a fair question with a
+  real answer, available via `allow_components = TRUE`, and the result is
+  labelled so that its fit statistic is not reported as a finding.
+- **Renaming is not laundering.** Name matching alone would miss the commonest
+  version: an index built on `OM` regressed against `SOC`, the same
+  measurement times 1.724. Supply `data` and every predictor is also checked
+  by correlation against every component. On `soil_structured`, `SOC` is
+  flagged as a proxy for **both** `OM` (rho 0.99) and `N` (rho 0.96, through
+  the C:N ratio) -- reporting only the first would understate the
+  entanglement.
+- `sqi_validate()` gains `external_r_max` (default 0.9) and now warns when the
+  "external" criterion is really one of the index's own indicators. That
+  vector arrives unnamed, so the check is numerical. It is the same trap
+  wearing a different hat, and the validation layer was exposed to it.
+
+No new dependencies: this needs `stats::cor()` and set arithmetic.
+
 # soilquality 2.0.0 (development)
 
 ## Breaking change
