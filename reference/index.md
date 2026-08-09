@@ -149,14 +149,17 @@ Shiny-based interactive applications
 
 ## Example Data
 
-Two datasets, for two different jobs. `soil_data` for scoring, weighting
-and aggregation; `soil_structured` for anything that reads the structure
-between indicators.
+Three datasets, for three different jobs. `soil_data` for scoring,
+weighting and aggregation; `soil_structured` for anything reading the
+structure between indicators; `soil_inherent` for design factors and
+nesting.
 
 - [`soil_data`](https://ccarbajal16.github.io/soilquality/reference/soil_data.md)
   : Soil Data from Ucayali, Peru
 - [`soil_structured`](https://ccarbajal16.github.io/soilquality/reference/soil_structured.md)
   : Simulated Soil Data with Realistic Covariance Structure
+- [`soil_inherent`](https://ccarbajal16.github.io/soilquality/reference/soil_inherent.md)
+  : Simulated Soil Data with Inherent Factors and a Nested Design
 
 ## Print Methods
 

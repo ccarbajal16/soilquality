@@ -580,10 +580,15 @@ stack is heavier and used by fewer users.)
   `soil_type`, `land_use_history` or a plot identifier — every column is
   a measured property. That answers Open decision 1 in the negative: the
   function cannot be demonstrated, tested against an injected group
-  effect, or given a runnable example on anything the package ships. **A
-  dataset with inherent factors is the prerequisite.** This is the same
-  failure the companion project hit when `soil_data` could not exercise
-  network selection, and which was fixed by adding `soil_structured`.
+  effect, or given a runnable example on anything the package ships. ✅
+  **RESOLVED 2026-08-09 — `soil_inherent` added** (180 samples, 36
+  plots, 5 per plot; `soil_type`, `land_use_history`, `management`,
+  `PlotID`). Verified two-sided: residualising on the inherent factors
+  removes the soil-type effect (p → 1.00) AND sharpens the management
+  effect (OM: 2e-04 → 6e-23). ICC 0.81–0.99, matching Maaz’s field
+  finding. **Task B is now unblocked.** This was the same failure the
+  companion project hit when `soil_data` could not exercise network
+  selection, and which was fixed by adding `soil_structured`.
 - **2026-08-09** — ⚠️ **The CRAN non-overlap survey is unverified by the
   implementing agent.** No web access; the `SQIpro` function index and
   the “no package does SQI + SEM” claim are taken from this document,

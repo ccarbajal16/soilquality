@@ -1,5 +1,54 @@
 # Changelog
 
+## soilquality 2.2.0 (development)
+
+#### New data
+
+- `soil_inherent` - 180 simulated samples carrying the columns an
+  inherent-property adjustment needs and neither other dataset has:
+  **soil type**, **land-use history**, a **current management** factor
+  and a **plot identifier**. Five samples per plot, 36 plots, fully
+  balanced.
+
+This unblocks `adjust_inherent()`, which was blocked on data rather than
+on code: every column in `soil_data` and `soil_structured` is a measured
+property, so the function could not have been demonstrated, tested
+against an injected effect, or given a runnable example.
+
+#### The property that makes it useful
+
+The three factors are generated separately so that an adjustment can be
+shown to remove one kind of variation and preserve another:
+
+| Factor             | Inherent? | Drives              |
+|--------------------|-----------|---------------------|
+| `soil_type`        | yes       | `Clay`, `CEC`, `pH` |
+| `land_use_history` | yes       | legacy `OM`, `N`    |
+| `management`       | **no**    | `OM`, `P`, `BD`     |
+
+Residualising on the two inherent factors removes the soil-type effect
+*and leaves the management effect standing*. An adjustment that erased
+both would be useless. Here the management signal does not merely
+survive – it **sharpens**, because inherent variation was masking it:
+
+| Indicator | soil_type p  | management p      |
+|-----------|--------------|-------------------|
+| `OM`      | 0.83 → 1.00  | 2e-04 → **6e-23** |
+| `CEC`     | 5e-56 → 1.00 | 0.09 → **8e-07**  |
+| `pH`      | 3e-91 → 1.00 | 0.48 → **5e-03**  |
+
+The R-squared of the inherent model separates the two kinds of
+indicator: `Clay` 0.95, `pH` 0.94, `CEC` 0.88 and `OM` 0.82 are mostly
+inherited, while `P` 0.22 and `BD` 0.19 are mostly managed.
+
+#### It is nested, on purpose
+
+Plot-level variance deliberately exceeds within-plot variance, giving
+intraclass correlations of **0.81 to 0.99**. Maaz et al. (2023) found
+ICC above 0.75 for every indicator: samples within a plot are not
+independent, which invalidates ordinary standard errors, and most soil
+campaigns never check. Tests assert this rather than assuming it.
+
 ## soilquality 2.1.0 (development)
 
 First piece of the SEM module, and the one that needed no SEM at all.

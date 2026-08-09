@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">soilquality</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,57 @@
       <small>Source: <a href="https://github.com/ccarbajal16/soilquality/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.2.0" id="soilquality-220-development">soilquality 2.2.0 (development)<a class="anchor" aria-label="anchor" href="#soilquality-220-development"></a></h2>
+<div class="section level4">
+<h4 id="new-data-2-2-0">New data<a class="anchor" aria-label="anchor" href="#new-data-2-2-0"></a></h4>
+<ul><li>
+<code>soil_inherent</code> - 180 simulated samples carrying the columns an inherent-property adjustment needs and neither other dataset has: <strong>soil type</strong>, <strong>land-use history</strong>, a <strong>current management</strong> factor and a <strong>plot identifier</strong>. Five samples per plot, 36 plots, fully balanced.</li>
+</ul><p>This unblocks <code>adjust_inherent()</code>, which was blocked on data rather than on code: every column in <code>soil_data</code> and <code>soil_structured</code> is a measured property, so the function could not have been demonstrated, tested against an injected effect, or given a runnable example.</p>
+</div>
+<div class="section level4">
+<h4 id="the-property-that-makes-it-useful-2-2-0">The property that makes it useful<a class="anchor" aria-label="anchor" href="#the-property-that-makes-it-useful-2-2-0"></a></h4>
+<p>The three factors are generated separately so that an adjustment can be shown to remove one kind of variation and preserve another:</p>
+<table class="table"><thead><tr><th>Factor</th>
+<th>Inherent?</th>
+<th>Drives</th>
+</tr></thead><tbody><tr><td><code>soil_type</code></td>
+<td>yes</td>
+<td>
+<code>Clay</code>, <code>CEC</code>, <code>pH</code>
+</td>
+</tr><tr><td><code>land_use_history</code></td>
+<td>yes</td>
+<td>legacy <code>OM</code>, <code>N</code>
+</td>
+</tr><tr><td><code>management</code></td>
+<td><strong>no</strong></td>
+<td>
+<code>OM</code>, <code>P</code>, <code>BD</code>
+</td>
+</tr></tbody></table><p>Residualising on the two inherent factors removes the soil-type effect <em>and leaves the management effect standing</em>. An adjustment that erased both would be useless. Here the management signal does not merely survive – it <strong>sharpens</strong>, because inherent variation was masking it:</p>
+<table class="table"><thead><tr><th>Indicator</th>
+<th>soil_type p</th>
+<th>management p</th>
+</tr></thead><tbody><tr><td><code>OM</code></td>
+<td>0.83 → 1.00</td>
+<td>2e-04 → <strong>6e-23</strong>
+</td>
+</tr><tr><td><code>CEC</code></td>
+<td>5e-56 → 1.00</td>
+<td>0.09 → <strong>8e-07</strong>
+</td>
+</tr><tr><td><code>pH</code></td>
+<td>3e-91 → 1.00</td>
+<td>0.48 → <strong>5e-03</strong>
+</td>
+</tr></tbody></table><p>The R-squared of the inherent model separates the two kinds of indicator: <code>Clay</code> 0.95, <code>pH</code> 0.94, <code>CEC</code> 0.88 and <code>OM</code> 0.82 are mostly inherited, while <code>P</code> 0.22 and <code>BD</code> 0.19 are mostly managed.</p>
+</div>
+<div class="section level4">
+<h4 id="it-is-nested-on-purpose-2-2-0">It is nested, on purpose<a class="anchor" aria-label="anchor" href="#it-is-nested-on-purpose-2-2-0"></a></h4>
+<p>Plot-level variance deliberately exceeds within-plot variance, giving intraclass correlations of <strong>0.81 to 0.99</strong>. Maaz et al. (2023) found ICC above 0.75 for every indicator: samples within a plot are not independent, which invalidates ordinary standard errors, and most soil campaigns never check. Tests assert this rather than assuming it.</p>
+</div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.1.0" id="soilquality-210-development">soilquality 2.1.0 (development)<a class="anchor" aria-label="anchor" href="#soilquality-210-development"></a></h2>
 <p>First piece of the SEM module, and the one that needed no SEM at all.</p>

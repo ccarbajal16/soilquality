@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">soilquality</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -407,7 +407,7 @@
 <li>⚠️ <strong>Task D4’s “<code><a href="https://rdrr.io/r/stats/ecdf.html" class="external-link">ecdf()</a></code> then cut at 0–20/…/80–100” needs disambiguating before anyone builds it.</strong> Applying <code><a href="https://rdrr.io/r/stats/ecdf.html" class="external-link">ecdf()</a></code> per <em>indicator</em> as a scoring transform is legitimate. Applying it to the finished index and then cutting quantile bands is <strong>degenerate</strong> — it returns n/5 per band for every possible index. The companion project hit this exact trap in its Phase 3 and the spec had to be corrected. Establish which one Maaz did before implementing.</li>
 </ol></li>
 <li>
-<strong>2026-08-09</strong> — ⚠️ <strong>Task B (<code>adjust_inherent()</code>) is blocked on data, not on code.</strong> Neither <code>soil_data</code> nor <code>soil_structured</code> carries <code>soil_type</code>, <code>land_use_history</code> or a plot identifier — every column is a measured property. That answers Open decision 1 in the negative: the function cannot be demonstrated, tested against an injected group effect, or given a runnable example on anything the package ships. <strong>A dataset with inherent factors is the prerequisite.</strong> This is the same failure the companion project hit when <code>soil_data</code> could not exercise network selection, and which was fixed by adding <code>soil_structured</code>.</li>
+<strong>2026-08-09</strong> — ⚠️ <strong>Task B (<code>adjust_inherent()</code>) is blocked on data, not on code.</strong> Neither <code>soil_data</code> nor <code>soil_structured</code> carries <code>soil_type</code>, <code>land_use_history</code> or a plot identifier — every column is a measured property. That answers Open decision 1 in the negative: the function cannot be demonstrated, tested against an injected group effect, or given a runnable example on anything the package ships. ✅ <strong>RESOLVED 2026-08-09 — <code>soil_inherent</code> added</strong> (180 samples, 36 plots, 5 per plot; <code>soil_type</code>, <code>land_use_history</code>, <code>management</code>, <code>PlotID</code>). Verified two-sided: residualising on the inherent factors removes the soil-type effect (p → 1.00) AND sharpens the management effect (OM: 2e-04 → 6e-23). ICC 0.81–0.99, matching Maaz’s field finding. <strong>Task B is now unblocked.</strong> This was the same failure the companion project hit when <code>soil_data</code> could not exercise network selection, and which was fixed by adding <code>soil_structured</code>.</li>
 <li>
 <strong>2026-08-09</strong> — ⚠️ <strong>The CRAN non-overlap survey is unverified by the implementing agent.</strong> No web access; the <code>SQIpro</code> function index and the “no package does SQI + SEM” claim are taken from this document, not confirmed independently.</li>
 <li>
