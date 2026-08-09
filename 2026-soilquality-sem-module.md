@@ -4,7 +4,7 @@ title: soilquality R package — SEM module for SQI construction and explanation
 domains: [soil-quality, vnv, ml]
 based_on_skills: ["[[skills-forge/soil-quality-index/SKILL]]"]
 study_area: n/a — software (github.com/ccarbajal16/soilquality)
-status: in-progress — C2 shipped; B blocked on data
+status: in-progress — B and C2 shipped; D3 deferred
 created: 2026-08-08
 updated: 2026-08-08
 ---
@@ -239,7 +239,7 @@ run SEM.
 [[sources/2023-maaz-sem-soil-health|Maaz's]] most stealable idea and **it needs no SEM at all** —
 it is a regression residual. None of the additive-index papers in the corpus do it.
 
-- [ ]  **B1 Implement `adjust_inherent()`.**
+- [x]  **B1 ✅ DONE — `adjust_inherent()` shipped in v2.3.0.**
   ```r
   adjust_inherent(data, indicators,
                   inherent = ~ soil_type * land_use_history,
@@ -251,13 +251,13 @@ it is a regression residual. None of the additive-index papers in the corpus do 
   Source: **Maaz 2023** — *"we developed scoring health functions that account for these factors to
   prevent their bias on the overall score"*; land-use history and soil type were the two most
   influential inherent drivers in their region (Crow et al. 2022).
-- [ ]  **B2 Report what the adjustment cost.** For each indicator, the R² of the inherent model —
+- [x]  **B2 ✅ DONE — `$r_squared` per indicator, with a `warn_r_squared` flag.** For each indicator, the R² of the inherent model —
   i.e. how much of its variation was inheritance rather than management. This is genuinely
   informative output, not diagnostics padding.
-- [ ]  **B3 Document the judgement call.** Adjusting removes inherent variation *by design*. If the
+- [x]  **B3 ✅ DONE, with a deliberate divergence.** The default is `method = "residual"`, not `"none"`: calling the function IS the deliberate act, and a no-op default would silently do nothing. The deliberateness lives in `compute_sqi_df(inherent = NULL)` instead. Original text: Adjusting removes inherent variation *by design*. If the
   user's question **is** "which soils are inherently better?", they must not adjust. Make the
   default `method = "none"` so adjustment is always a deliberate act.
-- [ ]  **B4 Wire as an optional pre-scoring step** in the main pipeline; tests on a fixture with a
+- [x]  **B4 ✅ DONE — `compute_sqi_df(inherent = )`, applied before selection, scoring and weighting.** Wired as an optional pre-scoring step in the main pipeline; tests on a fixture with a
   synthetic soil-type effect (adjustment should remove a known injected group difference).
 
 ### Task C — Path models to explain an index + the circularity guard

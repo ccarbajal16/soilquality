@@ -15,6 +15,7 @@ compute_sqi_df(
   reference = NULL,
   select = c("pca", "none", "network"),
   network_args = list(),
+  inherent = NULL,
   ...
 )
 }
@@ -64,6 +65,15 @@ PCA is run and reported in all three cases.}
 \item{network_args}{A named list of arguments forwarded to
 \code{\link{na_select_mds}} when \code{select = "network"}, for example
 \code{list(r_min = 0.5, component = "all")}. Ignored otherwise.}
+
+\item{inherent}{Optional one-sided formula naming inherent soil properties
+-- \code{~ soil_type * land_use_history} -- for which every numeric
+indicator is adjusted \strong{before} selection, scoring and weighting.
+Defaults to \code{NULL}, meaning no adjustment. See
+\code{\link{adjust_inherent}}, and read its warning first: adjusting
+removes inherent variation by design, which is wrong if your question is
+which soils are inherently better. The fitted adjustment is returned as
+\code{$adjustment}.}
 
 \item{...}{Additional arguments (currently unused).}
 }

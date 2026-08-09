@@ -163,6 +163,14 @@ compute_sqi <- function(input_csv,
 #' @param network_args A named list of arguments forwarded to
 #'   \code{\link{na_select_mds}} when \code{select = "network"}, for example
 #'   \code{list(r_min = 0.5, component = "all")}. Ignored otherwise.
+#' @param inherent Optional one-sided formula naming inherent soil properties
+#'   -- \code{~ soil_type * land_use_history} -- for which every numeric
+#'   indicator is adjusted \strong{before} selection, scoring and weighting.
+#'   Defaults to \code{NULL}, meaning no adjustment. See
+#'   \code{\link{adjust_inherent}}, and read its warning first: adjusting
+#'   removes inherent variation by design, which is wrong if your question is
+#'   which soils are inherently better. The fitted adjustment is returned as
+#'   \code{$adjustment}.
 #' @param ... Additional arguments (currently unused).
 #'
 #' @return An object of class "sqi_result" containing:
@@ -246,6 +254,7 @@ compute_sqi_df <- function(df,
                            reference = NULL,
                            select = c("pca", "none", "network"),
                            network_args = list(),
+                           inherent = NULL,
                            ...) {
   method <- match.arg(method)
   select <- match.arg(select)
@@ -268,6 +277,25 @@ compute_sqi_df <- function(df,
     }
     id_data <- df[[id_column]]
     exclude_cols <- id_column
+  }
+
+  # Inherent-property adjustment runs BEFORE anything else touches the
+  # indicators: selection, scoring and weighting must all see the adjusted
+  # values, or the correction would be undone by the step that follows it.
+  adjustment <- NULL
+  if (!is.null(inherent)) {
+    if (!inherits(inherent, "formula")) {
+      stop("inherent must be a one-sided formula naming the inherent ",
+           "factors, for example ~ soil_type * land_use_history")
+    }
+
+    numeric_cols <- vapply(df, is.numeric, logical(1))
+    adjustable <- setdiff(names(df)[numeric_cols],
+                          c(id_column, all.vars(inherent)))
+
+    adjustment <- adjust_inherent(df, indicators = adjustable,
+                                  inherent = inherent)
+    df <- adjustment$data
   }
 
   # Standardize numeric columns (excluding ID column)
@@ -399,7 +427,8 @@ compute_sqi_df <- function(df,
     var_exp = pca_result$var_exp,
     method = method,
     select = select,
-    network = network_result
+    network = network_result,
+    adjustment = adjustment
   )
 
   class(result) <- "sqi_result"
