@@ -423,9 +423,9 @@ favours **centrality** (ecological hubs).
 **Maaz 2023** found by confirmatory factor analysis that the physical/chemical/biological split has
 **no statistical support**. Two methods, two continents, same verdict: group by **function**.
 
-- [ ] **5.1 Add a `groups =` argument** to `pca_select_mds()` and `na_select_mds()` — select within
+- [x] **5.1 ✅ DONE — `groups =` argument** added to `pca_select_mds()` and `na_select_mds()` — select within
   each group rather than across the whole pool. Must default to `NULL` (current behaviour).
-- [ ] **5.2 Ship the five-function default grouping** as exported data, per Yuan (after Li et al. 2023):
+- [x] **5.2 ✅ DONE — shipped as `soil_function_groups`, with `assign_function_groups()` as the mapping helper.** Exported data, per Yuan (after Li et al. 2023):
   **carbon cycling · nutrient cycling · physical structure stability · buffering and filtration
   capacity · soil biodiversity maintenance**. Provide a mapping helper for the common indicator names
   already in `soil_property_sets`.
@@ -443,14 +443,14 @@ favours **centrality** (ecological hubs).
     pH, OM, SOC, N, P, K, CEC, Ca, Mg, EC, S. Note that **soil biodiversity maintenance has no
     measured indicator in this vocabulary** — ship the group, document that it is unpopulated by the
     example data, and do not fabricate a proxy.
-- [ ] **5.3 Implement the norm-value selector** for the grouped PCA route — pick the indicator with
+- [x] **5.3 ✅ DONE — norm-value selector** available as `selector = "norm"`, for the grouped PCA route — pick the indicator with
   the highest **norm value** per group:
   ```
   N_ik = sqrt( sum( u_ik^2 * lambda_k ) )
   ```
   where `u_ik` is the loading of indicator *i* on PC *k* and `lambda_k` the eigenvalue of PC *k*,
   summed over the PCs with eigenvalue ≥ 1. Source: **Yuan 2026 eq. (2)**.
-- [ ] **5.4 Document why not to group by physical/chemical/biological**, citing Maaz's CFA result.
+- [x] **5.4 ✅ DONE — documented in `soil_function_groups`** why not to group by physical/chemical/biological, citing Maaz's CFA result.
 
 ### Phase 6 — Reference-soil standardisation
 **Why:** it is the **only documented escape from SQI incomparability**. Scoring against your own
@@ -475,7 +475,7 @@ cannot be compared across studies.
   separated cleanly on a Luvic Phaeozem but **not** on a Calcic Chernozem — document the limitation.
 
 ### Phase 7 — Documentation, vignette, correctness fixes
-- [ ] **7.1 ❌ CORRECTED — the "within 10 %" rule is NOT implemented. This is a code task, not a doc
+- [x] **7.1 ✅ DONE in Phase 5, as the `within =` argument. ❌ The original task was CORRECTED first: the "within 10 %" rule was NOT implemented. It was a code task, not a doc
   task, and it does not belong in Phase 7.**
   The original task said "document that `pca_select_mds()` implements *within 10 % of the maximum
   loading*". Task 0.1 read the source: **it does not.** `R/pca_mds.R:152-171` does this instead:

@@ -70,6 +70,14 @@ reference:
   - na_select_mds
   - mds_consensus
 
+- title: Functional Grouping
+  desc: >
+    Selecting one indicator per soil function (EMDS) rather than across the
+    whole pool
+  contents:
+  - soil_function_groups
+  - assign_function_groups
+
 - title: AHP Weighting
   desc: >
     Analytic Hierarchy Process for expert-based indicator weighting
