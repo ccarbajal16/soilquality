@@ -157,12 +157,13 @@ reference:
 
 - title: Example Data
   desc: >
-    Two datasets, for two different jobs. `soil_data` for scoring, weighting
-    and aggregation; `soil_structured` for anything that reads the structure
-    between indicators.
+    Three datasets, for three different jobs. `soil_data` for scoring, weighting
+    and aggregation; `soil_structured` for anything reading the structure
+    between indicators; `soil_inherent` for design factors and nesting.
   contents:
   - soil_data
   - soil_structured
+  - soil_inherent
 
 - title: Print Methods
   desc: >
