@@ -14,7 +14,7 @@ including:
 ``` r
 
 library(soilquality)
-data(soil_ucayali)
+data(soil_data)
 ```
 
 ## Property Selection Strategies
@@ -35,16 +35,16 @@ names(soil_property_sets)
 
 # Compare different property sets
 result_basic <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = soil_property_sets$basic,
   id_column = "SampleID"
 )
 
 # Use only fertility properties that exist in the dataset
 fertility_available <- intersect(soil_property_sets$fertility, 
-                                  names(soil_ucayali))
+                                  names(soil_data))
 result_fertility <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = fertility_available,
   id_column = "SampleID"
 )
@@ -55,7 +55,7 @@ cat("Basic properties - Mean SQI:",
 #> Basic properties - Mean SQI: 0.49
 cat("Fertility properties - Mean SQI:", 
     round(mean(result_fertility$results$SQI), 3), "\n")
-#> Fertility properties - Mean SQI: 0.508
+#> Fertility properties - Mean SQI: 0.493
 ```
 
 ### Strategy 2: Domain-Specific Selection
@@ -68,7 +68,7 @@ Select properties based on your research question or management goal:
 erosion_props <- c("Sand", "Silt", "Clay", "BD", "OM")
 
 result_erosion <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = erosion_props,
   id_column = "SampleID"
 )
@@ -77,7 +77,7 @@ result_erosion <- compute_sqi_properties(
 nutrient_props <- c("pH", "OM", "N", "P", "K", "CEC")
 
 result_nutrient <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = nutrient_props,
   id_column = "SampleID"
 )
@@ -96,10 +96,10 @@ Let PCA automatically select the most informative properties:
 ``` r
 
 # Use all available numeric properties
-all_numeric <- names(soil_ucayali)[sapply(soil_ucayali, is.numeric)]
+all_numeric <- names(soil_data)[sapply(soil_data, is.numeric)]
 
 result_all <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = all_numeric,
   id_column = "SampleID"
 )
@@ -107,9 +107,9 @@ result_all <- compute_sqi_properties(
 # See which properties were selected by PCA
 cat("PCA selected:", length(result_all$mds), "indicators from", 
     length(all_numeric), "properties\n")
-#> PCA selected: 8 indicators from 14 properties
+#> PCA selected: 6 indicators from 15 properties
 print(result_all$mds)
-#> [1] "Sand" "Silt" "Ca"   "SOC"  "OM"   "pH"   "Mg"   "P"
+#> [1] "Sand" "Clay" "S"    "K"    "SOC"  "pH"
 ```
 
 ### Strategy 4: Correlation-Based Pre-screening
@@ -119,7 +119,7 @@ Remove highly correlated properties before analysis:
 ``` r
 
 # Calculate correlation matrix
-numeric_data <- soil_ucayali[, sapply(soil_ucayali, is.numeric)]
+numeric_data <- soil_data[, sapply(soil_data, is.numeric)]
 cor_matrix <- cor(numeric_data, use = "complete.obs")
 
 # Find highly correlated pairs (|r| > 0.9)
@@ -142,7 +142,7 @@ if (nrow(high_cor) > 0) {
 reduced_props <- setdiff(all_numeric, c("OM"))
 
 result_reduced <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = reduced_props,
   id_column = "SampleID"
 )
@@ -169,7 +169,7 @@ scoring_rules <- list(
 )
 
 result_higher <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = names(scoring_rules),
   scoring_rules = scoring_rules,
   id_column = "SampleID"
@@ -189,7 +189,7 @@ scoring_rules_lower <- list(
 )
 
 result_lower <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = names(scoring_rules_lower),
   scoring_rules = scoring_rules_lower,
   id_column = "SampleID"
@@ -211,7 +211,7 @@ scoring_rules_opt <- list(
 )
 
 result_opt <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = names(scoring_rules_opt),
   scoring_rules = scoring_rules_opt,
   id_column = "SampleID"
@@ -219,7 +219,7 @@ result_opt <- compute_sqi_properties(
 
 # Compare pH scoring with different optimal values
 result_opt_7 <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = c("pH", "OM", "N", "P"),
   scoring_rules = list(
     pH = optimum_range(optimal = 7.0, tolerance = 1.0),
@@ -260,7 +260,7 @@ scoring_rules_thresh <- list(
 )
 
 result_thresh <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = names(scoring_rules_thresh),
   scoring_rules = scoring_rules_thresh,
   id_column = "SampleID"
@@ -293,7 +293,7 @@ tropical_scoring <- list(
 )
 
 result_tropical <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = names(tropical_scoring),
   scoring_rules = tropical_scoring,
   id_column = "SampleID"
@@ -321,7 +321,7 @@ ahp_matrix <- create_ahp_matrix(indicators, mode = "interactive")
 
 # Use the AHP matrix in SQI calculation
 result_ahp <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = indicators,
   pairwise_matrix = ahp_matrix$matrix,
   id_column = "SampleID"
@@ -365,7 +365,7 @@ cat("\nConsistency Ratio:", round(ahp_result$CR, 4), "\n")
 # the MDS indicators selected by PCA. For this example, we'll calculate SQI
 # with equal weights and show the AHP weights separately.
 result_manual_ahp <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = indicators,
   id_column = "SampleID"
 )
@@ -407,7 +407,7 @@ print(round(ahp_from_ratios$weights, 3))
 
 # Calculate SQI for visualization examples
 result_viz <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = c("pH", "OM", "N", "P", "K", "CEC"),
   id_column = "SampleID"
 )
@@ -424,16 +424,16 @@ plot(result_viz, type = "distribution")
 
 # Calculate SQI with different property sets
 result_physical <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = soil_property_sets$physical,
   id_column = "SampleID"
 )
 
 # Use only chemical properties that exist in the dataset
 chemical_available <- intersect(soil_property_sets$chemical, 
-                                 names(soil_ucayali))
+                                 names(soil_data))
 result_chemical <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = chemical_available,
   id_column = "SampleID"
 )
@@ -499,7 +499,7 @@ boxplot(contributions,
 ``` r
 
 # Save data to CSV
-write.csv(soil_ucayali, "soil_data.csv", row.names = FALSE)
+write.csv(soil_data, "soil_data.csv", row.names = FALSE)
 
 # Calculate SQI from file
 result_from_file <- compute_sqi(
@@ -517,7 +517,7 @@ result_from_file <- compute_sqi(
 
 # Work directly with data frames (no file I/O)
 result_df <- compute_sqi_df(
-  df = soil_ucayali,
+  df = soil_data,
   id_column = "SampleID"
 )
 
@@ -527,8 +527,8 @@ names(sqi_values) <- result_df$results$SampleID
 
 # View top 5 samples by SQI
 head(sort(sqi_values, decreasing = TRUE), 5)
-#>    UCY043    UCY005    UCY001    UCY050    UCY045 
-#> 0.6927483 0.6061193 0.5852834 0.5773329 0.5691887
+#>    UCY031    UCY050    UCY043    UCY016    UCY039 
+#> 0.6119037 0.6072937 0.6041071 0.6039605 0.5916653
 ```
 
 ### Batch Processing Multiple Datasets

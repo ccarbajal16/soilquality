@@ -1,10 +1,8 @@
-# Extended Soil Data from Ucayali, Peru
+# Soil Data from Ucayali, Peru
 
-An extended dataset containing soil physical, chemical, and fertility
-properties from 50 soil samples collected in the Ucayali region of Peru.
-This dataset includes all properties from
-[`soil_ucayali`](https://ccarbajal16.github.io/soilquality/reference/soil_ucayali.md)
-plus an additional sulfur (S) measurement.
+Soil physical, chemical and fertility properties from 50 samples in the
+Ucayali region of Peru. This is the package's general-purpose example
+dataset, used throughout the documentation and vignettes.
 
 ## Usage
 
@@ -87,27 +85,39 @@ of Peru.
 
 ## Details
 
-This dataset extends
-[`soil_ucayali`](https://ccarbajal16.github.io/soilquality/reference/soil_ucayali.md)
-with sulfur measurements, providing a more comprehensive view of soil
-fertility properties. The soils are generally acidic (pH 4-7.5), with
-moderate organic matter content and variable nutrient levels typical of
-tropical agricultural soils in the Ucayali region.
+The soils are generally acidic (pH 4-7.5), with moderate organic matter
+and variable nutrient levels typical of tropical agricultural soils in
+the Ucayali region.
 
-This dataset can be used to:
+**Choosing between the two example datasets.** The values here are
+simulated with each property drawn independently, so the dataset has
+almost no covariance structure: the largest off-diagonal Spearman
+correlation is 0.66 and exactly one pair of indicators clears a 0.6
+threshold. That is fine, and realistic enough, for demonstrating
+scoring, weighting and aggregation, which treat indicators one at a
+time.
 
-- Demonstrate SQI calculations with an extended set of soil properties
+It is **not** suitable for any method that reads the structure *between*
+indicators – correlation-network selection, functional grouping,
+redundancy screening. Use
+[`soil_structured`](https://ccarbajal16.github.io/soilquality/reference/soil_structured.md)
+for those.
 
-- Test property selection with additional nutrient parameters
+## A note on this dataset's own soil quality index
 
-- Compare results between standard and extended property sets
-
-- Explore the impact of sulfur in soil quality assessment
+Running
+[`sqi_validate`](https://ccarbajal16.github.io/soilquality/reference/sqi_validate.md)
+on the default recipe applied to this data fires the middle-band
+warning: the resulting index spans roughly 0.36 to 0.70, so every sample
+lands in the middle bands and both extreme categories are empty. That is
+the diagnostic working, not a defect, and it is a useful thing to see
+before trusting an index built the same way on real data.
 
 ## See also
 
-[`soil_ucayali`](https://ccarbajal16.github.io/soilquality/reference/soil_ucayali.md)
-for the standard dataset without sulfur
+[`soil_structured`](https://ccarbajal16.github.io/soilquality/reference/soil_structured.md),
+which carries realistic covariance and is the one to use for
+indicator-selection methods
 
 ## Examples
 

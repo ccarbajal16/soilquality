@@ -147,12 +147,12 @@ Shiny-based interactive applications
 
 ## Example Data
 
-Built-in datasets for examples and testing
+Two datasets, for two different jobs. `soil_data` for scoring, weighting
+and aggregation; `soil_structured` for anything that reads the structure
+between indicators.
 
-- [`soil_ucayali`](https://ccarbajal16.github.io/soilquality/reference/soil_ucayali.md)
-  : Example Soil Data from Ucayali, Peru
 - [`soil_data`](https://ccarbajal16.github.io/soilquality/reference/soil_data.md)
-  : Extended Soil Data from Ucayali, Peru
+  : Soil Data from Ucayali, Peru
 - [`soil_structured`](https://ccarbajal16.github.io/soilquality/reference/soil_structured.md)
   : Simulated Soil Data with Realistic Covariance Structure
 

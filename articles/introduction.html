@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">soilquality</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -135,7 +135,7 @@ GitHub:</p>
 <li>Visualize and interpret results</li>
 </ol>
 <p>Let’s walk through a complete example using the included
-<code>soil_ucayali</code> dataset.</p>
+<code>soil_data</code> dataset.</p>
 <div class="section level3">
 <h3 id="load-the-package-and-data">Load the Package and Data<a class="anchor" aria-label="anchor" href="#load-the-package-and-data"></a>
 </h3>
@@ -143,19 +143,26 @@ GitHub:</p>
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ccarbajal16/soilquality" class="external-link">soilquality</a></span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Load the example dataset</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">soil_ucayali</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">soil_data</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># View the first few rows</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">soil_ucayali</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="va">soil_data</span><span class="op">)</span></span>
 <span><span class="co">#&gt;   SampleID Sand Silt Clay   BD  pH   OM  SOC     N    P   K  CEC   Ca   Mg   EC</span></span>
 <span><span class="co">#&gt; 1   UCY001 42.4 35.4 22.2 1.47 7.0 2.46 1.24 0.201  7.8 131 10.2 5.51 2.44 0.06</span></span>
 <span><span class="co">#&gt; 2   UCY002 42.7 30.2 27.1 1.47 6.2 2.29 1.22 0.050  4.5 121  9.0 3.56 1.78 0.26</span></span>
 <span><span class="co">#&gt; 3   UCY003 54.6 25.4 20.0 1.40 5.0 2.49 1.13 0.129  6.1 106 15.1 5.83 1.78 0.31</span></span>
 <span><span class="co">#&gt; 4   UCY004 41.9 37.4 20.7 1.20 5.6 2.88 1.07 0.156  7.9 113 14.3 4.80 0.89 0.10</span></span>
 <span><span class="co">#&gt; 5   UCY005 50.1 30.3 19.6 1.33 4.9 4.24 1.38 0.105 10.0 118  7.5 6.48 2.27 0.30</span></span>
-<span><span class="co">#&gt; 6   UCY006 49.5 31.8 18.7 1.31 4.8 2.72 1.77 0.167  3.0  40 11.7 2.75 1.67 0.17</span></span></code></pre></div>
-<p>The <code>soil_ucayali</code> dataset contains 50 soil samples from
-the Ucayali region of Peru, with 14 soil properties including physical,
+<span><span class="co">#&gt; 6   UCY006 49.5 31.8 18.7 1.31 4.8 2.72 1.77 0.167  3.0  40 11.7 2.75 1.67 0.17</span></span>
+<span><span class="co">#&gt;       S</span></span>
+<span><span class="co">#&gt; 1  5.54</span></span>
+<span><span class="co">#&gt; 2  7.20</span></span>
+<span><span class="co">#&gt; 3  8.50</span></span>
+<span><span class="co">#&gt; 4  6.50</span></span>
+<span><span class="co">#&gt; 5 15.50</span></span>
+<span><span class="co">#&gt; 6 12.50</span></span></code></pre></div>
+<p>The <code>soil_data</code> dataset contains 50 soil samples from the
+Ucayali region of Peru, with 14 soil properties including physical,
 chemical, and fertility indicators.</p>
 </div>
 <div class="section level3">
@@ -166,7 +173,7 @@ chemical, and fertility indicators.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Calculate SQI using standard fertility properties</span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pH"</span>, <span class="st">"OM"</span>, <span class="st">"N"</span>, <span class="st">"P"</span>, <span class="st">"K"</span>, <span class="st">"CEC"</span><span class="op">)</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
 <span><span class="op">)</span></span>
@@ -481,7 +488,7 @@ analyses:</p>
 <span></span>
 <span><span class="co"># Use a pre-defined property set</span></span>
 <span><span class="va">result_standard</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="va">soil_property_sets</span><span class="op">$</span><span class="va">standard</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -510,7 +517,7 @@ analyses:</p>
 <span><span class="va">physical_props</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sand"</span>, <span class="st">"Silt"</span>, <span class="st">"Clay"</span>, <span class="st">"BD"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">result_physical</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="va">physical_props</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
 <span><span class="op">)</span></span>

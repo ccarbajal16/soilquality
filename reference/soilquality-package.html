@@ -19,7 +19,7 @@ weighting."><meta property="og:image" content="https://ccarbajal16.github.io/soi
 
     <a class="navbar-brand me-2" href="../index.html">soilquality</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -115,11 +115,11 @@ weighting.</p>
 
 <div class="sourceCode"><pre><code><span></span>
 <span><span class="co"># Load example data</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">soil_ucayali</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">soil_data</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Calculate SQI with standard properties</span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pH"</span>, <span class="st">"OM"</span>, <span class="st">"N"</span>, <span class="st">"P"</span>, <span class="st">"K"</span>, <span class="st">"CEC"</span><span class="op">)</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
 <span><span class="op">)</span></span>
@@ -152,7 +152,7 @@ weighting.</p>
 <span></span>
 <span><span class="co"># Calculate SQI with custom rules</span></span>
 <span><span class="va">result</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">rules</span><span class="op">)</span>,</span>
 <span>  scoring_rules <span class="op">=</span> <span class="va">rules</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>

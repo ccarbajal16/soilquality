@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">soilquality</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,30 @@
       <small>Source: <a href="https://github.com/ccarbajal16/soilquality/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.0.0" id="soilquality-200-development">soilquality 2.0.0 (development)<a class="anchor" aria-label="anchor" href="#soilquality-200-development"></a></h2>
+<div class="section level3">
+<h3 id="breaking-change-2-0-0">Breaking change<a class="anchor" aria-label="anchor" href="#breaking-change-2-0-0"></a></h3>
+<p><strong><code>soil_ucayali</code> has been removed.</strong> Use <code>soil_data</code>, which is a strict superset: the same 50 samples, the same <code>SampleID</code>s, and all fifteen shared columns <strong>identical value for value</strong>, plus a sulfur (<code>S</code>) measurement that <code>soil_ucayali</code> lacked. The dataset carried no information of its own, and shipping both made the reference index look like there were two example datasets to choose between when there was one.</p>
+<p>Migration is a rename:</p>
+<div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="co"># before</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">soil_ucayali</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span><span class="va">soil_ucayali</span>, properties <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pH"</span>, <span class="st">"OM"</span><span class="op">)</span><span class="op">)</span></span>
+<span></span>
+<span><span class="co"># after</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">soil_data</span><span class="op">)</span></span>
+<span><span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span><span class="va">soil_data</span>, properties <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pH"</span>, <span class="st">"OM"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
+<p>One caveat worth stating: code that <strong>auto-detects numeric columns</strong> rather than naming properties explicitly will now see sixteen columns instead of fifteen, because <code>S</code> is present. The selected minimum data set, and therefore the index, can change. Name your properties if that matters to you. The package’s own vignettes were updated on this basis and their results shift accordingly.</p>
+<p>The major version is bumped because this removes an exported object.</p>
+</div>
+<div class="section level3">
+<h3 id="documentation-2-0-0">Documentation<a class="anchor" aria-label="anchor" href="#documentation-2-0-0"></a></h3>
+<ul><li>
+<code>soil_data</code> is retitled from “Extended Soil Data from Ucayali, Peru” — the “Extended” only meant “relative to <code>soil_ucayali</code>” and no longer parses. Its help page now says plainly what it is good for and what it is not: it has almost no covariance structure (largest off-diagonal Spearman rho 0.66, one pair above 0.6), which is fine for scoring, weighting and aggregation, and useless for anything that reads the structure <em>between</em> indicators. Use <code>soil_structured</code> for that.</li>
+<li>The two remaining datasets are now described in the reference index by the job each does, rather than as interchangeable alternatives.</li>
+</ul></div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="1.7.0" id="soilquality-170-development">soilquality 1.7.0 (development)<a class="anchor" aria-label="anchor" href="#soilquality-170-development"></a></h2>
 <p>Completes the upgrade begun in 1.1.0: adequacy testing, the main vignette, and the documentation the earlier phases deferred.</p>

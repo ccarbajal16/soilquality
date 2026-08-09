@@ -4,9 +4,7 @@ A dataset of 120 simulated soil samples in which the properties are
 **related to one another the way real soil properties are**. It exists
 because
 [`soil_data`](https://ccarbajal16.github.io/soilquality/reference/soil_data.md)
-and
-[`soil_ucayali`](https://ccarbajal16.github.io/soilquality/reference/soil_ucayali.md)
-do not: those draw every property independently, so they carry almost no
+does not: it draws every property independently, so it carries almost no
 covariance and cannot exercise any method that works on the
 relationships *between* indicators.
 
@@ -139,10 +137,8 @@ across the whole pool, is worth doing.
 
 ## See also
 
-[`soil_data`](https://ccarbajal16.github.io/soilquality/reference/soil_data.md)
-and
-[`soil_ucayali`](https://ccarbajal16.github.io/soilquality/reference/soil_ucayali.md),
-which are simpler but carry no covariance structure
+[`soil_data`](https://ccarbajal16.github.io/soilquality/reference/soil_data.md),
+which is simpler but carries no covariance structure
 
 ## Examples
 

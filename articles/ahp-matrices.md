@@ -38,14 +38,14 @@ these context-specific priorities into the SQI calculation.
 
 ``` r
 
-data(soil_ucayali)
+data(soil_data)
 
 # Define indicators
 indicators <- c("pH", "OM", "N", "P")
 
 # Calculate SQI with equal weights (default)
 result_equal <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = indicators,
   id_column = "SampleID"
 )
@@ -138,7 +138,7 @@ print(ahp_matrix)
 # The matrix is stored in ahp_matrix$matrix
 # Use it in SQI calculation
 result <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = indicators,
   pairwise_matrix = ahp_matrix$matrix,
   id_column = "SampleID"
@@ -420,7 +420,7 @@ cat("\nCR:", round(tropical_ahp$CR, 4), "\n")
 
 # Calculate SQI (note: pairwise matrix would need to match MDS indicators)
 result_tropical <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = tropical_indicators,
   id_column = "SampleID"
 )
@@ -598,7 +598,7 @@ print(round(ahp_n$weights, 3))
 
 # Calculate SQI with equal weights to show the approach
 result_sqi <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = indicators,
   id_column = "SampleID"
 )
@@ -621,7 +621,7 @@ When possible, validate AHP weights against field observations:
 # Example: Compare SQI with crop yield data
 # Assuming you have yield data
 yield_data <- data.frame(
-  SampleID = soil_ucayali$SampleID,
+  SampleID = soil_data$SampleID,
   Yield = rnorm(50, 3000, 500)  # Example yield data
 )
 

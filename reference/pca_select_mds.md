@@ -233,7 +233,7 @@ print(result$mds)
 
 # View variance explained
 print(result$var_exp)
-#> [1] 5.364949e-01 3.191878e-01 1.052890e-01 3.902825e-02 2.001949e-33
+#> [1] 5.364949e-01 3.191878e-01 1.052890e-01 3.902825e-02 2.080216e-33
 
 # Use custom thresholds
 result2 <- pca_select_mds(soil_std,

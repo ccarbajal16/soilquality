@@ -25,7 +25,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">soilquality</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.7.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -89,7 +89,7 @@ including:</p>
 </ul>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://github.com/ccarbajal16/soilquality" class="external-link">soilquality</a></span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">soil_ucayali</span><span class="op">)</span></span></code></pre></div>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/data.html" class="external-link">data</a></span><span class="op">(</span><span class="va">soil_data</span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="property-selection-strategies">Property Selection Strategies<a class="anchor" aria-label="anchor" href="#property-selection-strategies"></a>
@@ -108,16 +108,16 @@ calculation. The package offers several approaches.</p>
 <span></span>
 <span><span class="co"># Compare different property sets</span></span>
 <span><span class="va">result_basic</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="va">soil_property_sets</span><span class="op">$</span><span class="va">basic</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Use only fertility properties that exist in the dataset</span></span>
 <span><span class="va">fertility_available</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">intersect</a></span><span class="op">(</span><span class="va">soil_property_sets</span><span class="op">$</span><span class="va">fertility</span>, </span>
-<span>                                  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">soil_ucayali</span><span class="op">)</span><span class="op">)</span></span>
+<span>                                  <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">soil_data</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">result_fertility</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="va">fertility_available</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
 <span><span class="op">)</span></span>
@@ -128,7 +128,7 @@ calculation. The package offers several approaches.</p>
 <span><span class="co">#&gt; Basic properties - Mean SQI: 0.49</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"Fertility properties - Mean SQI:"</span>, </span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/Round.html" class="external-link">round</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/mean.html" class="external-link">mean</a></span><span class="op">(</span><span class="va">result_fertility</span><span class="op">$</span><span class="va">results</span><span class="op">$</span><span class="va">SQI</span><span class="op">)</span>, <span class="fl">3</span><span class="op">)</span>, <span class="st">"\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; Fertility properties - Mean SQI: 0.508</span></span></code></pre></div>
+<span><span class="co">#&gt; Fertility properties - Mean SQI: 0.493</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="strategy-2-domain-specific-selection">Strategy 2: Domain-Specific Selection<a class="anchor" aria-label="anchor" href="#strategy-2-domain-specific-selection"></a>
@@ -140,7 +140,7 @@ goal:</p>
 <span><span class="va">erosion_props</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"Sand"</span>, <span class="st">"Silt"</span>, <span class="st">"Clay"</span>, <span class="st">"BD"</span>, <span class="st">"OM"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">result_erosion</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="va">erosion_props</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
 <span><span class="op">)</span></span>
@@ -149,7 +149,7 @@ goal:</p>
 <span><span class="va">nutrient_props</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pH"</span>, <span class="st">"OM"</span>, <span class="st">"N"</span>, <span class="st">"P"</span>, <span class="st">"K"</span>, <span class="st">"CEC"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">result_nutrient</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="va">nutrient_props</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
 <span><span class="op">)</span></span>
@@ -166,10 +166,10 @@ goal:</p>
 <p>Let PCA automatically select the most informative properties:</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Use all available numeric properties</span></span>
-<span><span class="va">all_numeric</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">soil_ucayali</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">soil_ucayali</span>, <span class="va">is.numeric</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">all_numeric</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">soil_data</span><span class="op">)</span><span class="op">[</span><span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">soil_data</span>, <span class="va">is.numeric</span><span class="op">)</span><span class="op">]</span></span>
 <span></span>
 <span><span class="va">result_all</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="va">all_numeric</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
 <span><span class="op">)</span></span>
@@ -177,9 +177,9 @@ goal:</p>
 <span><span class="co"># See which properties were selected by PCA</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/cat.html" class="external-link">cat</a></span><span class="op">(</span><span class="st">"PCA selected:"</span>, <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">result_all</span><span class="op">$</span><span class="va">mds</span><span class="op">)</span>, <span class="st">"indicators from"</span>, </span>
 <span>    <span class="fu"><a href="https://rdrr.io/r/base/length.html" class="external-link">length</a></span><span class="op">(</span><span class="va">all_numeric</span><span class="op">)</span>, <span class="st">"properties\n"</span><span class="op">)</span></span>
-<span><span class="co">#&gt; PCA selected: 8 indicators from 14 properties</span></span>
+<span><span class="co">#&gt; PCA selected: 6 indicators from 15 properties</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/base/print.html" class="external-link">print</a></span><span class="op">(</span><span class="va">result_all</span><span class="op">$</span><span class="va">mds</span><span class="op">)</span></span>
-<span><span class="co">#&gt; [1] "Sand" "Silt" "Ca"   "SOC"  "OM"   "pH"   "Mg"   "P"</span></span></code></pre></div>
+<span><span class="co">#&gt; [1] "Sand" "Clay" "S"    "K"    "SOC"  "pH"</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="strategy-4-correlation-based-pre-screening">Strategy 4: Correlation-Based Pre-screening<a class="anchor" aria-label="anchor" href="#strategy-4-correlation-based-pre-screening"></a>
@@ -187,7 +187,7 @@ goal:</p>
 <p>Remove highly correlated properties before analysis:</p>
 <div class="sourceCode" id="cb5"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Calculate correlation matrix</span></span>
-<span><span class="va">numeric_data</span> <span class="op">&lt;-</span> <span class="va">soil_ucayali</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">soil_ucayali</span>, <span class="va">is.numeric</span><span class="op">)</span><span class="op">]</span></span>
+<span><span class="va">numeric_data</span> <span class="op">&lt;-</span> <span class="va">soil_data</span><span class="op">[</span>, <span class="fu"><a href="https://rdrr.io/r/base/lapply.html" class="external-link">sapply</a></span><span class="op">(</span><span class="va">soil_data</span>, <span class="va">is.numeric</span><span class="op">)</span><span class="op">]</span></span>
 <span><span class="va">cor_matrix</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/stats/cor.html" class="external-link">cor</a></span><span class="op">(</span><span class="va">numeric_data</span>, use <span class="op">=</span> <span class="st">"complete.obs"</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Find highly correlated pairs (|r| &gt; 0.9)</span></span>
@@ -210,7 +210,7 @@ goal:</p>
 <span><span class="va">reduced_props</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">setdiff</a></span><span class="op">(</span><span class="va">all_numeric</span>, <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"OM"</span><span class="op">)</span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">result_reduced</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="va">reduced_props</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
 <span><span class="op">)</span></span></code></pre></div>
@@ -236,7 +236,7 @@ soil property behaviors.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">result_higher</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">scoring_rules</span><span class="op">)</span>,</span>
 <span>  scoring_rules <span class="op">=</span> <span class="va">scoring_rules</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
@@ -254,7 +254,7 @@ soil property behaviors.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">result_lower</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">scoring_rules_lower</span><span class="op">)</span>,</span>
 <span>  scoring_rules <span class="op">=</span> <span class="va">scoring_rules_lower</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
@@ -274,7 +274,7 @@ soil property behaviors.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">result_opt</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">scoring_rules_opt</span><span class="op">)</span>,</span>
 <span>  scoring_rules <span class="op">=</span> <span class="va">scoring_rules_opt</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
@@ -282,7 +282,7 @@ soil property behaviors.</p>
 <span></span>
 <span><span class="co"># Compare pH scoring with different optimal values</span></span>
 <span><span class="va">result_opt_7</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pH"</span>, <span class="st">"OM"</span>, <span class="st">"N"</span>, <span class="st">"P"</span><span class="op">)</span>,</span>
 <span>  scoring_rules <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span></span>
 <span>    pH <span class="op">=</span> <span class="fu"><a href="../reference/optimum_range.html">optimum_range</a></span><span class="op">(</span>optimal <span class="op">=</span> <span class="fl">7.0</span>, tolerance <span class="op">=</span> <span class="fl">1.0</span><span class="op">)</span>,</span>
@@ -321,7 +321,7 @@ soil property behaviors.</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">result_thresh</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">scoring_rules_thresh</span><span class="op">)</span>,</span>
 <span>  scoring_rules <span class="op">=</span> <span class="va">scoring_rules_thresh</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
@@ -353,7 +353,7 @@ assessment:</p>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="va">result_tropical</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">tropical_scoring</span><span class="op">)</span>,</span>
 <span>  scoring_rules <span class="op">=</span> <span class="va">tropical_scoring</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
@@ -380,7 +380,7 @@ indicators.</p>
 <span></span>
 <span><span class="co"># Use the AHP matrix in SQI calculation</span></span>
 <span><span class="va">result_ahp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="va">indicators</span>,</span>
 <span>  pairwise_matrix <span class="op">=</span> <span class="va">ahp_matrix</span><span class="op">$</span><span class="va">matrix</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
@@ -422,7 +422,7 @@ indicators.</p>
 <span><span class="co"># the MDS indicators selected by PCA. For this example, we'll calculate SQI</span></span>
 <span><span class="co"># with equal weights and show the AHP weights separately.</span></span>
 <span><span class="va">result_manual_ahp</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="va">indicators</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
 <span><span class="op">)</span></span>
@@ -464,7 +464,7 @@ matrix):</p>
 <div class="sourceCode" id="cb14"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Calculate SQI for visualization examples</span></span>
 <span><span class="va">result_viz</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pH"</span>, <span class="st">"OM"</span>, <span class="st">"N"</span>, <span class="st">"P"</span>, <span class="st">"K"</span>, <span class="st">"CEC"</span><span class="op">)</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
 <span><span class="op">)</span></span>
@@ -479,16 +479,16 @@ matrix):</p>
 <div class="sourceCode" id="cb15"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Calculate SQI with different property sets</span></span>
 <span><span class="va">result_physical</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="va">soil_property_sets</span><span class="op">$</span><span class="va">physical</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Use only chemical properties that exist in the dataset</span></span>
 <span><span class="va">chemical_available</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/sets.html" class="external-link">intersect</a></span><span class="op">(</span><span class="va">soil_property_sets</span><span class="op">$</span><span class="va">chemical</span>, </span>
-<span>                                 <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">soil_ucayali</span><span class="op">)</span><span class="op">)</span></span>
+<span>                                 <span class="fu"><a href="https://rdrr.io/r/base/names.html" class="external-link">names</a></span><span class="op">(</span><span class="va">soil_data</span><span class="op">)</span><span class="op">)</span></span>
 <span><span class="va">result_chemical</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
-<span>  data <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  data <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  properties <span class="op">=</span> <span class="va">chemical_available</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
 <span><span class="op">)</span></span>
@@ -545,7 +545,7 @@ matrix):</p>
 </h3>
 <div class="sourceCode" id="cb19"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Save data to CSV</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">soil_ucayali</span>, <span class="st">"soil_data.csv"</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
+<span><span class="fu"><a href="https://rdrr.io/r/utils/write.table.html" class="external-link">write.csv</a></span><span class="op">(</span><span class="va">soil_data</span>, <span class="st">"soil_data.csv"</span>, row.names <span class="op">=</span> <span class="cn">FALSE</span><span class="op">)</span></span>
 <span></span>
 <span><span class="co"># Calculate SQI from file</span></span>
 <span><span class="va">result_from_file</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi.html">compute_sqi</a></span><span class="op">(</span></span>
@@ -562,7 +562,7 @@ matrix):</p>
 <div class="sourceCode" id="cb20"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Work directly with data frames (no file I/O)</span></span>
 <span><span class="va">result_df</span> <span class="op">&lt;-</span> <span class="fu"><a href="../reference/compute_sqi_df.html">compute_sqi_df</a></span><span class="op">(</span></span>
-<span>  df <span class="op">=</span> <span class="va">soil_ucayali</span>,</span>
+<span>  df <span class="op">=</span> <span class="va">soil_data</span>,</span>
 <span>  id_column <span class="op">=</span> <span class="st">"SampleID"</span></span>
 <span><span class="op">)</span></span>
 <span></span>
@@ -572,8 +572,8 @@ matrix):</p>
 <span></span>
 <span><span class="co"># View top 5 samples by SQI</span></span>
 <span><span class="fu"><a href="https://rdrr.io/r/utils/head.html" class="external-link">head</a></span><span class="op">(</span><span class="fu"><a href="https://rdrr.io/r/base/sort.html" class="external-link">sort</a></span><span class="op">(</span><span class="va">sqi_values</span>, decreasing <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span>, <span class="fl">5</span><span class="op">)</span></span>
-<span><span class="co">#&gt;    UCY043    UCY005    UCY001    UCY050    UCY045 </span></span>
-<span><span class="co">#&gt; 0.6927483 0.6061193 0.5852834 0.5773329 0.5691887</span></span></code></pre></div>
+<span><span class="co">#&gt;    UCY031    UCY050    UCY043    UCY016    UCY039 </span></span>
+<span><span class="co">#&gt; 0.6119037 0.6072937 0.6041071 0.6039605 0.5916653</span></span></code></pre></div>
 </div>
 <div class="section level3">
 <h3 id="batch-processing-multiple-datasets">Batch Processing Multiple Datasets<a class="anchor" aria-label="anchor" href="#batch-processing-multiple-datasets"></a>
