@@ -64,6 +64,10 @@
 #' @param middle_band_threshold Share of samples in the middle bands above
 #'   which a warning is raised. Defaults to 0.8. Set to \code{NA} to disable
 #'   the warning while still reporting the number.
+#' @param external_r_max Absolute Spearman correlation above which
+#'   \code{external} is reported as being one of the index's own indicators
+#'   rather than an independent criterion. Defaults to 0.9. Set to \code{NA}
+#'   to disable the check. See \code{\link{check_circularity}}.
 #'
 #' @return An object of class \code{sqi_validation}, a list with:
 #'   \describe{
@@ -106,7 +110,8 @@ sqi_validate <- function(x,
                          external = NULL,
                          external_method = c("pearson", "spearman", "kendall"),
                          bands = c(0, 0.2, 0.4, 0.6, 0.8, 1),
-                         middle_band_threshold = 0.8) {
+                         middle_band_threshold = 0.8,
+                         external_r_max = 0.9) {
   external_method <- match.arg(external_method)
 
   sqi <- .extract_sqi(x, "x")
@@ -219,6 +224,12 @@ sqi_validate <- function(x,
       stop("At least 3 paired non-missing values are needed to correlate ",
            "against an external criterion")
     }
+
+    # An "external" criterion that is really one of the index's own indicators
+    # is the circularity trap wearing a different hat. The vector arrives
+    # unnamed, so the check has to be numerical: compare it against every
+    # component the index was built from.
+    .warn_external_circularity(x, external, both, external_r_max)
 
     ct <- suppressWarnings(
       stats::cor.test(sqi_full[both], external[both], method = external_method)
@@ -477,6 +488,52 @@ print.sqi_stability <- function(x, ...) {
   }
 
   invisible(x)
+}
+
+
+# Internal: warn when the "external" criterion is really one of the indicators
+# the index was built from. Correlating an index against its own component is
+# the same trap check_circularity() refuses in a path model, but the vector
+# arrives here unnamed, so it has to be caught numerically.
+.warn_external_circularity <- function(x, external, both, r_max) {
+  if (is.na(r_max) || !inherits(x, "sqi_result")) {
+    return(invisible(NULL))
+  }
+  if (is.null(x$mds) || is.null(x$results)) {
+    return(invisible(NULL))
+  }
+
+  offenders <- character(0)
+
+  for (indicator in x$mds) {
+    if (!indicator %in% names(x$results)) {
+      next
+    }
+    values <- x$results[[indicator]]
+    if (!is.numeric(values) || length(values) != length(external)) {
+      next
+    }
+
+    r <- suppressWarnings(
+      stats::cor(external[both], values[both], method = "spearman",
+                 use = "pairwise.complete.obs")
+    )
+
+    if (!is.na(r) && abs(r) >= r_max) {
+      offenders <- c(offenders, sprintf("%s (rho = %.2f)", indicator, r))
+    }
+  }
+
+  if (length(offenders) > 0) {
+    warning("The external criterion is nearly identical to ",
+            if (length(offenders) == 1) "an indicator " else "indicators ",
+            "the index was built from: ", paste(offenders, collapse = ", "),
+            ". Correlating an index against its own components measures ",
+            "arithmetic, not agreement with an independent outcome. Set ",
+            "external_r_max = NA if this is deliberate.", call. = FALSE)
+  }
+
+  invisible(NULL)
 }
 
 

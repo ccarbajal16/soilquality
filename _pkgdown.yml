@@ -132,6 +132,7 @@ reference:
   contents:
   - sqi_validate
   - sqi_stability
+  - check_circularity
 
 - title: Property Sets and Standard Rules
   desc: >
@@ -172,6 +173,7 @@ reference:
   - print.sqi_validation
   - print.sqi_stability
   - print.pca_adequacy
+  - print.sqi_circularity
 
 articles:
 - title: Getting Started

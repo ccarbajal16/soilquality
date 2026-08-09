@@ -10,7 +10,8 @@ sqi_validate(
   external = NULL,
   external_method = c("pearson", "spearman", "kendall"),
   bands = c(0, 0.2, 0.4, 0.6, 0.8, 1),
-  middle_band_threshold = 0.8
+  middle_band_threshold = 0.8,
+  external_r_max = 0.9
 )
 }
 \arguments{
@@ -35,6 +36,11 @@ Defaults to the conventional five soil-health categories,
 \item{middle_band_threshold}{Share of samples in the middle bands above
 which a warning is raised. Defaults to 0.8. Set to \code{NA} to disable
 the warning while still reporting the number.}
+
+\item{external_r_max}{Absolute Spearman correlation above which
+\code{external} is reported as being one of the index's own indicators
+rather than an independent criterion. Defaults to 0.9. Set to \code{NA}
+to disable the check. See \code{\link{check_circularity}}.}
 }
 \value{
 An object of class \code{sqi_validation}, a list with:
