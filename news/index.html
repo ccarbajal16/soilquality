@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">soilquality</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.0.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.1.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -38,6 +38,23 @@
       <small>Source: <a href="https://github.com/ccarbajal16/soilquality/blob/master/NEWS.md" class="external-link"><code>NEWS.md</code></a></small>
     </div>
 
+    <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.1.0" id="soilquality-210-development">soilquality 2.1.0 (development)<a class="anchor" aria-label="anchor" href="#soilquality-210-development"></a></h2>
+<p>First piece of the SEM module, and the one that needed no SEM at all.</p>
+<div class="section level4">
+<h4 id="new-features-2-1-0">New features<a class="anchor" aria-label="anchor" href="#new-features-2-1-0"></a></h4>
+<ul><li>
+<code><a href="../reference/check_circularity.html">check_circularity()</a></code> - refuses to let you regress a soil quality index on the indicators that <strong>built</strong> it. An index is a weighted sum of its components, so a model predicting it from those components must fit well: the R-squared is arithmetic, not evidence about soil. Sarapatka et al.
+<ol start="2026" style="list-style-type: decimal"><li>report R-squared = 0.99 from exactly this arrangement and name the cause themselves; Wang et al. (2025) conclude that carbon “affects” an index carbon helped build.</li>
+</ol></li>
+<li>Two modes, and the function distinguishes them. <strong>Explanation</strong> uses predictors from outside the index; overlap is an error. <strong>Decomposition</strong> – “which of my components dominates this index?” – is a fair question with a real answer, available via <code>allow_components = TRUE</code>, and the result is labelled so that its fit statistic is not reported as a finding.</li>
+<li>
+<strong>Renaming is not laundering.</strong> Name matching alone would miss the commonest version: an index built on <code>OM</code> regressed against <code>SOC</code>, the same measurement times 1.724. Supply <code>data</code> and every predictor is also checked by correlation against every component. On <code>soil_structured</code>, <code>SOC</code> is flagged as a proxy for <strong>both</strong> <code>OM</code> (rho 0.99) and <code>N</code> (rho 0.96, through the C:N ratio) – reporting only the first would understate the entanglement.</li>
+<li>
+<code><a href="../reference/sqi_validate.html">sqi_validate()</a></code> gains <code>external_r_max</code> (default 0.9) and now warns when the “external” criterion is really one of the index’s own indicators. That vector arrives unnamed, so the check is numerical. It is the same trap wearing a different hat, and the validation layer was exposed to it.</li>
+</ul><p>No new dependencies: this needs <code><a href="https://rdrr.io/r/stats/cor.html" class="external-link">stats::cor()</a></code> and set arithmetic.</p>
+</div>
+</div>
     <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.0.0" id="soilquality-200-development">soilquality 2.0.0 (development)<a class="anchor" aria-label="anchor" href="#soilquality-200-development"></a></h2>
 <div class="section level3">

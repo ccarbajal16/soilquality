@@ -460,6 +460,8 @@ conclusion survives a change of recipe
   : Validate a Soil Quality Index
 - [`sqi_stability()`](https://ccarbajal16.github.io/soilquality/reference/sqi_stability.md)
   : Test whether a conclusion survives a change of index recipe
+- [`check_circularity()`](https://ccarbajal16.github.io/soilquality/reference/check_circularity.md)
+  : Detect circularity between an index and its predictors
 
 ## Property Sets and Standard Rules
 
@@ -513,6 +515,8 @@ S3 print methods for custom objects
   : Print method for sqi_stability objects
 - [`print(`*`<pca_adequacy>`*`)`](https://ccarbajal16.github.io/soilquality/reference/print.pca_adequacy.md)
   : Print method for pca_adequacy objects
+- [`print(`*`<sqi_circularity>`*`)`](https://ccarbajal16.github.io/soilquality/reference/print.sqi_circularity.md)
+  : Print method for sqi_circularity objects
 
 # Articles
 

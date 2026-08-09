@@ -15,7 +15,8 @@ sqi_validate(
   external = NULL,
   external_method = c("pearson", "spearman", "kendall"),
   bands = c(0, 0.2, 0.4, 0.6, 0.8, 1),
-  middle_band_threshold = 0.8
+  middle_band_threshold = 0.8,
+  external_r_max = 0.9
 )
 ```
 
@@ -55,6 +56,13 @@ sqi_validate(
   Share of samples in the middle bands above which a warning is raised.
   Defaults to 0.8. Set to `NA` to disable the warning while still
   reporting the number.
+
+- external_r_max:
+
+  Absolute Spearman correlation above which `external` is reported as
+  being one of the index's own indicators rather than an independent
+  criterion. Defaults to 0.9. Set to `NA` to disable the check. See
+  [`check_circularity`](https://ccarbajal16.github.io/soilquality/reference/check_circularity.md).
 
 ## Value
 

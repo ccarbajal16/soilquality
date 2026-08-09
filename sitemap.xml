@@ -1,5 +1,6 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
 <url><loc>https://ccarbajal16.github.io/soilquality/2026-soilquality-package-upgrade.html</loc></url>
+<url><loc>https://ccarbajal16.github.io/soilquality/2026-soilquality-sem-module.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/404.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/LICENSE-text.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/articles/advanced-usage.html</loc></url>
@@ -12,6 +13,7 @@
 <url><loc>https://ccarbajal16.github.io/soilquality/news/index.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/ahp_weights.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/assign_function_groups.html</loc></url>
+<url><loc>https://ccarbajal16.github.io/soilquality/reference/check_circularity.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/compute_sqi.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/compute_sqi_df.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/compute_sqi_properties.html</loc></url>
@@ -30,6 +32,7 @@
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/print.ahp_matrix.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/print.pca_adequacy.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/print.scoring_rule.html</loc></url>
+<url><loc>https://ccarbajal16.github.io/soilquality/reference/print.sqi_circularity.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/print.sqi_stability.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/print.sqi_validation.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/ratio_to_saaty.html</loc></url>
