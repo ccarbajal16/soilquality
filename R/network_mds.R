@@ -103,9 +103,14 @@
 #'   which indicators are retained. Defaults to 0.10, i.e. "within 10 percent".
 #' @param screen If \code{TRUE} (the default), drop a retained indicator when
 #'   it still correlates at \code{>= r_min} with a retained indicator of higher
-#'   centrality. \strong{Note:} \code{\link{pca_select_mds}} performs no
-#'   equivalent screening -- it takes one indicator per component -- so this is
-#'   an additional step in this route, not a mirror of the other one.
+#'   centrality \strong{in the same module}. The screen deliberately does not
+#'   run across modules: they exist to partition the indicator space so each
+#'   contributes a representative, and screening globally would discard those
+#'   representatives as redundant with the single most central indicator,
+#'   collapsing the partition the module step just built. \strong{Note:}
+#'   \code{\link{pca_select_mds}} performs no equivalent screening -- it takes
+#'   one indicator per component -- so this is an additional step in this
+#'   route, not a mirror of the other one.
 #' @param component How to compute eigenvector centrality when the network is
 #'   disconnected. \code{"largest"} (the default) computes it over the whole
 #'   graph, which is Yuan's literal procedure and drives the centrality of
@@ -233,15 +238,20 @@ na_select_mds <- function(data,
 
   comp <- igraph::components(g)
 
-  if (comp$no > 1 && component == "largest") {
-    warning("The correlation network has ", comp$no, " disconnected ",
-            "components. With component = \"largest\", eigenvector ",
-            "centrality is driven to 0 for every indicator outside the ",
-            "dominant component, so those modules CANNOT pass the ",
-            "centrality_min filter at any threshold and will be discarded ",
-            "however strong their internal correlation. Pass ",
-            "component = \"all\" to evaluate each component on its own ",
-            "terms, and inspect $modules and $isolated.")
+  # Only a component with structure of its own is worth warning about. A lone
+  # isolated indicator is a component too, but it carries no internal
+  # correlation to erase and is already reported in $isolated.
+  structured_components <- sum(table(comp$membership) > 1)
+
+  if (structured_components > 1 && component == "largest") {
+    warning("The correlation network has ", structured_components,
+            " disconnected components of more than one indicator. With ",
+            "component = \"largest\", eigenvector centrality is driven to 0 ",
+            "for every indicator outside the dominant component, so those ",
+            "modules CANNOT pass the centrality_min filter at any threshold ",
+            "and will be discarded however strong their internal ",
+            "correlation. Pass component = \"all\" to evaluate each ",
+            "component on its own terms, and inspect $modules and $isolated.")
   }
 
   # ---- 2. Communities -------------------------------------------------------
@@ -283,26 +293,30 @@ na_select_mds <- function(data,
          "). Lower centrality_min, or use pca_select_mds().")
   }
 
+  # ---- 4b/5. Within-module retention and screening ---------------------------
+  #
+  # The screen runs WITHIN each module, not across the selected set as a whole.
+  # Modules exist to partition the indicator space so that each contributes a
+  # representative; screening globally would discard those representatives as
+  # redundant with the single most central indicator and collapse the partition
+  # to one indicator, which is what the module step was meant to prevent.
+  screened <- character(0)
+
   selected <- unlist(lapply(kept_modules, function(m) {
     members <- indicators[membership == m]
     module_centrality <- centrality[members]
     cutoff <- (1 - within) * max(module_centrality)
 
-    retained <- members[module_centrality >= cutoff]
+    retained <- .order_indicators(members[module_centrality >= cutoff],
+                                  centrality, strength)
 
-    .order_indicators(retained, centrality, strength)
-  }), use.names = FALSE)
+    if (!screen || length(retained) < 2) {
+      return(retained)
+    }
 
-  # ---- 5. Correlation screen ------------------------------------------------
-  screened <- character(0)
-
-  if (screen && length(selected) > 1) {
-    # Walk the selected set from most to least central, dropping anything that
-    # duplicates an already-accepted indicator.
-    ordered <- .order_indicators(selected, centrality, strength)
     accepted <- character(0)
 
-    for (candidate in ordered) {
+    for (candidate in retained) {
       redundant <- any(vapply(accepted, function(a) {
         !is.na(cors$r[candidate, a]) &&
           abs(cors$r[candidate, a]) >= r_min &&
@@ -311,14 +325,14 @@ na_select_mds <- function(data,
       }, logical(1)))
 
       if (redundant) {
-        screened <- c(screened, candidate)
+        screened <<- c(screened, candidate)
       } else {
         accepted <- c(accepted, candidate)
       }
     }
 
-    selected <- accepted
-  }
+    accepted
+  }), use.names = FALSE)
 
   selected <- .order_indicators(selected, centrality, strength)
 

@@ -140,6 +140,7 @@ reference:
   contents:
   - soil_ucayali
   - soil_data
+  - soil_structured
 
 - title: Print Methods
   desc: >

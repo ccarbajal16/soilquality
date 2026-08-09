@@ -34,9 +34,14 @@ which indicators are retained. Defaults to 0.10, i.e. "within 10 percent".}
 
 \item{screen}{If \code{TRUE} (the default), drop a retained indicator when
 it still correlates at \code{>= r_min} with a retained indicator of higher
-centrality. \strong{Note:} \code{\link{pca_select_mds}} performs no
-equivalent screening -- it takes one indicator per component -- so this is
-an additional step in this route, not a mirror of the other one.}
+centrality \strong{in the same module}. The screen deliberately does not
+run across modules: they exist to partition the indicator space so each
+contributes a representative, and screening globally would discard those
+representatives as redundant with the single most central indicator,
+collapsing the partition the module step just built. \strong{Note:}
+\code{\link{pca_select_mds}} performs no equivalent screening -- it takes
+one indicator per component -- so this is an additional step in this
+route, not a mirror of the other one.}
 
 \item{component}{How to compute eigenvector centrality when the network is
 disconnected. \code{"largest"} (the default) computes it over the whole
