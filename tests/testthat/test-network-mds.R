@@ -360,19 +360,27 @@ test_that("a disconnected network warns", {
   expect_warning(na_select_mds(disconnected_data()), "disconnected")
 })
 
-test_that("component = 'largest' assigns exactly zero outside the dominant one", {
+test_that("component = 'largest' zeroes centrality outside the dominant one", {
   skip_if_not_installed("igraph")
 
-  # Not "close to zero" -- exactly zero. This is why no centrality_min can
-  # rescue a disconnected module, and why the warning is worded as it is.
+  # The centrality of everything outside the dominant component is zero, or
+  # numerically indistinguishable from it.
+  #
+  # An earlier version of this test asserted `centrality == 0` exactly. That
+  # passed on Linux and Windows and FAILED on macOS, whose Accelerate BLAS
+  # returns values around 1e-17 where the reference BLAS returns a hard zero.
+  # The distinction does not matter -- 1e-17 fails any usable centrality_min
+  # just as surely -- but "exactly zero" was a stronger claim than the
+  # arithmetic supports, so the assertion is a tolerance.
   result <- suppressWarnings(na_select_mds(disconnected_data(),
                                            component = "largest"))
 
-  zeroed <- result$centrality[result$centrality == 0]
-  expect_gte(length(zeroed), 3)
+  negligible <- result$centrality[result$centrality < 1e-8]
+  expect_gte(length(negligible), 3)
 
-  # An entire clique correlating internally above 0.95 is discarded.
-  discarded <- names(zeroed)
+  # An entire clique correlating internally above 0.95 is discarded, and no
+  # threshold in [0, 1] could have retained it.
+  discarded <- names(negligible)
   expect_gt(abs(result$correlation[discarded[1], discarded[2]]), 0.95)
   expect_false(any(discarded %in% result$mds))
 })

@@ -54,12 +54,13 @@
 #' never reject anything.
 #'
 #' The cost is severe and not merely theoretical. When the network splits into
-#' disconnected components, eigenvector centrality assigns \strong{exactly
-#' zero} to every node outside the dominant component -- not a small number, an
-#' exact zero. A group of three indicators correlating with each other at 0.98
-#' will be discarded in its entirety, and \strong{no value of
-#' \code{centrality_min} can rescue it}, because nothing is above zero. This
-#' was measured during development, not inferred.
+#' disconnected components, eigenvector centrality drives every node outside
+#' the dominant component to \strong{zero, or to a value indistinguishable
+#' from it} -- around \eqn{10^{-17}}, depending on the BLAS implementation.
+#' A group of three indicators correlating with each other at 0.98 will be
+#' discarded in its entirety, and \strong{no usable value of
+#' \code{centrality_min} can rescue it}. This was measured during development,
+#' not inferred.
 #'
 #' Yuan's procedure implicitly assumes a connected network. When yours is not,
 #' set \code{component = "all"} to compute centrality separately within each
@@ -107,8 +108,8 @@
 #'   an additional step in this route, not a mirror of the other one.
 #' @param component How to compute eigenvector centrality when the network is
 #'   disconnected. \code{"largest"} (the default) computes it over the whole
-#'   graph, which is Yuan's literal procedure and assigns exactly zero to
-#'   everything outside the dominant component. \code{"all"} computes it
+#'   graph, which is Yuan's literal procedure and drives the centrality of
+#'   everything outside the dominant component to zero. \code{"all"} computes it
 #'   separately within each connected component, normalised per component, so
 #'   that a well-structured but disconnected group of indicators can still be
 #'   selected. Has no effect on a connected network.
@@ -235,7 +236,7 @@ na_select_mds <- function(data,
   if (comp$no > 1 && component == "largest") {
     warning("The correlation network has ", comp$no, " disconnected ",
             "components. With component = \"largest\", eigenvector ",
-            "centrality is exactly 0 for every indicator outside the ",
+            "centrality is driven to 0 for every indicator outside the ",
             "dominant component, so those modules CANNOT pass the ",
             "centrality_min filter at any threshold and will be discarded ",
             "however strong their internal correlation. Pass ",

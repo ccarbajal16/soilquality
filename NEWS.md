@@ -26,12 +26,14 @@ variance.
   local scope that leaves the caller's random stream untouched. Vary it to
   find out whether a selection is genuinely robust; stability at one seed is
   not evidence.
-- **On a disconnected network, eigenvector centrality is exactly zero outside
-  the dominant component.** A clique of three indicators correlating at 0.98
-  was discarded entire, and no `centrality_min` could rescue it. The new
+- **On a disconnected network, eigenvector centrality goes to zero outside the
+  dominant component** -- exactly zero under the reference BLAS, around 1e-17
+  under macOS Accelerate; the distinction is immaterial, since neither passes
+  a usable threshold. A clique of three indicators correlating at 0.98 was
+  discarded entire, and no `centrality_min` could rescue it. The new
   `component = "all"` computes centrality within each connected component so
   each sub-network is judged on its own terms; the default reproduces the
-  published behaviour, and a warning now states the consequence exactly.
+  published behaviour, and a warning now states the consequence.
 
 ### Note on the example data
 `soil_data` is simulated from independent draws and carries almost no
