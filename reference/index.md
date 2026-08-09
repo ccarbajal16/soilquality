@@ -100,6 +100,8 @@ from index incomparability
   : Standardise an indicator against a non-degraded reference soil
 - [`sensitivity_resistance()`](https://ccarbajal16.github.io/soilquality/reference/sensitivity_resistance.md)
   : Classify indicators as sensitive or resistant to degradation
+- [`adjust_inherent()`](https://ccarbajal16.github.io/soilquality/reference/adjust_inherent.md)
+  : Adjust indicators for inherent soil properties
 
 ## Aggregation
 
@@ -177,3 +179,5 @@ S3 print methods for custom objects
   : Print method for pca_adequacy objects
 - [`print(`*`<sqi_circularity>`*`)`](https://ccarbajal16.github.io/soilquality/reference/print.sqi_circularity.md)
   : Print method for sqi_circularity objects
+- [`print(`*`<inherent_adjustment>`*`)`](https://ccarbajal16.github.io/soilquality/reference/print.inherent_adjustment.md)
+  : Print method for inherent_adjustment objects

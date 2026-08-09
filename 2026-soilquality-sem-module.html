@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="index.html">soilquality</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -64,13 +64,13 @@
 <td>
 <strong>none</strong> ⭐</td>
 <td>sits exactly in the gap: SEM packages don’t know what an SQI is; SQI packages don’t do path models</td>
-</tr><tr><td><strong><code>adjust_inherent()</code></strong></td>
+</tr><tr><td><strong><code><a href="reference/adjust_inherent.html">adjust_inherent()</a></code></strong></td>
 <td><strong>none</strong></td>
 <td>it is <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> residuals — the novelty is the <em>framing</em> (adjust for soil type × land-use history <strong>before</strong> scoring), not the arithmetic</td>
 </tr><tr><td><strong><code>weights_from_cfa()</code></strong></td>
 <td><strong>none</strong></td>
 <td>nobody connects <code>lavaan</code> loadings to SQI weights, because nobody has both halves</td>
-</tr></tbody></table><p>⚠️ Honest caveat on <code>adjust_inherent()</code>: a reviewer can fairly say <em>“that’s just residuals”</em>. Its value is being an opinionated, documented, correctly-defaulted step in an SQI pipeline (<code>method = "none"</code> by default, so adjusting is deliberate). Do not oversell it as a new method — sell it as the step [[sources/2023-maaz-sem-soil-health|Maaz]] showed matters and that <strong>no additive-index paper in the corpus performs</strong>.</p>
+</tr></tbody></table><p>⚠️ Honest caveat on <code><a href="reference/adjust_inherent.html">adjust_inherent()</a></code>: a reviewer can fairly say <em>“that’s just residuals”</em>. Its value is being an opinionated, documented, correctly-defaulted step in an SQI pipeline (<code>method = "none"</code> by default, so adjusting is deliberate). Do not oversell it as a new method — sell it as the step [[sources/2023-maaz-sem-soil-health|Maaz]] showed matters and that <strong>no additive-index paper in the corpus performs</strong>.</p>
 <p>Applied to the task list below:</p>
 <table class="table"><colgroup><col width="33%"><col width="33%"><col width="33%"></colgroup><thead><tr><th>Task</th>
 <th>Needs SQI knowledge?</th>
@@ -79,7 +79,7 @@
 <td>
 <strong>yes</strong> — needs the indicators that <em>constructed</em> the index</td>
 <td>✅ <strong>BUILD</strong> ⭐</td>
-</tr><tr><td><strong>B <code>adjust_inherent()</code></strong></td>
+</tr><tr><td><strong>B <code><a href="reference/adjust_inherent.html">adjust_inherent()</a></code></strong></td>
 <td>
 <strong>yes</strong> — a pre-scoring step of the SQI pipeline</td>
 <td>✅ <strong>BUILD</strong> ⭐</td>
@@ -201,7 +201,7 @@
 <li>
 <strong>Out of scope (non-goals):</strong> implementing estimators; automatic model specification/search (dangerous and indefensible); Bayesian SEM; spatial SEM; teaching SEM in the docs beyond what is needed to use the functions safely.</li>
 <li>
-<strong>First slice (revised):</strong> <strong>Task B (<code>adjust_inherent()</code>) + Task C2 (<code><a href="reference/check_circularity.html">check_circularity()</a></code>).</strong> These two pass the scoping rule most cleanly, need no SEM dependency at all, and exist nowhere else. Task A follows only if it earns its place. Neither requires <code>lavaan</code> or <code>plspm</code>. Together they deliver most of the practical value of [[sources/2023-maaz-sem-soil-health|Maaz]] to users with ordinary sample sizes, and they make the later tasks safe.</li>
+<strong>First slice (revised):</strong> <strong>Task B (<code><a href="reference/adjust_inherent.html">adjust_inherent()</a></code>) + Task C2 (<code><a href="reference/check_circularity.html">check_circularity()</a></code>).</strong> These two pass the scoping rule most cleanly, need no SEM dependency at all, and exist nowhere else. Task A follows only if it earns its place. Neither requires <code>lavaan</code> or <code>plspm</code>. Together they deliver most of the practical value of [[sources/2023-maaz-sem-soil-health|Maaz]] to users with ordinary sample sizes, and they make the later tasks safe.</li>
 </ul></div>
 <div class="section level2">
 <h2 id="warning-the-implementing-agent-has-no-wiki">⚠️ The implementing agent has no wiki<a class="anchor" aria-label="anchor" href="#warning-the-implementing-agent-has-no-wiki"></a></h2>
@@ -257,16 +257,16 @@
 <h3 id="task-b--inherent-property-adjustment-star-best-valueeffort-in-the-module">Task B — Inherent-property adjustment ⭐ best value/effort in the module<a class="anchor" aria-label="anchor" href="#task-b--inherent-property-adjustment-star-best-valueeffort-in-the-module"></a></h3>
 <p><strong>Why:</strong> a soil should not be scored down for being what its parent material made it. This is [[sources/2023-maaz-sem-soil-health|Maaz’s]] most stealable idea and <strong>it needs no SEM at all</strong> — it is a regression residual. None of the additive-index papers in the corpus do it.</p>
 <ul class="task-list"><li>
-<p><label><input type="checkbox"><strong>B1 Implement <code>adjust_inherent()</code>.</strong></label></p>
+<p><label><input type="checkbox" checked><strong>B1 ✅ DONE — <code><a href="reference/adjust_inherent.html">adjust_inherent()</a></code> shipped in v2.3.0.</strong></label></p>
 <div class="sourceCode" id="cb1"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="fu">adjust_inherent</span><span class="op">(</span><span class="va">data</span>, <span class="va">indicators</span>,</span>
+<code class="sourceCode R"><span><span class="fu"><a href="reference/adjust_inherent.html">adjust_inherent</a></span><span class="op">(</span><span class="va">data</span>, <span class="va">indicators</span>,</span>
 <span>                inherent <span class="op">=</span> <span class="op">~</span> <span class="va">soil_type</span> <span class="op">*</span> <span class="va">land_use_history</span>,</span>
 <span>                method <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"residual"</span>, <span class="st">"none"</span><span class="op">)</span><span class="op">)</span></span></code></pre></div>
 <p>Regress each indicator on the inherent factors and return the <strong>residuals</strong> (recentred on the indicator mean so scoring functions still behave), plus the fitted models for inspection. Source: <strong>Maaz 2023</strong> — <em>“we developed scoring health functions that account for these factors to prevent their bias on the overall score”</em>; land-use history and soil type were the two most influential inherent drivers in their region (Crow et al. 2022).</p>
 </li>
-<li><p><label><input type="checkbox"><strong>B2 Report what the adjustment cost.</strong> For each indicator, the R² of the inherent model — i.e. how much of its variation was inheritance rather than management. This is genuinely informative output, not diagnostics padding.</label></p></li>
-<li><p><label><input type="checkbox"><strong>B3 Document the judgement call.</strong> Adjusting removes inherent variation <em>by design</em>. If the user’s question <strong>is</strong> “which soils are inherently better?”, they must not adjust. Make the default <code>method = "none"</code> so adjustment is always a deliberate act.</label></p></li>
-<li><p><label><input type="checkbox"><strong>B4 Wire as an optional pre-scoring step</strong> in the main pipeline; tests on a fixture with a synthetic soil-type effect (adjustment should remove a known injected group difference).</label></p></li>
+<li><p><label><input type="checkbox" checked><strong>B2 ✅ DONE — <code>$r_squared</code> per indicator, with a <code>warn_r_squared</code> flag.</strong> For each indicator, the R² of the inherent model — i.e. how much of its variation was inheritance rather than management. This is genuinely informative output, not diagnostics padding.</label></p></li>
+<li><p><label><input type="checkbox" checked><strong>B3 ✅ DONE, with a deliberate divergence.</strong> The default is <code>method = "residual"</code>, not <code>"none"</code>: calling the function IS the deliberate act, and a no-op default would silently do nothing. The deliberateness lives in <code>compute_sqi_df(inherent = NULL)</code> instead. Original text: Adjusting removes inherent variation <em>by design</em>. If the user’s question <strong>is</strong> “which soils are inherently better?”, they must not adjust. Make the default <code>method = "none"</code> so adjustment is always a deliberate act.</label></p></li>
+<li><p><label><input type="checkbox" checked><strong>B4 ✅ DONE — <code>compute_sqi_df(inherent = )</code>, applied before selection, scoring and weighting.</strong> Wired as an optional pre-scoring step in the main pipeline; tests on a fixture with a synthetic soil-type effect (adjustment should remove a known injected group difference).</label></p></li>
 </ul></div>
 <div class="section level3">
 <h3 id="task-c--path-models-to-explain-an-index--the-circularity-guard">Task C — Path models to explain an index + the circularity guard<a class="anchor" aria-label="anchor" href="#task-c--path-models-to-explain-an-index--the-circularity-guard"></a></h3>
@@ -407,7 +407,7 @@
 <li>⚠️ <strong>Task D4’s “<code><a href="https://rdrr.io/r/stats/ecdf.html" class="external-link">ecdf()</a></code> then cut at 0–20/…/80–100” needs disambiguating before anyone builds it.</strong> Applying <code><a href="https://rdrr.io/r/stats/ecdf.html" class="external-link">ecdf()</a></code> per <em>indicator</em> as a scoring transform is legitimate. Applying it to the finished index and then cutting quantile bands is <strong>degenerate</strong> — it returns n/5 per band for every possible index. The companion project hit this exact trap in its Phase 3 and the spec had to be corrected. Establish which one Maaz did before implementing.</li>
 </ol></li>
 <li>
-<strong>2026-08-09</strong> — ⚠️ <strong>Task B (<code>adjust_inherent()</code>) is blocked on data, not on code.</strong> Neither <code>soil_data</code> nor <code>soil_structured</code> carries <code>soil_type</code>, <code>land_use_history</code> or a plot identifier — every column is a measured property. That answers Open decision 1 in the negative: the function cannot be demonstrated, tested against an injected group effect, or given a runnable example on anything the package ships. ✅ <strong>RESOLVED 2026-08-09 — <code>soil_inherent</code> added</strong> (180 samples, 36 plots, 5 per plot; <code>soil_type</code>, <code>land_use_history</code>, <code>management</code>, <code>PlotID</code>). Verified two-sided: residualising on the inherent factors removes the soil-type effect (p → 1.00) AND sharpens the management effect (OM: 2e-04 → 6e-23). ICC 0.81–0.99, matching Maaz’s field finding. <strong>Task B is now unblocked.</strong> This was the same failure the companion project hit when <code>soil_data</code> could not exercise network selection, and which was fixed by adding <code>soil_structured</code>.</li>
+<strong>2026-08-09</strong> — ⚠️ <strong>Task B (<code><a href="reference/adjust_inherent.html">adjust_inherent()</a></code>) is blocked on data, not on code.</strong> Neither <code>soil_data</code> nor <code>soil_structured</code> carries <code>soil_type</code>, <code>land_use_history</code> or a plot identifier — every column is a measured property. That answers Open decision 1 in the negative: the function cannot be demonstrated, tested against an injected group effect, or given a runnable example on anything the package ships. ✅ <strong>RESOLVED 2026-08-09 — <code>soil_inherent</code> added</strong> (180 samples, 36 plots, 5 per plot; <code>soil_type</code>, <code>land_use_history</code>, <code>management</code>, <code>PlotID</code>). Verified two-sided: residualising on the inherent factors removes the soil-type effect (p → 1.00) AND sharpens the management effect (OM: 2e-04 → 6e-23). ICC 0.81–0.99, matching Maaz’s field finding. <strong>Task B is now unblocked.</strong> This was the same failure the companion project hit when <code>soil_data</code> could not exercise network selection, and which was fixed by adding <code>soil_structured</code>.</li>
 <li>
 <strong>2026-08-09</strong> — ⚠️ <strong>The CRAN non-overlap survey is unverified by the implementing agent.</strong> No web access; the <code>SQIpro</code> function index and the “no package does SQI + SEM” claim are taken from this document, not confirmed independently.</li>
 <li>

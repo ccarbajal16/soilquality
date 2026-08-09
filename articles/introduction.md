@@ -251,6 +251,9 @@ print(result)
 #> $network
 #> NULL
 #> 
+#> $adjustment
+#> NULL
+#> 
 #> attr(,"class")
 #> [1] "sqi_result"
 ```

@@ -11,6 +11,7 @@
 <url><loc>https://ccarbajal16.github.io/soilquality/authors.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/index.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/news/index.html</loc></url>
+<url><loc>https://ccarbajal16.github.io/soilquality/reference/adjust_inherent.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/ahp_weights.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/assign_function_groups.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/check_circularity.html</loc></url>
@@ -30,6 +31,7 @@
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/plot_sqi_report.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/plot_sqi_validation.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/print.ahp_matrix.html</loc></url>
+<url><loc>https://ccarbajal16.github.io/soilquality/reference/print.inherent_adjustment.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/print.pca_adequacy.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/print.scoring_rule.html</loc></url>
 <url><loc>https://ccarbajal16.github.io/soilquality/reference/print.sqi_circularity.html</loc></url>

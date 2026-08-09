@@ -19,6 +19,7 @@ compute_sqi_df(
   reference = NULL,
   select = c("pca", "none", "network"),
   network_args = list(),
+  inherent = NULL,
   ...
 )
 ```
@@ -102,6 +103,17 @@ compute_sqi_df(
   [`na_select_mds`](https://ccarbajal16.github.io/soilquality/reference/na_select_mds.md)
   when `select = "network"`, for example
   `list(r_min = 0.5, component = "all")`. Ignored otherwise.
+
+- inherent:
+
+  Optional one-sided formula naming inherent soil properties –
+  `~ soil_type * land_use_history` – for which every numeric indicator
+  is adjusted **before** selection, scoring and weighting. Defaults to
+  `NULL`, meaning no adjustment. See
+  [`adjust_inherent`](https://ccarbajal16.github.io/soilquality/reference/adjust_inherent.md),
+  and read its warning first: adjusting removes inherent variation by
+  design, which is wrong if your question is which soils are inherently
+  better. The fitted adjustment is returned as `$adjustment`.
 
 - ...:
 

@@ -7,7 +7,7 @@
 
     <a class="navbar-brand me-2" href="../index.html">soilquality</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -39,12 +39,36 @@
     </div>
 
     <div class="section level2">
+<h2 class="pkg-version" data-toc-text="2.3.0" id="soilquality-230-development">soilquality 2.3.0 (development)<a class="anchor" aria-label="anchor" href="#soilquality-230-development"></a></h2>
+<p>Second piece of the SEM module, and like the first it needs no SEM.</p>
+<div class="section level4">
+<h4 id="new-features-2-3-0">New features<a class="anchor" aria-label="anchor" href="#new-features-2-3-0"></a></h4>
+<ul><li>
+<code><a href="../reference/adjust_inherent.html">adjust_inherent()</a></code> - removes the variation in each indicator attributable to properties a manager cannot change, so what remains is the part an index can fairly hold anyone responsible for. A soil should not be scored down for being what its geology made it.</li>
+<li>
+<code><a href="../reference/compute_sqi_df.html">compute_sqi_df()</a></code> gains <code>inherent</code>, a one-sided formula. The adjustment runs <strong>before</strong> selection, scoring and weighting – correcting after any of those would undo it. Defaults to <code>NULL</code>: the pipeline never adjusts unless asked.</li>
+</ul></div>
+<div class="section level4">
+<h4 id="what-it-reports-which-is-half-the-value-2-3-0">What it reports, which is half the value<a class="anchor" aria-label="anchor" href="#what-it-reports-which-is-half-the-value-2-3-0"></a></h4>
+<p><code>$r_squared</code> is the share of each indicator’s variation that was inheritance rather than management. On <code>soil_inherent</code>, <code>Clay</code> and <code>pH</code> come back above 0.9 – almost entirely inherited – while <code>P</code> and <code>BD</code> sit near 0.2, meaning they were mostly telling you about management all along. An indicator whose inherent model explains more than <code>warn_r_squared</code> (default 0.95) is flagged, because once nearly all the variation is inherited the residual is mostly noise.</p>
+</div>
+<div class="section level4">
+<h4 id="honest-about-what-it-is-and-when-not-to-use-it-2-3-0">Honest about what it is, and when not to use it<a class="anchor" aria-label="anchor" href="#honest-about-what-it-is-and-when-not-to-use-it-2-3-0"></a></h4>
+<p>The arithmetic is <code><a href="https://rdrr.io/r/stats/lm.html" class="external-link">lm()</a></code> residuals, recentred on the indicator mean so the scale survives and the scoring functions behave exactly as before. A reviewer can fairly say “those are just residuals”. They are. What the function adds is an opinionated, documented, correctly-defaulted step in an index pipeline that <strong>no additive-index paper in the reviewed corpus performs</strong>, plus a report of what the adjustment cost.</p>
+<p><strong>Do not do it by reflex.</strong> Adjusting removes inherent variation by design. If your question is <em>which of these soils is inherently better</em> – siting, valuation, capability mapping – adjusting destroys the answer you came for. Adjust when the question is about management. The two look similar and are not.</p>
+</div>
+<div class="section level4">
+<h4 id="a-deliberate-divergence-from-the-plan-2-3-0">A deliberate divergence from the plan<a class="anchor" aria-label="anchor" href="#a-deliberate-divergence-from-the-plan-2-3-0"></a></h4>
+<p>The specification proposed <code>method = "none"</code> as the default so that adjustment would always be a deliberate act. The default here is <code>"residual"</code>, because <strong>calling the function is the deliberate act</strong>; a no-op default would mean <code>adjust_inherent(data, indicators, ~ soil_type)</code> silently did nothing, which is its own footgun. The deliberateness lives where it belongs instead: the <code>inherent</code> argument of <code><a href="../reference/compute_sqi_df.html">compute_sqi_df()</a></code> defaults to <code>NULL</code>. <code>"none"</code> remains available for switching the step off programmatically.</p>
+</div>
+</div>
+    <div class="section level2">
 <h2 class="pkg-version" data-toc-text="2.2.0" id="soilquality-220-development">soilquality 2.2.0 (development)<a class="anchor" aria-label="anchor" href="#soilquality-220-development"></a></h2>
 <div class="section level4">
 <h4 id="new-data-2-2-0">New data<a class="anchor" aria-label="anchor" href="#new-data-2-2-0"></a></h4>
 <ul><li>
 <code>soil_inherent</code> - 180 simulated samples carrying the columns an inherent-property adjustment needs and neither other dataset has: <strong>soil type</strong>, <strong>land-use history</strong>, a <strong>current management</strong> factor and a <strong>plot identifier</strong>. Five samples per plot, 36 plots, fully balanced.</li>
-</ul><p>This unblocks <code>adjust_inherent()</code>, which was blocked on data rather than on code: every column in <code>soil_data</code> and <code>soil_structured</code> is a measured property, so the function could not have been demonstrated, tested against an injected effect, or given a runnable example.</p>
+</ul><p>This unblocks <code><a href="../reference/adjust_inherent.html">adjust_inherent()</a></code>, which was blocked on data rather than on code: every column in <code>soil_data</code> and <code>soil_structured</code> is a measured property, so the function could not have been demonstrated, tested against an injected effect, or given a runnable example.</p>
 </div>
 <div class="section level4">
 <h4 id="the-property-that-makes-it-useful-2-2-0">The property that makes it useful<a class="anchor" aria-label="anchor" href="#the-property-that-makes-it-useful-2-2-0"></a></h4>

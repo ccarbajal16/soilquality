@@ -13,7 +13,7 @@ the final Soil Quality Index."><meta property="og:image" content="https://ccarba
 
     <a class="navbar-brand me-2" href="../index.html">soilquality</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.2.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">2.3.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -65,6 +65,7 @@ the final Soil Quality Index.</p>
 <span>  reference <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  select <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pca"</span>, <span class="st">"none"</span>, <span class="st">"network"</span><span class="op">)</span>,</span>
 <span>  network_args <span class="op">=</span> <span class="fu"><a href="https://rdrr.io/r/base/list.html" class="external-link">list</a></span><span class="op">(</span><span class="op">)</span>,</span>
+<span>  inherent <span class="op">=</span> <span class="cn">NULL</span>,</span>
 <span>  <span class="va">...</span></span>
 <span><span class="op">)</span></span></code></pre></div>
     </div>
@@ -141,6 +142,17 @@ must cover every selected MDS indicator.</p></dd>
 <dd><p>A named list of arguments forwarded to
 <code><a href="na_select_mds.html">na_select_mds</a></code> when <code>select = "network"</code>, for example
 <code>list(r_min = 0.5, component = "all")</code>. Ignored otherwise.</p></dd>
+
+
+<dt id="arg-inherent">inherent<a class="anchor" aria-label="anchor" href="#arg-inherent"></a></dt>
+<dd><p>Optional one-sided formula naming inherent soil properties
+– <code>~ soil_type * land_use_history</code> – for which every numeric
+indicator is adjusted <strong>before</strong> selection, scoring and weighting.
+Defaults to <code>NULL</code>, meaning no adjustment. See
+<code><a href="adjust_inherent.html">adjust_inherent</a></code>, and read its warning first: adjusting
+removes inherent variation by design, which is wrong if your question is
+which soils are inherently better. The fitted adjustment is returned as
+<code>$adjustment</code>.</p></dd>
 
 
 <dt id="arg--">...<a class="anchor" aria-label="anchor" href="#arg--"></a></dt>

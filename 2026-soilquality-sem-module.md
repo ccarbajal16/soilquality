@@ -43,12 +43,13 @@ ecosystem:
 | Function | Overlap found | Why nothing else has it |
 |----|----|----|
 | **[`check_circularity()`](https://ccarbajal16.github.io/soilquality/reference/check_circularity.md)** | **none** ⭐ | sits exactly in the gap: SEM packages don’t know what an SQI is; SQI packages don’t do path models |
-| **`adjust_inherent()`** | **none** | it is [`lm()`](https://rdrr.io/r/stats/lm.html) residuals — the novelty is the *framing* (adjust for soil type × land-use history **before** scoring), not the arithmetic |
+| **[`adjust_inherent()`](https://ccarbajal16.github.io/soilquality/reference/adjust_inherent.md)** | **none** | it is [`lm()`](https://rdrr.io/r/stats/lm.html) residuals — the novelty is the *framing* (adjust for soil type × land-use history **before** scoring), not the arithmetic |
 | **`weights_from_cfa()`** | **none** | nobody connects `lavaan` loadings to SQI weights, because nobody has both halves |
 
-⚠️ Honest caveat on `adjust_inherent()`: a reviewer can fairly say
-*“that’s just residuals”*. Its value is being an opinionated,
-documented, correctly-defaulted step in an SQI pipeline
+⚠️ Honest caveat on
+[`adjust_inherent()`](https://ccarbajal16.github.io/soilquality/reference/adjust_inherent.md):
+a reviewer can fairly say *“that’s just residuals”*. Its value is being
+an opinionated, documented, correctly-defaulted step in an SQI pipeline
 (`method = "none"` by default, so adjusting is deliberate). Do not
 oversell it as a new method — sell it as the step
 \[\[sources/2023-maaz-sem-soil-health\|Maaz\]\] showed matters and that
@@ -59,7 +60,7 @@ Applied to the task list below:
 | Task | Needs SQI knowledge? | Verdict |
 |----|----|----|
 | **C2 [`check_circularity()`](https://ccarbajal16.github.io/soilquality/reference/check_circularity.md)** | **yes** — needs the indicators that *constructed* the index | ✅ **BUILD** ⭐ |
-| **B `adjust_inherent()`** | **yes** — a pre-scoring step of the SQI pipeline | ✅ **BUILD** ⭐ |
+| **B [`adjust_inherent()`](https://ccarbajal16.github.io/soilquality/reference/adjust_inherent.md)** | **yes** — a pre-scoring step of the SQI pipeline | ✅ **BUILD** ⭐ |
 | **D3 `weights_from_cfa()`** | **yes** — the loadings → SQI-weights bridge | ✅ **BUILD** |
 | **A `sqi_diagnose()` / `sqi_icc()`** | partly — aggregates `psych::KMO()`, `cortest.bartlett()`, `performance::icc()` into one SQI-context verdict | 🟡 **build thin**, or fold into the vignette |
 | **C0 route selector** | no — a decision table | 🟡 **vignette** (or a tiny helper) |
@@ -192,7 +193,9 @@ measurement model when — and only when — sample size permits.
   specification/search (dangerous and indefensible); Bayesian SEM;
   spatial SEM; teaching SEM in the docs beyond what is needed to use the
   functions safely.
-- **First slice (revised):** **Task B (`adjust_inherent()`) + Task C2
+- **First slice (revised):** **Task B
+  ([`adjust_inherent()`](https://ccarbajal16.github.io/soilquality/reference/adjust_inherent.md)) +
+  Task C2
   ([`check_circularity()`](https://ccarbajal16.github.io/soilquality/reference/check_circularity.md)).**
   These two pass the scoping rule most cleanly, need no SEM dependency
   at all, and exist nowhere else. Task A follows only if it earns its
@@ -284,7 +287,9 @@ material made it. This is
 and **it needs no SEM at all** — it is a regression residual. None of
 the additive-index papers in the corpus do it.
 
-**B1 Implement `adjust_inherent()`.**
+**B1 ✅ DONE —
+[`adjust_inherent()`](https://ccarbajal16.github.io/soilquality/reference/adjust_inherent.md)
+shipped in v2.3.0.**
 
 ``` r
 
@@ -301,19 +306,24 @@ factors to prevent their bias on the overall score”*; land-use history
 and soil type were the two most influential inherent drivers in their
 region (Crow et al. 2022).
 
-**B2 Report what the adjustment cost.** For each indicator, the R² of
-the inherent model — i.e. how much of its variation was inheritance
-rather than management. This is genuinely informative output, not
-diagnostics padding.
+**B2 ✅ DONE — `$r_squared` per indicator, with a `warn_r_squared`
+flag.** For each indicator, the R² of the inherent model — i.e. how much
+of its variation was inheritance rather than management. This is
+genuinely informative output, not diagnostics padding.
 
-**B3 Document the judgement call.** Adjusting removes inherent variation
-*by design*. If the user’s question **is** “which soils are inherently
-better?”, they must not adjust. Make the default `method = "none"` so
-adjustment is always a deliberate act.
+**B3 ✅ DONE, with a deliberate divergence.** The default is
+`method = "residual"`, not `"none"`: calling the function IS the
+deliberate act, and a no-op default would silently do nothing. The
+deliberateness lives in `compute_sqi_df(inherent = NULL)` instead.
+Original text: Adjusting removes inherent variation *by design*. If the
+user’s question **is** “which soils are inherently better?”, they must
+not adjust. Make the default `method = "none"` so adjustment is always a
+deliberate act.
 
-**B4 Wire as an optional pre-scoring step** in the main pipeline; tests
-on a fixture with a synthetic soil-type effect (adjustment should remove
-a known injected group difference).
+**B4 ✅ DONE — `compute_sqi_df(inherent = )`, applied before selection,
+scoring and weighting.** Wired as an optional pre-scoring step in the
+main pipeline; tests on a fixture with a synthetic soil-type effect
+(adjustment should remove a known injected group difference).
 
 ### Task C — Path models to explain an index + the circularity guard
 
@@ -575,20 +585,22 @@ stack is heavier and used by fewer users.)
       The companion project hit this exact trap in its Phase 3 and the
       spec had to be corrected. Establish which one Maaz did before
       implementing.
-- **2026-08-09** — ⚠️ **Task B (`adjust_inherent()`) is blocked on data,
-  not on code.** Neither `soil_data` nor `soil_structured` carries
-  `soil_type`, `land_use_history` or a plot identifier — every column is
-  a measured property. That answers Open decision 1 in the negative: the
-  function cannot be demonstrated, tested against an injected group
-  effect, or given a runnable example on anything the package ships. ✅
-  **RESOLVED 2026-08-09 — `soil_inherent` added** (180 samples, 36
-  plots, 5 per plot; `soil_type`, `land_use_history`, `management`,
-  `PlotID`). Verified two-sided: residualising on the inherent factors
-  removes the soil-type effect (p → 1.00) AND sharpens the management
-  effect (OM: 2e-04 → 6e-23). ICC 0.81–0.99, matching Maaz’s field
-  finding. **Task B is now unblocked.** This was the same failure the
-  companion project hit when `soil_data` could not exercise network
-  selection, and which was fixed by adding `soil_structured`.
+- **2026-08-09** — ⚠️ **Task B
+  ([`adjust_inherent()`](https://ccarbajal16.github.io/soilquality/reference/adjust_inherent.md))
+  is blocked on data, not on code.** Neither `soil_data` nor
+  `soil_structured` carries `soil_type`, `land_use_history` or a plot
+  identifier — every column is a measured property. That answers Open
+  decision 1 in the negative: the function cannot be demonstrated,
+  tested against an injected group effect, or given a runnable example
+  on anything the package ships. ✅ **RESOLVED 2026-08-09 —
+  `soil_inherent` added** (180 samples, 36 plots, 5 per plot;
+  `soil_type`, `land_use_history`, `management`, `PlotID`). Verified
+  two-sided: residualising on the inherent factors removes the soil-type
+  effect (p → 1.00) AND sharpens the management effect (OM: 2e-04 →
+  6e-23). ICC 0.81–0.99, matching Maaz’s field finding. **Task B is now
+  unblocked.** This was the same failure the companion project hit when
+  `soil_data` could not exercise network selection, and which was fixed
+  by adding `soil_structured`.
 - **2026-08-09** — ⚠️ **The CRAN non-overlap survey is unverified by the
   implementing agent.** No web access; the `SQIpro` function index and
   the “no package does SQI + SEM” claim are taken from this document,
