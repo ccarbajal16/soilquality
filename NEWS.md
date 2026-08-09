@@ -1,3 +1,40 @@
+# soilquality 1.2.0 (development)
+
+Adds index validation -- the ability to ask whether an index actually
+discriminates, rather than assuming it does.
+
+### New features
+
+#### Validation
+- `sqi_validate()` - assesses a computed index on four diagnostics, in
+  descending order of how much they should influence a judgement: the
+  distribution across the five soil-health decision categories, the
+  sensitivity index (max/min), fidelity to a total-data-set index, and
+  correlation against an optional external criterion such as yield.
+- The distribution is the headline, and it warns. Maaz et al. (2023) found an
+  additive index and an SEM index correlating at r = 0.96 while placing 94%
+  vs 61% of plots in the middle bands: correlation is the wrong diagnostic
+  for an index, the spread across decision categories is the right one. A
+  warning fires above `middle_band_threshold` (default 0.8) because a silent
+  number gets ignored.
+- `sqi_stability()` - runs the same samples through two or more recipes and
+  reports whether the ranking survives: Spearman rho per pair, plus a flag
+  when the best or worst sample changes. A high rank correlation does not
+  rescue a changed extreme if the extreme is what you act on.
+- `plot_sqi_validation()` - the distribution plot, accepting an
+  `sqi_validation`, an `sqi_result` or a bare numeric vector.
+- `compute_sqi_df()` gains `select = c("pca", "none")`. With `"none"` the
+  selection step is skipped and every numeric indicator is used, which is how
+  the total-data-set index that `sqi_validate()` measures fidelity against is
+  built. PCA is still run and reported either way.
+
+### Note on the example data
+Running `sqi_validate()` on the package's own default recipe applied to
+`soil_data` fires the middle-band warning: the resulting SQI spans roughly
+0.36-0.70, so 100% of samples land in the middle bands and the "very low" and
+"very high" categories are empty. This is not a bug -- it is the diagnostic
+working, on exactly the pathology it was built to expose.
+
 # soilquality 1.1.0 (development)
 
 Broadens the package from a single SQI route (PCA-MDS, AHP/loading weights,

@@ -13,6 +13,7 @@ compute_sqi_df(
   loading_threshold = 0.5,
   method = c("weighted", "area"),
   reference = NULL,
+  select = c("pca", "none"),
   ...
 )
 }
@@ -43,6 +44,13 @@ MDS indicators, used only when \code{method = "area"}. When supplied, the
 SQI is reported as a ratio against this non-degraded reference soil,
 which is what makes area-based values comparable across studies. Names
 must cover every selected MDS indicator.}
+
+\item{select}{Indicator selection strategy. \code{"pca"} (the default, and
+the historical behaviour) selects a Minimum Data Set via
+\code{\link{pca_select_mds}}. \code{"none"} skips selection and uses
+\strong{every} numeric indicator -- the "total data set" (TDS) index that
+\code{\link{sqi_validate}} measures fidelity against. PCA is still run
+and reported in either case.}
 
 \item{...}{Additional arguments (currently unused).}
 }

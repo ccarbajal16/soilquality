@@ -355,3 +355,64 @@ plot_sqi_report <- function(sqi_result, ...) {
 
   invisible(NULL)
 }
+
+
+#' Plot the distribution of an index across decision categories
+#'
+#' Draws the diagnostic that \code{\link{sqi_validate}} treats as its headline:
+#' how many samples the index places in each soil-health band. An index that
+#' piles everything into the middle cannot inform a decision, and that is
+#' visible here in a way it is not in a correlation coefficient.
+#'
+#' @param x An \code{sqi_validation} object, an \code{sqi_result}, or a
+#'   numeric vector of index values. The latter two are validated on the fly
+#'   with default settings.
+#' @param col Fill colours for the bars, recycled across bands. Defaults to a
+#'   red-to-green ramp so that "very low" and "very high" read at a glance.
+#' @param ... Additional graphical parameters passed to
+#'   \code{\link[graphics]{barplot}}.
+#'
+#' @return Invisibly returns the \code{sqi_validation} object that was
+#'   plotted.
+#'
+#' @examples
+#' props <- c("pH", "OM", "N", "P", "K", "CEC", "BD")
+#' result <- compute_sqi_properties(soil_data, properties = props,
+#'                                  id_column = "SampleID")
+#' plot_sqi_validation(result)
+#'
+#' @seealso \code{\link{sqi_validate}}, \code{\link{plot_sqi_report}}
+#'
+#' @export
+plot_sqi_validation <- function(x,
+                                col = c("#d73027", "#fc8d59", "#fee08b",
+                                        "#d9ef8b", "#1a9850"),
+                                ...) {
+  validation <- if (inherits(x, "sqi_validation")) x else sqi_validate(x)
+
+  d <- validation$distribution
+  heights <- 100 * d$proportion
+  bar_col <- rep(col, length.out = nrow(d))
+
+  mids <- barplot(heights,
+                  names.arg = d$band,
+                  main = "SQI distribution across decision categories",
+                  xlab = "Soil health category",
+                  ylab = "Samples (%)",
+                  col = bar_col,
+                  border = "white",
+                  las = 1,
+                  ylim = c(0, max(heights, na.rm = TRUE) * 1.2),
+                  ...)
+
+  # Label each bar with its count, so the plot carries the raw number too.
+  text(mids, heights, labels = d$count, pos = 3, cex = 0.9)
+
+  # The middle-band share is the number the print method warns on, so it
+  # belongs on the plot rather than only in the console.
+  mtext(sprintf("Middle bands: %.1f%% of %d samples",
+                100 * validation$middle_band_share, validation$n),
+        side = 3, line = 0.2, cex = 0.85)
+
+  invisible(validation)
+}

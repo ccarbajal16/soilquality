@@ -146,6 +146,12 @@ compute_sqi <- function(input_csv,
 #'   SQI is reported as a ratio against this non-degraded reference soil,
 #'   which is what makes area-based values comparable across studies. Names
 #'   must cover every selected MDS indicator.
+#' @param select Indicator selection strategy. \code{"pca"} (the default, and
+#'   the historical behaviour) selects a Minimum Data Set via
+#'   \code{\link{pca_select_mds}}. \code{"none"} skips selection and uses
+#'   \strong{every} numeric indicator -- the "total data set" (TDS) index that
+#'   \code{\link{sqi_validate}} measures fidelity against. PCA is still run
+#'   and reported in either case.
 #' @param ... Additional arguments (currently unused).
 #'
 #' @return An object of class "sqi_result" containing:
@@ -211,8 +217,10 @@ compute_sqi_df <- function(df,
                            loading_threshold = 0.5,
                            method = c("weighted", "area"),
                            reference = NULL,
+                           select = c("pca", "none"),
                            ...) {
   method <- match.arg(method)
+  select <- match.arg(select)
 
   # Validate input
   if (!is.data.frame(df)) {
@@ -237,18 +245,30 @@ compute_sqi_df <- function(df,
   # Standardize numeric columns (excluding ID column)
   data_std <- standardize_numeric(df, exclude = exclude_cols)
 
-  # Perform PCA and select MDS
+  # PCA is always run, because its loadings and variance decomposition are
+  # reported regardless of whether they drive the selection.
   pca_result <- pca_select_mds(
     data_std,
     var_threshold = var_threshold,
     loading_threshold = loading_threshold
   )
 
-  mds <- pca_result$mds
+  if (select == "pca") {
+    mds <- pca_result$mds
 
-  # Check if any indicators were selected
-  if (length(mds) == 0) {
-    stop("No indicators selected by PCA. Try adjusting thresholds.")
+    # Check if any indicators were selected
+    if (length(mds) == 0) {
+      stop("No indicators selected by PCA. Try adjusting thresholds.")
+    }
+  } else {
+    # Total data set: every numeric indicator, no selection step. This is what
+    # sqi_validate()'s fidelity metric compares an MDS index against.
+    numeric_cols <- vapply(df, is.numeric, logical(1))
+    mds <- setdiff(names(df)[numeric_cols], id_column)
+
+    if (length(mds) == 0) {
+      stop("No numeric indicator columns found in df")
+    }
   }
 
   # Calculate AHP weights

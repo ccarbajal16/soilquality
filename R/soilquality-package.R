@@ -1,5 +1,5 @@
 #' @keywords internal
-#' @importFrom graphics abline barplot boxplot hist legend lines mtext par
+#' @importFrom graphics abline barplot boxplot hist legend lines mtext par text
 #' @importFrom stats approx biplot complete.cases sd
 "_PACKAGE"
 
