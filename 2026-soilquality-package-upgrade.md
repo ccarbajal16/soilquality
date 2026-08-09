@@ -515,9 +515,24 @@ to a single indicator on it. This is a property of the fixture, not the
 method — real soil data has compositional texture (Sand+Silt+Clay = 100)
 and near-collinear OM/SOC. Tests use purpose-built synthetic fixtures
 with genuine correlation structure; the collapse on `soil_data` is
-pinned by its own test so nobody concludes the method is broken.
-**Consider replacing or supplementing `soil_data` with a realistically
-correlated dataset** — it also affects Phase 5’s grouping work.
+pinned by its own test so nobody concludes the method is broken. ✅
+**RESOLVED — `soil_structured` added** (120 samples, 16 columns,
+generated from three latent gradients in
+`data-raw/create_soil_structured.R`). `soil_data` and `soil_ucayali` are
+left untouched. **40** indicator pairs reach \|ρ\| ≥ 0.6 against **1**
+in `soil_data`, with the standard relationships holding: texture
+compositional to 100, `SOC = OM/1.724` (ρ = 0.99), `N = SOC/(C:N)`, CEC
+from clay + organic colloids, `OM ~ BD` = −0.85, `Ca ~ EC` = 0.92. Use
+it for Phase 5. ⚠️ It also exposed a **bug in Task 4.2’s screen**: the
+redundancy screen ran across the whole selected set instead of within
+each module, so every module’s representative was discarded as redundant
+with the single most central indicator — collapsing the very partition
+the module step had just built. Fixed; the MDS went from 1 indicator to
+2 on this data. ⚠️ And it usefully sets up Phase 5: the base-status
+module (`pH`, `Ca`, `Mg`, `EC`) is internally coherent but peripheral,
+so the centrality filter discards it entirely. Selecting **within
+functional groups** rather than across the whole pool is the fix, which
+is exactly Phase 5.
 
 **4.5 Document the caveat.** ✅ Done. Correlation networks **cannot
 establish causality**, and shared environmental drivers create

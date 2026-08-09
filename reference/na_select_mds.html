@@ -13,7 +13,7 @@ network route performing better on several axes."><meta property="og:image" cont
 
     <a class="navbar-brand me-2" href="../index.html">soilquality</a>
 
-    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.3.0</small>
+    <small class="nav-text text-muted me-auto" data-bs-toggle="tooltip" data-bs-placement="bottom" title="">1.4.0</small>
 
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbar" aria-controls="navbar" aria-expanded="false" aria-label="Toggle navigation">
@@ -98,9 +98,14 @@ which indicators are retained. Defaults to 0.10, i.e. "within 10 percent".</p></
 <dt id="arg-screen">screen<a class="anchor" aria-label="anchor" href="#arg-screen"></a></dt>
 <dd><p>If <code>TRUE</code> (the default), drop a retained indicator when
 it still correlates at <code>&gt;= r_min</code> with a retained indicator of higher
-centrality. <strong>Note:</strong> <code><a href="pca_select_mds.html">pca_select_mds</a></code> performs no
-equivalent screening – it takes one indicator per component – so this is
-an additional step in this route, not a mirror of the other one.</p></dd>
+centrality <strong>in the same module</strong>. The screen deliberately does not
+run across modules: they exist to partition the indicator space so each
+contributes a representative, and screening globally would discard those
+representatives as redundant with the single most central indicator,
+collapsing the partition the module step just built. <strong>Note:</strong>
+<code><a href="pca_select_mds.html">pca_select_mds</a></code> performs no equivalent screening – it takes
+one indicator per component – so this is an additional step in this
+route, not a mirror of the other one.</p></dd>
 
 
 <dt id="arg-component">component<a class="anchor" aria-label="anchor" href="#arg-component"></a></dt>
@@ -263,7 +268,6 @@ Blondel, V. D. et al. (2008) – Louvain community detection.</p>
 <span class="r-in"><span>  <span class="co"># Indicators that correlate with nothing are dropped by this route</span></span></span>
 <span class="r-in"><span>  <span class="va">result</span><span class="op">$</span><span class="va">isolated</span></span></span>
 <span class="r-in"><span><span class="op">}</span></span></span>
-<span class="r-wrn co"><span class="r-pr">#&gt;</span> <span class="warning">Warning: </span>The correlation network has 13 disconnected components. With component = "largest", eigenvector centrality is driven to 0 for every indicator outside the dominant component, so those modules CANNOT pass the centrality_min filter at any threshold and will be discarded however strong their internal correlation. Pass component = "all" to evaluate each component on its own terms, and inspect $modules and $isolated.</span>
 <span class="r-out co"><span class="r-pr">#&gt;</span>  [1] "Clay" "pH"   "OM"   "SOC"  "N"    "P"    "K"    "CEC"  "Ca"   "Mg"  </span>
 <span class="r-out co"><span class="r-pr">#&gt;</span> [11] "BD"   "EC"  </span>
 <span class="r-in"><span></span></span>

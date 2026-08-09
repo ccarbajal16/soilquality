@@ -93,6 +93,5 @@ if (requireNamespace("igraph", quietly = TRUE)) {
   agreement$pca_only
   agreement$network_only
 }
-#> Warning: The correlation network has 13 disconnected components. With component = "largest", eigenvector centrality is driven to 0 for every indicator outside the dominant component, so those modules CANNOT pass the centrality_min filter at any threshold and will be discarded however strong their internal correlation. Pass component = "all" to evaluate each component on its own terms, and inspect $modules and $isolated.
 #> character(0)
 ```

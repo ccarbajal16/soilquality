@@ -53,7 +53,12 @@ na_select_mds(
 
   If `TRUE` (the default), drop a retained indicator when it still
   correlates at `>= r_min` with a retained indicator of higher
-  centrality. **Note:**
+  centrality **in the same module**. The screen deliberately does not
+  run across modules: they exist to partition the indicator space so
+  each contributes a representative, and screening globally would
+  discard those representatives as redundant with the single most
+  central indicator, collapsing the partition the module step just
+  built. **Note:**
   [`pca_select_mds`](https://ccarbajal16.github.io/soilquality/reference/pca_select_mds.md)
   performs no equivalent screening – it takes one indicator per
   component – so this is an additional step in this route, not a mirror
@@ -255,7 +260,6 @@ if (requireNamespace("igraph", quietly = TRUE)) {
   # Indicators that correlate with nothing are dropped by this route
   result$isolated
 }
-#> Warning: The correlation network has 13 disconnected components. With component = "largest", eigenvector centrality is driven to 0 for every indicator outside the dominant component, so those modules CANNOT pass the centrality_min filter at any threshold and will be discarded however strong their internal correlation. Pass component = "all" to evaluate each component on its own terms, and inspect $modules and $isolated.
 #>  [1] "Clay" "pH"   "OM"   "SOC"  "N"    "P"    "K"    "CEC"  "Ca"   "Mg"  
 #> [11] "BD"   "EC"  
 ```

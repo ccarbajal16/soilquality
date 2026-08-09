@@ -129,6 +129,8 @@ Built-in datasets for examples and testing
   : Example Soil Data from Ucayali, Peru
 - [`soil_data`](https://ccarbajal16.github.io/soilquality/reference/soil_data.md)
   : Extended Soil Data from Ucayali, Peru
+- [`soil_structured`](https://ccarbajal16.github.io/soilquality/reference/soil_structured.md)
+  : Simulated Soil Data with Realistic Covariance Structure
 
 ## Print Methods
 
