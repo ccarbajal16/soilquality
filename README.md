@@ -1,7 +1,8 @@
 # soilquality <img src="man/figures/logo.png" align="right" height="139" alt="" />
 
 <!-- badges: start -->
-[![R-CMD-check](https://img.shields.io/badge/R--CMD--check-passing-brightgreen.svg)](https://github.com/ccarbajal16/soilquality)
+[![R-CMD-check](https://github.com/ccarbajal16/soilquality/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/ccarbajal16/soilquality/actions/workflows/R-CMD-check.yaml)
+[![pkgdown](https://github.com/ccarbajal16/soilquality/actions/workflows/pkgdown.yaml/badge.svg)](https://github.com/ccarbajal16/soilquality/actions/workflows/pkgdown.yaml)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 <!-- badges: end -->
 
@@ -89,9 +90,9 @@ See `vignette("building-and-validating-an-sqi")` for the pipeline end to end.
 
 ## Installation
 
-### From GitHub (Development Version)
+`soilquality` is **not on CRAN**. Install it from GitHub:
 
-#### Using pak (Recommended)
+### Using pak (Recommended)
 
 ```r
 # Install pak if needed
@@ -103,7 +104,7 @@ if (!requireNamespace("pak", quietly = TRUE)) {
 pak::pak("ccarbajal16/soilquality")
 ```
 
-#### Using devtools
+### Using devtools
 
 ```r
 # Install devtools if needed
@@ -115,11 +116,15 @@ if (!requireNamespace("devtools", quietly = TRUE)) {
 devtools::install_github("ccarbajal16/soilquality")
 ```
 
-### From CRAN (Stable Release)
+### Optional dependency
+
+Correlation-network selection (`na_select_mds()`, `mds_consensus()`) needs
+**igraph**, which is suggested rather than required — this package is
+MIT-licensed and igraph is GPL, so it is kept out of `Imports` deliberately.
+Everything else works without it.
 
 ```r
-# Coming soon
-install.packages("soilquality")
+install.packages("igraph")
 ```
 
 ## Quick Start
@@ -349,8 +354,11 @@ citation("soilquality")
 
 Or use:
 
-> Carbajal, Carlos (2025). soilquality: Soil Quality Index Calculation with PCA and AHP.
-> R package version 1.0.0. https://github.com/ccarbajal16/soilquality
+> Carbajal, Carlos (2026). soilquality: Soil Quality Index Calculation with PCA and AHP.
+> R package version 2.3.0. <https://github.com/ccarbajal16/soilquality>
+
+`citation("soilquality")` reads the installed `DESCRIPTION`, so it is the
+authoritative version; the block above will drift as releases go by.
 
 ## Contributing
 
