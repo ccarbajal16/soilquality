@@ -12,22 +12,43 @@
 #'   variance a principal component must explain to be retained. Components
 #'   with variance below this threshold are excluded from MDS selection.
 #'   Default is 0.05 (5\%).
-#' @param loading_threshold Numeric value specifying the minimum absolute
-#'   loading value for a variable to be considered for selection within a
-#'   principal component. Variables with absolute loadings below this threshold
-#'   are not selected. Default is 0.5.
+#' @param loading_threshold Numeric value specifying the minimum \strong{absolute}
+#'   loading a variable must reach to be considered. This is a floor on the
+#'   loading itself, not the relative "within 10 percent" rule of the
+#'   literature -- see \code{within}. Default is 0.5.
+#' @param within Relative tolerance below the maximum absolute loading on a
+#'   retained component, within which \strong{every} variable is selected.
+#'   \code{NULL} (the default) keeps the historical behaviour of taking only
+#'   the single highest-loading variable per component. Set \code{0.10} for the
+#'   published rule. See Details -- this changes the size of the MDS.
+#' @param groups Optional named list of character vectors assigning indicators
+#'   to functional groups, as produced by
+#'   \code{\link{assign_function_groups}}. When supplied, selection runs
+#'   \strong{within each group} rather than across the whole pool, which is the
+#'   expanded minimum data set (EMDS) of the literature. Empty groups are
+#'   skipped. Defaults to \code{NULL} (no grouping).
+#' @param selector How to choose within a component or group.
+#'   \code{"loading"} (the default) uses absolute loadings per retained
+#'   component. \code{"norm"} uses the norm value of Yuan and Shi (2026)
+#'   eq. (2), which aggregates an indicator's loadings across components rather
+#'   than judging it one component at a time; it is designed for the grouped
+#'   route and returns the highest-norm indicator per group.
 #'
 #' @return A list with the following components:
 #'   \describe{
 #'     \item{mds}{Character vector of selected variable names representing
 #'       the minimum data set.}
-#'     \item{pca}{The PCA object returned by \code{stats::prcomp}, containing
-#'       the full PCA results including rotation matrix, scores, and other
-#'       components.}
+#'     \item{pca}{The PCA object returned by \code{stats::prcomp}, computed
+#'       over the whole pool regardless of grouping, containing the full PCA
+#'       results including rotation matrix, scores, and other components.}
 #'     \item{loadings}{Numeric matrix of variable loadings (rotation matrix)
 #'       for all principal components.}
 #'     \item{var_exp}{Numeric vector containing the proportion of variance
 #'       explained by each principal component.}
+#'     \item{groups}{The validated grouping, or \code{NULL}.}
+#'     \item{group_results}{Per-group selection detail, including the norm
+#'       values when \code{selector = "norm"}, or \code{NULL}.}
+#'     \item{selector, within}{The settings used.}
 #'   }
 #'
 #' @details
@@ -44,6 +65,59 @@
 #'
 #' If no variables meet the selection criteria, an empty character vector
 #' is returned for the MDS component.
+#'
+#' @section The two loading rules, and why the default is the narrow one:
+#' Step 4 above takes \strong{one} indicator per retained component, the one
+#' with the largest absolute loading. The rule stated in the soil quality
+#' literature is broader: keep \strong{every} indicator whose absolute loading
+#' is within 10 percent of that maximum, i.e.
+#' \code{abs(loading) >= 0.9 * max(abs(loading))}. That generally yields a
+#' \emph{larger} minimum data set.
+#'
+#' Both are available. \code{within = NULL} keeps the narrow rule, which is
+#' what this function has always done and what the package's regression
+#' baseline pins; \code{within = 0.10} implements the published rule. The
+#' default does not move, because widening the MDS changes every downstream
+#' weight and every SQI value.
+#'
+#' Note that \code{loading_threshold} and \code{within} are different
+#' mechanisms and can be combined: the first is an \strong{absolute} floor on
+#' the loading, the second a \strong{relative} band below the maximum.
+#'
+#' \strong{A warning for anyone implementing from Yuan and Shi (2026).} Its
+#' section 2.3.1 states this rule \emph{inverted} -- as retaining loadings
+#' "within 10 percent" in the sense of being \emph{less than} 10 percent of the
+#' highest, which would select the least informative variables. The paper's own
+#' section 2.3.2, and every other source, state it correctly. Read it as
+#' \code{>= 0.9 * max}.
+#'
+#' @section Grouped (EMDS) selection:
+#' With \code{groups}, the selection runs separately inside each functional
+#' group and the results are combined. This is the expanded minimum data set:
+#' every function contributes an indicator, instead of the whole pool
+#' competing on a single criterion where one dominant function can crowd the
+#' others out.
+#'
+#' That failure mode is not hypothetical in this package. On
+#' \code{\link{soil_structured}}, with all fifteen indicators offered:
+#'
+#' \tabular{lll}{
+#'   \strong{Route} \tab \strong{Selected} \tab \strong{Functions covered} \cr
+#'   network, ungrouped \tab OM, CEC \tab 2 of 4 \cr
+#'   network, grouped \tab OM, P, N, Clay, EC \tab \strong{4 of 4} \cr
+#'   PCA, ungrouped \tab pH, Silt \tab 2 of 4 \cr
+#'   PCA, grouped \tab SOC, P, Sand, EC \tab \strong{4 of 4}
+#' }
+#'
+#' Ungrouped, both routes leave \strong{entire functions with no
+#' representative} -- nutrient cycling and physical structure vanish from the
+#' network selection, and the base-status indicators \code{pH}, \code{Ca},
+#' \code{Mg} and \code{EC} are dropped wholesale because their module is
+#' peripheral to the network. Grouping is the fix, and it is why fidelity
+#' improves with grouping detail in Yuan's measurements.
+#'
+#' See \code{\link{soil_function_groups}} for why the grouping should be
+#' functional rather than the familiar physical/chemical split.
 #'
 #' @examples
 #' # Create example soil data
@@ -77,7 +151,12 @@
 #' @export
 pca_select_mds <- function(data,
                            var_threshold = 0.05,
-                           loading_threshold = 0.5) {
+                           loading_threshold = 0.5,
+                           within = NULL,
+                           groups = NULL,
+                           selector = c("loading", "norm")) {
+  selector <- match.arg(selector)
+
   # Input validation
   if (!is.data.frame(data)) {
     stop("data must be a data frame")
@@ -133,48 +212,130 @@ pca_select_mds <- function(data,
     stop("loading_threshold must be a single numeric value between 0 and 1")
   }
 
-  # Perform PCA (scale = FALSE because data should be pre-standardized)
-  pca_result <- stats::prcomp(numeric_data, scale. = FALSE)
-
-  # Extract loadings (rotation matrix)
-  loadings <- pca_result$rotation
-
-  # Calculate variance explained by each PC
-  variance <- pca_result$sdev^2
-  var_exp <- variance / sum(variance)
-
-  # Identify PCs that meet variance threshold
-  retained_pcs <- which(var_exp > var_threshold)
-
-  # Select variables with maximum loadings per retained PC
-  mds <- character(0)
-
-  if (length(retained_pcs) > 0) {
-    for (pc_idx in retained_pcs) {
-      # Get loadings for this PC
-      pc_loadings <- loadings[, pc_idx]
-
-      # Find variable with maximum absolute loading
-      abs_loadings <- abs(pc_loadings)
-      max_idx <- which.max(abs_loadings)
-      max_loading <- abs_loadings[max_idx]
-
-      # Check if it exceeds loading threshold
-      if (max_loading > loading_threshold) {
-        var_name <- names(pc_loadings)[max_idx]
-        # Add to MDS if not already present (ensure uniqueness)
-        if (!(var_name %in% mds)) {
-          mds <- c(mds, var_name)
-        }
-      }
+  if (!is.null(within)) {
+    if (!is.numeric(within) || length(within) != 1 ||
+        within < 0 || within > 1) {
+      stop("within must be a single numeric value between 0 and 1, or NULL")
     }
   }
 
-  # Return results as a list
+  # A pool-wide PCA is always computed and reported, so that $pca, $loadings
+  # and $var_exp keep the same meaning whether or not groups are supplied.
+  pca_result <- stats::prcomp(numeric_data, scale. = FALSE)
+  loadings <- pca_result$rotation
+  variance <- pca_result$sdev^2
+  var_exp <- variance / sum(variance)
+
+  if (is.null(groups)) {
+    selection <- .pca_select_core(numeric_data, var_threshold,
+                                  loading_threshold, within, selector)
+    mds <- selection$mds
+    group_results <- NULL
+  } else {
+    groups <- .validate_groups(groups, colnames(numeric_data))
+
+    group_results <- lapply(names(groups), function(g) {
+      members <- groups[[g]]
+
+      # A single-indicator group needs no selection: it IS the selection.
+      if (length(members) == 1) {
+        return(list(mds = members, norms = stats::setNames(NA_real_, members),
+                    n_indicators = 1L))
+      }
+
+      .pca_select_core(numeric_data[, members, drop = FALSE], var_threshold,
+                       loading_threshold, within, selector)
+    })
+    names(group_results) <- names(groups)
+
+    mds <- unique(unlist(lapply(group_results, `[[`, "mds"),
+                         use.names = FALSE))
+    if (is.null(mds)) {
+      mds <- character(0)
+    }
+  }
+
   list(
     mds = mds,
     pca = pca_result,
     loadings = loadings,
-    var_exp = var_exp
+    var_exp = var_exp,
+    groups = groups,
+    group_results = group_results,
+    selector = selector,
+    within = within
   )
+}
+
+
+# Internal: the selection itself, run either over the whole pool or over one
+# functional group's columns.
+.pca_select_core <- function(x, var_threshold, loading_threshold, within,
+                             selector) {
+  pca <- stats::prcomp(x, scale. = FALSE)
+  loadings <- pca$rotation
+  eigenvalues <- pca$sdev^2
+  var_exp <- eigenvalues / sum(eigenvalues)
+
+  retained_pcs <- which(var_exp > var_threshold)
+
+  if (selector == "norm") {
+    # Yuan 2026 eq. (2): N_i = sqrt( sum_k u_ik^2 * lambda_k ), summed over the
+    # PCs with eigenvalue >= 1 (Kaiser). The data is pre-standardised, so an
+    # eigenvalue of 1 is the variance a single indicator would carry on its own.
+    kaiser_pcs <- which(eigenvalues >= 1)
+
+    # With few indicators no PC may clear Kaiser; fall back to the
+    # variance-retained set rather than returning nothing.
+    if (length(kaiser_pcs) == 0) {
+      kaiser_pcs <- retained_pcs
+    }
+    if (length(kaiser_pcs) == 0) {
+      return(list(mds = character(0),
+                  norms = stats::setNames(numeric(0), character(0)),
+                  n_indicators = ncol(x)))
+    }
+
+    norms <- sqrt(rowSums(
+      loadings[, kaiser_pcs, drop = FALSE]^2 *
+        rep(eigenvalues[kaiser_pcs], each = nrow(loadings))
+    ))
+    names(norms) <- rownames(loadings)
+
+    cutoff <- if (is.null(within)) max(norms) else (1 - within) * max(norms)
+    selected <- names(norms)[norms >= cutoff]
+    selected <- selected[order(-norms[selected], selected)]
+
+    return(list(mds = selected, norms = norms, n_indicators = ncol(x)))
+  }
+
+  # selector == "loading"
+  mds <- character(0)
+
+  for (pc_idx in retained_pcs) {
+    pc_loadings <- loadings[, pc_idx]
+    abs_loadings <- abs(pc_loadings)
+    max_loading <- max(abs_loadings)
+
+    if (max_loading <= loading_threshold) {
+      next
+    }
+
+    if (is.null(within)) {
+      # Historical behaviour: one indicator per retained PC.
+      candidates <- names(pc_loadings)[which.max(abs_loadings)]
+    } else {
+      # The published rule: every indicator within `within` of the maximum
+      # loading on this PC, subject to the absolute floor as well.
+      keep <- abs_loadings >= (1 - within) * max_loading &
+        abs_loadings > loading_threshold
+      candidates <- names(pc_loadings)[keep]
+      candidates <- candidates[order(-abs_loadings[candidates], candidates)]
+    }
+
+    mds <- c(mds, setdiff(candidates, mds))
+  }
+
+  list(mds = mds, norms = stats::setNames(numeric(0), character(0)),
+       n_indicators = ncol(x))
 }

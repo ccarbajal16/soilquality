@@ -118,6 +118,24 @@
 #'   separately within each connected component, normalised per component, so
 #'   that a well-structured but disconnected group of indicators can still be
 #'   selected. Has no effect on a connected network.
+#' @param groups Optional named list of character vectors assigning indicators
+#'   to functional groups, as produced by
+#'   \code{\link{assign_function_groups}}. When supplied, the whole procedure
+#'   runs \strong{independently inside each group} and the results are
+#'   combined, so that every function contributes an indicator instead of one
+#'   dominant function crowding the others out.
+#'
+#'   A group can be too small for a correlation network -- carbon cycling is
+#'   two indicators, and three is the minimum for a graph worth clustering.
+#'   Such a group falls back to keeping the indicator most strongly correlated
+#'   with the rest of its group, which is the same principle degraded to
+#'   something computable. \strong{The fallback warns and is recorded per group
+#'   in \code{$group_results}}, because it is not the published method.
+#'
+#'   With \code{groups} supplied the return value carries \code{$mds},
+#'   \code{$weights}, \code{$groups}, \code{$group_results} and
+#'   \code{$grouped}; the pool-level graph and centrality have no single
+#'   meaning across groups and are absent.
 #' @param seed Integer seed for the Louvain step, which is \strong{randomised}.
 #'   Defaults to 1 so that the same data yields the same Minimum Data Set; see
 #'   the note on reproducibility below. The seed is applied in a local scope
@@ -175,9 +193,18 @@ na_select_mds <- function(data,
                           within = 0.10,
                           screen = TRUE,
                           component = c("largest", "all"),
+                          groups = NULL,
                           seed = 1L) {
   .require_igraph("na_select_mds")
   component <- match.arg(component)
+
+  if (!is.null(groups)) {
+    return(.na_select_grouped(
+      data = data, groups = groups, r_min = r_min, p_max = p_max,
+      centrality_min = centrality_min, within = within, screen = screen,
+      component = component, seed = seed
+    ))
+  }
 
   # Louvain is randomised. Seed locally and restore the caller's stream so
   # that a reproducible selection does not cost them their RNG state.
@@ -453,6 +480,104 @@ mds_consensus <- function(data,
     network = na_result,
     pca_only = setdiff(pca_result$mds, na_result$mds),
     network_only = setdiff(na_result$mds, pca_result$mds)
+  )
+}
+
+
+# Internal: grouped (EMDS) selection for the network route.
+#
+# The procedure runs independently inside each functional group, so that every
+# function contributes an indicator instead of one dominant function crowding
+# the others out of a pool-wide competition.
+#
+# A group can be too small for a correlation network -- carbon cycling is two
+# indicators, and three is the minimum for a graph worth clustering. Rather
+# than dropping such a group (losing a whole soil function) or keeping all of
+# it (defeating the point, since its members are usually near-collinear), it
+# falls back to the same principle degraded to something computable: keep the
+# indicator most strongly correlated with the rest of its group. The fallback
+# is recorded per group in $group_results so it is never silent.
+.na_select_grouped <- function(data, groups, r_min, p_max, centrality_min,
+                               within, screen, component, seed) {
+  numeric_data <- .network_numeric_data(data)
+  groups <- .validate_groups(groups, colnames(numeric_data))
+
+  group_results <- lapply(names(groups), function(g) {
+    members <- groups[[g]]
+
+    if (length(members) == 1) {
+      return(list(mds = members, method = "single-indicator group",
+                  result = NULL))
+    }
+
+    subset <- numeric_data[, members, drop = FALSE]
+
+    attempt <- try(
+      na_select_mds(as.data.frame(subset), r_min = r_min, p_max = p_max,
+                    centrality_min = centrality_min, within = within,
+                    screen = screen, component = component,
+                    groups = NULL, seed = seed),
+      silent = TRUE
+    )
+
+    if (!inherits(attempt, "try-error")) {
+      return(list(mds = attempt$mds, method = "network", result = attempt))
+    }
+
+    # Fallback: most correlated with the rest of the group.
+    cors <- suppressWarnings(
+      stats::cor(subset, method = "spearman", use = "pairwise.complete.obs")
+    )
+    diag(cors) <- NA
+    connectedness <- rowSums(abs(cors), na.rm = TRUE)
+    pick <- names(sort(connectedness, decreasing = TRUE))[1]
+
+    list(mds = pick,
+         method = paste0("fallback: group too small or too sparse for a ",
+                         "network (", length(members), " indicators)"),
+         result = NULL)
+  })
+  names(group_results) <- names(groups)
+
+  mds <- unique(unlist(lapply(group_results, `[[`, "mds"), use.names = FALSE))
+  if (is.null(mds)) {
+    mds <- character(0)
+  }
+
+  # Weights come from each group's own centrality where a network was built,
+  # and are equal within a group that fell back. Normalised over the selection.
+  raw <- vapply(mds, function(ind) {
+    for (gr in group_results) {
+      if (ind %in% gr$mds) {
+        if (!is.null(gr$result)) {
+          return(unname(gr$result$weights[ind]))
+        }
+        return(1)
+      }
+    }
+    1
+  }, numeric(1))
+
+  weights <- raw / sum(raw)
+  names(weights) <- mds
+
+  fell_back <- names(group_results)[
+    vapply(group_results, function(g) grepl("^fallback", g$method), logical(1))
+  ]
+  if (length(fell_back) > 0) {
+    warning("These groups were too small or too sparse to build a ",
+            "correlation network, so the most within-group correlated ",
+            "indicator was kept instead: ",
+            paste(fell_back, collapse = ", "),
+            ". See $group_results for what each group did.")
+  }
+
+  list(
+    mds = mds,
+    weights = weights,
+    groups = groups,
+    group_results = group_results,
+    grouped = TRUE
   )
 }
 

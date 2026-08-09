@@ -3,6 +3,12 @@
 #' @importFrom stats approx biplot complete.cases sd
 "_PACKAGE"
 
+# `soil_function_groups` is a lazy-loaded dataset used as a default argument
+# value in assign_function_groups(). It resolves fine at run time, but R CMD
+# check's static analysis cannot see the binding and reports it as an undefined
+# global. Declaring it here is the documented remedy.
+utils::globalVariables("soil_function_groups")
+
 #' soilquality: Soil Quality Index Calculation with PCA and AHP
 #'
 #' @description
