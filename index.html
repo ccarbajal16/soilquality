@@ -73,35 +73,52 @@
 <div class="section level2">
 <h2 id="overview">Overview<a class="anchor" aria-label="anchor" href="#overview"></a>
 </h2>
-<p>The <code>soilquality</code> R package provides comprehensive tools for calculating Soil Quality Index (SQI) using scientifically validated methods. The package implements Principal Component Analysis (PCA) for Minimum Data Set (MDS) selection and Analytic Hierarchy Process (AHP) for expert-based weighting, transforming complex soil property data into standardized quality metrics.</p>
+<p><code>soilquality</code> builds Soil Quality Indices — and, unusually, helps you find out whether the one you built is any good.</p>
+<p>A soil quality index has <strong>no ground truth</strong>. Nothing tells you whether yours is correct. Most packages stop at producing a number; this one carries the routes the literature actually uses at every step of the pipeline, and the diagnostics that reveal when an index is not discriminating, when a model is circular, or when a comparison was never fair to begin with.</p>
 </div>
 <div class="section level2">
 <h2 id="key-features">Key Features<a class="anchor" aria-label="anchor" href="#key-features"></a>
 </h2>
+<p><strong>Selecting indicators</strong></p>
 <ul>
 <li>
-<strong>Automated MDS Selection</strong>: PCA-based dimensionality reduction to identify key soil indicators</li>
+<strong>PCA</strong> minimum data set selection, with the published <em>within 10 % of the maximum loading</em> rule available alongside the narrower default</li>
 <li>
-<strong>Expert Weighting System</strong>: AHP methodology with consistency ratio validation</li>
+<strong>Correlation-network</strong> selection by centrality rather than variance — ecological hubs instead of high-variance variables</li>
 <li>
-<strong>Flexible Scoring Functions</strong>: Multiple normalization methods for different soil properties
-<ul>
-<li>Higher-is-better (e.g., organic matter, nutrients)</li>
-<li>Lower-is-better (e.g., bulk density, electrical conductivity)</li>
-<li>Optimal range (e.g., pH)</li>
-<li>Custom threshold-based scoring</li>
+<strong>Functional (EMDS) grouping</strong>: select one indicator per soil <em>function</em>, so a dominant function cannot crowd the others out</li>
+<li>
+<strong>PCA adequacy testing</strong> — KMO and Bartlett’s sphericity, which most published work skips</li>
 </ul>
-</li>
+<p><strong>Scoring</strong></p>
+<ul>
+<li>Linear (higher / lower / optimum / threshold), plus the <strong>sigmoidal</strong> curve that dominates the SQI literature</li>
 <li>
-<strong>Pre-defined Property Sets</strong>: Standard collections for common soil analyses (basic, standard, comprehensive, physical, chemical, fertility)</li>
+<strong>Reference-soil standardisation</strong> — score against an undisturbed soil instead of your own sample extremes, the documented escape from index incomparability</li>
 <li>
-<strong>Standard Scoring Rules</strong>: Automatic rule assignment based on property patterns</li>
+<strong>Inherent-property adjustment</strong> — stop scoring a soil down for being what its parent material made it</li>
+</ul>
+<p><strong>Weighting and aggregation</strong></p>
+<ul>
 <li>
-<strong>Comprehensive Visualization</strong>: Multiple plot types for results interpretation</li>
+<strong>AHP</strong> with consistency-ratio validation, PCA loadings, or network centrality</li>
 <li>
-<strong>Interactive Shiny Application</strong>: GUI for non-programmers</li>
+<strong>Area aggregation</strong> — a weight-free route that sidesteps the pipeline’s most contested step entirely</li>
+</ul>
+<p><strong>Validation — the part most work skips</strong></p>
+<ul>
 <li>
-<strong>Complete Documentation</strong>: Vignettes, examples, and function references</li>
+<code><a href="reference/sqi_validate.html">sqi_validate()</a></code> leads with the <strong>distribution across decision categories</strong>, not a correlation</li>
+<li>
+<code><a href="reference/sqi_stability.html">sqi_stability()</a></code> asks whether your conclusion survives a change of recipe</li>
+<li>
+<code><a href="reference/check_circularity.html">check_circularity()</a></code> refuses to let you regress an index on the indicators that built it</li>
+</ul>
+<p><strong>Also</strong></p>
+<ul>
+<li>Three example datasets, each for a different job</li>
+<li>Interactive Shiny application for non-programmers</li>
+<li>Vignettes, a full function reference, and a package website</li>
 </ul>
 </div>
 <div class="section level2">
@@ -185,12 +202,10 @@
 <div class="section level2">
 <h2 id="installation">Installation<a class="anchor" aria-label="anchor" href="#installation"></a>
 </h2>
+<p><code>soilquality</code> is <strong>not on CRAN</strong>. Install it from GitHub:</p>
 <div class="section level3">
-<h3 id="from-github-development-version">From GitHub (Development Version)<a class="anchor" aria-label="anchor" href="#from-github-development-version"></a>
+<h3 id="using-pak-recommended">Using pak (Recommended)<a class="anchor" aria-label="anchor" href="#using-pak-recommended"></a>
 </h3>
-<div class="section level4">
-<h4 id="using-pak-recommended">Using pak (Recommended)<a class="anchor" aria-label="anchor" href="#using-pak-recommended"></a>
-</h4>
 <div class="sourceCode" id="cb2"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install pak if needed</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"pak"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
@@ -200,9 +215,9 @@
 <span><span class="co"># Install soilquality</span></span>
 <span><span class="fu">pak</span><span class="fu">::</span><span class="fu"><a href="https://pak.r-lib.org/reference/pak.html" class="external-link">pak</a></span><span class="op">(</span><span class="st">"ccarbajal16/soilquality"</span><span class="op">)</span></span></code></pre></div>
 </div>
-<div class="section level4">
-<h4 id="using-devtools">Using devtools<a class="anchor" aria-label="anchor" href="#using-devtools"></a>
-</h4>
+<div class="section level3">
+<h3 id="using-devtools">Using devtools<a class="anchor" aria-label="anchor" href="#using-devtools"></a>
+</h3>
 <div class="sourceCode" id="cb3"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Install devtools if needed</span></span>
 <span><span class="kw">if</span> <span class="op">(</span><span class="op">!</span><span class="fu"><a href="https://rdrr.io/r/base/ns-load.html" class="external-link">requireNamespace</a></span><span class="op">(</span><span class="st">"devtools"</span>, quietly <span class="op">=</span> <span class="cn">TRUE</span><span class="op">)</span><span class="op">)</span> <span class="op">{</span></span>
@@ -212,13 +227,12 @@
 <span><span class="co"># Install soilquality</span></span>
 <span><span class="fu">devtools</span><span class="fu">::</span><span class="fu">install_github</span><span class="op">(</span><span class="st">"ccarbajal16/soilquality"</span><span class="op">)</span></span></code></pre></div>
 </div>
-</div>
 <div class="section level3">
-<h3 id="from-cran-stable-release">From CRAN (Stable Release)<a class="anchor" aria-label="anchor" href="#from-cran-stable-release"></a>
+<h3 id="optional-dependency">Optional dependency<a class="anchor" aria-label="anchor" href="#optional-dependency"></a>
 </h3>
+<p>Correlation-network selection (<code><a href="reference/na_select_mds.html">na_select_mds()</a></code>, <code><a href="reference/mds_consensus.html">mds_consensus()</a></code>) needs <strong>igraph</strong>, which is suggested rather than required — this package is MIT-licensed and igraph is GPL, so it is kept out of <code>Imports</code> deliberately. Everything else works without it.</p>
 <div class="sourceCode" id="cb4"><pre class="downlit sourceCode r">
-<code class="sourceCode R"><span><span class="co"># Coming soon</span></span>
-<span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"soilquality"</span><span class="op">)</span></span></code></pre></div>
+<code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/install.packages.html" class="external-link">install.packages</a></span><span class="op">(</span><span class="st">"igraph"</span><span class="op">)</span></span></code></pre></div>
 </div>
 </div>
 <div class="section level2">
@@ -295,9 +309,34 @@
 <span><span class="op">)</span></span></code></pre></div>
 </div>
 <div class="section level3">
+<h3 id="validating-what-you-built">Validating What You Built<a class="anchor" aria-label="anchor" href="#validating-what-you-built"></a>
+</h3>
+<p>Producing an index is the easy half. This is the other one.</p>
+<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">props</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://rdrr.io/r/base/c.html" class="external-link">c</a></span><span class="op">(</span><span class="st">"pH"</span>, <span class="st">"OM"</span>, <span class="st">"N"</span>, <span class="st">"P"</span>, <span class="st">"K"</span>, <span class="st">"CEC"</span>, <span class="st">"BD"</span><span class="op">)</span></span>
+<span><span class="va">index</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span><span class="va">soil_data</span>, properties <span class="op">=</span> <span class="va">props</span>,</span>
+<span>                                id_column <span class="op">=</span> <span class="st">"SampleID"</span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/sqi_validate.html">sqi_validate</a></span><span class="op">(</span><span class="va">index</span><span class="op">)</span></span></code></pre></div>
+<p>On this dataset that call raises a warning, and it is not a bug — it is the diagnostic working. The default recipe puts <strong>100 % of samples in the middle bands</strong>, with “very low” and “very high” both empty. An index that declines to call any sample clearly good or clearly bad cannot inform a decision.</p>
+<p>Then ask whether the conclusion depends on how you built it:</p>
+<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="va">sigmoid</span> <span class="op">&lt;-</span> <span class="fu"><a href="reference/compute_sqi_properties.html">compute_sqi_properties</a></span><span class="op">(</span></span>
+<span>  <span class="va">soil_data</span>, properties <span class="op">=</span> <span class="va">props</span>, id_column <span class="op">=</span> <span class="st">"SampleID"</span>,</span>
+<span>  scoring_rules <span class="op">=</span> <span class="fu"><a href="reference/standard_scoring_rules.html">standard_scoring_rules</a></span><span class="op">(</span><span class="va">props</span>, scoring <span class="op">=</span> <span class="st">"sigmoid"</span><span class="op">)</span></span>
+<span><span class="op">)</span></span>
+<span></span>
+<span><span class="fu"><a href="reference/sqi_stability.html">sqi_stability</a></span><span class="op">(</span>linear <span class="op">=</span> <span class="va">index</span>, sigmoid <span class="op">=</span> <span class="va">sigmoid</span><span class="op">)</span></span></code></pre></div>
+<p>Here the two recipes agree at ρ = 0.80 and keep the same best field — but the <strong>worst one changes</strong>. If the field you were about to intervene on depends on which scoring function you happened to pick, you do not have a result; you have an artefact of the recipe. A high rank correlation does not rescue that.</p>
+<p>And before modelling what drives the index, check that the question is not circular:</p>
+<div class="sourceCode" id="cb11"><pre class="downlit sourceCode r">
+<code class="sourceCode R"><span><span class="fu"><a href="reference/check_circularity.html">check_circularity</a></span><span class="op">(</span><span class="va">index</span>, <span class="op">~</span> <span class="va">Sand</span> <span class="op">+</span> <span class="va">Clay</span><span class="op">)</span>          <span class="co"># outside the index: fine</span></span>
+<span><span class="kw"><a href="https://rdrr.io/r/base/try.html" class="external-link">try</a></span><span class="op">(</span><span class="fu"><a href="reference/check_circularity.html">check_circularity</a></span><span class="op">(</span><span class="va">index</span>, <span class="op">~</span> <span class="va">OM</span><span class="op">)</span><span class="op">)</span>              <span class="co"># a component: refused</span></span></code></pre></div>
+</div>
+<div class="section level3">
 <h3 id="launch-interactive-application">Launch Interactive Application<a class="anchor" aria-label="anchor" href="#launch-interactive-application"></a>
 </h3>
-<div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb12"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="co"># Start Shiny app for GUI-based analysis</span></span>
 <span><span class="fu"><a href="reference/run_sqi_app.html">run_sqi_app</a></span><span class="op">(</span><span class="op">)</span></span></code></pre></div>
 </div>
@@ -305,6 +344,19 @@
 <div class="section level2">
 <h2 id="main-functions">Main Functions<a class="anchor" aria-label="anchor" href="#main-functions"></a>
 </h2>
+<div class="section level3">
+<h3 id="sqi-computation">SQI Computation<a class="anchor" aria-label="anchor" href="#sqi-computation"></a>
+</h3>
+<ul>
+<li>
+<code><a href="reference/compute_sqi.html">compute_sqi()</a></code> - File-based workflow</li>
+<li>
+<code><a href="reference/compute_sqi_df.html">compute_sqi_df()</a></code> - In-memory workflow, and the engine the others delegate to. Carries <code>method</code>, <code>select</code>, <code>inherent</code> and <code>network_args</code>
+</li>
+<li>
+<code><a href="reference/compute_sqi_properties.html">compute_sqi_properties()</a></code> - Property selection and constructor-based scoring</li>
+</ul>
+</div>
 <div class="section level3">
 <h3 id="data-handling">Data Handling<a class="anchor" aria-label="anchor" href="#data-handling"></a>
 </h3>
@@ -318,39 +370,42 @@
 </ul>
 </div>
 <div class="section level3">
-<h3 id="pca-and-mds-selection">PCA and MDS Selection<a class="anchor" aria-label="anchor" href="#pca-and-mds-selection"></a>
+<h3 id="selecting-a-minimum-data-set">Selecting a Minimum Data Set<a class="anchor" aria-label="anchor" href="#selecting-a-minimum-data-set"></a>
 </h3>
 <ul>
 <li>
-<code><a href="reference/pca_select_mds.html">pca_select_mds()</a></code> - PCA-based minimum data set selection</li>
+<code><a href="reference/pca_select_mds.html">pca_select_mds()</a></code> - Selection by variance. <code>within</code> gives the published relative-loading rule, <code>groups</code> selects within soil functions, <code>selector = "norm"</code> uses Yuan’s norm value</li>
+<li>
+<code><a href="reference/na_select_mds.html">na_select_mds()</a></code> - Selection by centrality in a Spearman correlation network <em>(needs the suggested <code>igraph</code>)</em>
+</li>
+<li>
+<code><a href="reference/mds_consensus.html">mds_consensus()</a></code> - The intersection of both routes, as a robustness check</li>
+<li>
+<code><a href="reference/pca_adequacy.html">pca_adequacy()</a></code> - KMO and Bartlett’s test of sphericity</li>
 </ul>
 </div>
 <div class="section level3">
-<h3 id="ahp-weighting">AHP Weighting<a class="anchor" aria-label="anchor" href="#ahp-weighting"></a>
+<h3 id="functional-grouping">Functional Grouping<a class="anchor" aria-label="anchor" href="#functional-grouping"></a>
 </h3>
 <ul>
 <li>
-<code><a href="reference/ahp_weights.html">ahp_weights()</a></code> - Calculate weights from pairwise comparison matrix</li>
+<code>soil_function_groups</code> - The five soil functions, for grouped selection</li>
 <li>
-<code><a href="reference/create_ahp_matrix.html">create_ahp_matrix()</a></code> - Interactive or programmatic matrix creation</li>
-<li>
-<code><a href="reference/ratio_to_saaty.html">ratio_to_saaty()</a></code> - Convert importance ratios to Saaty scale</li>
+<code><a href="reference/assign_function_groups.html">assign_function_groups()</a></code> - Map property names onto those functions</li>
 </ul>
 </div>
 <div class="section level3">
-<h3 id="scoring-functions">Scoring Functions<a class="anchor" aria-label="anchor" href="#scoring-functions"></a>
+<h3 id="scoring">Scoring<a class="anchor" aria-label="anchor" href="#scoring"></a>
 </h3>
 <ul>
 <li>
-<code><a href="reference/score_higher_better.html">score_higher_better()</a></code> - Normalize properties where higher is better</li>
+<code><a href="reference/score_higher_better.html">score_higher_better()</a></code>, <code><a href="reference/score_lower_better.html">score_lower_better()</a></code>, <code><a href="reference/score_optimum.html">score_optimum()</a></code>, <code><a href="reference/score_threshold.html">score_threshold()</a></code> - The linear family</li>
 <li>
-<code><a href="reference/score_lower_better.html">score_lower_better()</a></code> - Normalize properties where lower is better</li>
+<code><a href="reference/score_sigmoid.html">score_sigmoid()</a></code> - The non-linear curve that dominates the SQI literature</li>
 <li>
-<code><a href="reference/score_optimum.html">score_optimum()</a></code> - Normalize properties with optimal range</li>
+<code><a href="reference/standardize_to_reference.html">standardize_to_reference()</a></code> - Score against an undisturbed reference soil</li>
 <li>
-<code><a href="reference/score_threshold.html">score_threshold()</a></code> - Custom piecewise scoring</li>
-<li>
-<code><a href="reference/score_indicators.html">score_indicators()</a></code> - Apply scoring to multiple indicators</li>
+<code><a href="reference/score_indicators.html">score_indicators()</a></code> - Apply scoring across a set of indicators</li>
 </ul>
 </div>
 <div class="section level3">
@@ -358,35 +413,52 @@
 </h3>
 <ul>
 <li>
-<code><a href="reference/higher_better.html">higher_better()</a></code> - Constructor for higher-is-better rules</li>
+<code><a href="reference/higher_better.html">higher_better()</a></code>, <code><a href="reference/lower_better.html">lower_better()</a></code>, <code><a href="reference/optimum_range.html">optimum_range()</a></code>, <code><a href="reference/threshold_scoring.html">threshold_scoring()</a></code>
+</li>
 <li>
-<code><a href="reference/lower_better.html">lower_better()</a></code> - Constructor for lower-is-better rules</li>
+<code><a href="reference/sigmoid_scoring.html">sigmoid_scoring()</a></code> - Sigmoidal rule</li>
 <li>
-<code><a href="reference/optimum_range.html">optimum_range()</a></code> - Constructor for optimal range rules</li>
+<code><a href="reference/reference_scoring.html">reference_scoring()</a></code> - Reference-soil rule</li>
 <li>
-<code><a href="reference/threshold_scoring.html">threshold_scoring()</a></code> - Constructor for threshold-based rules</li>
-</ul>
-</div>
-<div class="section level3">
-<h3 id="property-sets-and-standard-rules">Property Sets and Standard Rules<a class="anchor" aria-label="anchor" href="#property-sets-and-standard-rules"></a>
-</h3>
-<ul>
+<code><a href="reference/standard_scoring_rules.html">standard_scoring_rules()</a></code> - Automatic assignment by property name, in <code>"linear"</code> or <code>"sigmoid"</code> flavour</li>
 <li>
 <code>soil_property_sets</code> - Pre-defined property collections</li>
-<li>
-<code><a href="reference/standard_scoring_rules.html">standard_scoring_rules()</a></code> - Automatic rule assignment</li>
 </ul>
 </div>
 <div class="section level3">
-<h3 id="sqi-computation">SQI Computation<a class="anchor" aria-label="anchor" href="#sqi-computation"></a>
+<h3 id="weighting-and-aggregation">Weighting and Aggregation<a class="anchor" aria-label="anchor" href="#weighting-and-aggregation"></a>
 </h3>
 <ul>
 <li>
-<code><a href="reference/compute_sqi.html">compute_sqi()</a></code> - File-based workflow</li>
+<code><a href="reference/ahp_weights.html">ahp_weights()</a></code> - Weights from a pairwise comparison matrix, with a consistency ratio</li>
 <li>
-<code><a href="reference/compute_sqi_df.html">compute_sqi_df()</a></code> - In-memory workflow</li>
+<code><a href="reference/create_ahp_matrix.html">create_ahp_matrix()</a></code> - Interactive or programmatic matrix creation</li>
 <li>
-<code><a href="reference/compute_sqi_properties.html">compute_sqi_properties()</a></code> - Enhanced workflow with property selection</li>
+<code><a href="reference/ratio_to_saaty.html">ratio_to_saaty()</a></code> - Convert importance ratios to the Saaty scale</li>
+<li>
+<code><a href="reference/sqi_area.html">sqi_area()</a></code> - Weight-free aggregation as the area of a radar diagram</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="validation">Validation<a class="anchor" aria-label="anchor" href="#validation"></a>
+</h3>
+<ul>
+<li>
+<code><a href="reference/sqi_validate.html">sqi_validate()</a></code> - Distribution across decision categories, sensitivity, fidelity to a total-data-set index, and an optional external criterion</li>
+<li>
+<code><a href="reference/sqi_stability.html">sqi_stability()</a></code> - Does the ranking survive a change of recipe?</li>
+<li>
+<code><a href="reference/check_circularity.html">check_circularity()</a></code> - Refuses a model that regresses an index on its own components</li>
+</ul>
+</div>
+<div class="section level3">
+<h3 id="correcting-for-what-cannot-be-managed">Correcting for What Cannot Be Managed<a class="anchor" aria-label="anchor" href="#correcting-for-what-cannot-be-managed"></a>
+</h3>
+<ul>
+<li>
+<code><a href="reference/adjust_inherent.html">adjust_inherent()</a></code> - Remove the variation attributable to parent material and land-use history</li>
+<li>
+<code><a href="reference/sensitivity_resistance.html">sensitivity_resistance()</a></code> - Which indicators degrade faster than soil carbon, and which resist</li>
 </ul>
 </div>
 <div class="section level3">
@@ -394,9 +466,11 @@
 </h3>
 <ul>
 <li>
-<code><a href="reference/plot.sqi_result.html">plot.sqi_result()</a></code> - S3 plot method with multiple types</li>
+<code><a href="reference/plot.sqi_result.html">plot.sqi_result()</a></code> - S3 plot method with five types</li>
 <li>
-<code><a href="reference/plot_sqi_report.html">plot_sqi_report()</a></code> - Multi-panel visualization report</li>
+<code><a href="reference/plot_sqi_report.html">plot_sqi_report()</a></code> - Multi-panel report</li>
+<li>
+<code><a href="reference/plot_sqi_validation.html">plot_sqi_validation()</a></code> - The distribution across decision categories</li>
 </ul>
 </div>
 <div class="section level3">
@@ -404,9 +478,47 @@
 </h3>
 <ul>
 <li>
-<code><a href="reference/run_sqi_app.html">run_sqi_app()</a></code> - Launch Shiny application</li>
+<code><a href="reference/run_sqi_app.html">run_sqi_app()</a></code> - Launch the Shiny application</li>
 </ul>
+<blockquote>
+<p><strong>Note:</strong> the Shiny app currently exposes the 1.0.0 workflow. The routes added since — sigmoid and reference scoring, area aggregation, network and grouped selection, and the whole validation layer — are available from the console only.</p>
+</blockquote>
 </div>
+</div>
+<div class="section level2">
+<h2 id="example-data">Example Data<a class="anchor" aria-label="anchor" href="#example-data"></a>
+</h2>
+<p>Three datasets, because they do three different jobs:</p>
+<table class="table">
+<colgroup>
+<col width="33%">
+<col width="33%">
+<col width="33%">
+</colgroup>
+<thead><tr>
+<th>Dataset</th>
+<th>Rows</th>
+<th>For</th>
+</tr></thead>
+<tbody>
+<tr>
+<td><code>soil_data</code></td>
+<td>50</td>
+<td>Scoring, weighting, aggregation. Properties drawn independently, so it carries almost no covariance</td>
+</tr>
+<tr>
+<td><code>soil_structured</code></td>
+<td>120</td>
+<td>Anything reading the structure <em>between</em> indicators. Texture sums to 100, <code>SOC = OM/1.724</code>, CEC generated by clay and organic colloids</td>
+</tr>
+<tr>
+<td><code>soil_inherent</code></td>
+<td>180</td>
+<td>Inherent-property adjustment and nested designs. Carries <code>soil_type</code>, <code>land_use_history</code>, <code>management</code> and <code>PlotID</code>, five samples per plot</td>
+</tr>
+</tbody>
+</table>
+<p>All three are simulated, and each generating script in <code>data-raw/</code> states every relationship it used.</p>
 </div>
 <div class="section level2">
 <h2 id="documentation">Documentation<a class="anchor" aria-label="anchor" href="#documentation"></a>
@@ -416,6 +528,8 @@
 <li>
 <p><strong>Vignettes</strong>:</p>
 <ul>
+<li>
+<a href="vignettes/building-and-validating-an-sqi.Rmd"><strong>Building and validating a Soil Quality Index</strong></a> — the pipeline end to end, and the one to read first</li>
 <li>
 <a href="vignettes/introduction.Rmd">Introduction to soilquality</a> - Basic workflow and concepts</li>
 <li>
@@ -432,12 +546,13 @@
 <h2 id="citation">Citation<a class="anchor" aria-label="anchor" href="#citation"></a>
 </h2>
 <p>If you use this package in your research, please cite it as:</p>
-<div class="sourceCode" id="cb10"><pre class="downlit sourceCode r">
+<div class="sourceCode" id="cb13"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="fu"><a href="https://rdrr.io/r/utils/citation.html" class="external-link">citation</a></span><span class="op">(</span><span class="st">"soilquality"</span><span class="op">)</span></span></code></pre></div>
 <p>Or use:</p>
 <blockquote>
-<p>Carbajal, Carlos (2025). soilquality: Soil Quality Index Calculation with PCA and AHP. R package version 1.0.0. <a href="https://github.com/ccarbajal16/soilquality" class="external-link uri">https://github.com/ccarbajal16/soilquality</a></p>
+<p>Carbajal, Carlos (2026). soilquality: Soil Quality Index Calculation with PCA and AHP. R package version 2.3.0. <a href="https://github.com/ccarbajal16/soilquality" class="external-link uri">https://github.com/ccarbajal16/soilquality</a></p>
 </blockquote>
+<p><code>citation("soilquality")</code> reads the installed <code>DESCRIPTION</code>, so it is the authoritative version; the block above will drift as releases go by.</p>
 </div>
 <div class="section level2">
 <h2 id="contributing">Contributing<a class="anchor" aria-label="anchor" href="#contributing"></a>
@@ -502,7 +617,8 @@
 <div class="dev-status">
 <h2 data-toc-skip>Dev status</h2>
 <ul class="list-unstyled">
-<li><a href="https://github.com/ccarbajal16/soilquality" class="external-link"><img src="https://img.shields.io/badge/R--CMD--check-passing-brightgreen.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://github.com/ccarbajal16/soilquality/actions/workflows/R-CMD-check.yaml" class="external-link"><img src="https://github.com/ccarbajal16/soilquality/actions/workflows/R-CMD-check.yaml/badge.svg" alt="R-CMD-check"></a></li>
+<li><a href="https://github.com/ccarbajal16/soilquality/actions/workflows/pkgdown.yaml" class="external-link"><img src="https://github.com/ccarbajal16/soilquality/actions/workflows/pkgdown.yaml/badge.svg" alt="pkgdown"></a></li>
 <li><a href="https://opensource.org/licenses/MIT" class="external-link"><img src="https://img.shields.io/badge/License-MIT-yellow.svg" alt="License: MIT"></a></li>
 </ul>
 </div>
