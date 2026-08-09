@@ -7,7 +7,7 @@
 ## Citation
 
 Source:
-[`DESCRIPTION`](https://github.com/ccarbajal16/soilquality/blob/master/DESCRIPTION)
+[`DESCRIPTION`](https://github.com/ccarbajal16/soilquality/blob/v2.3.0/DESCRIPTION)
 
 Carlos Carbajal (2026). *soilquality: Soil Quality Index Calculation
 with PCA and AHP*. R package version 2.3.0,
