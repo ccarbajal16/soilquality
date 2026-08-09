@@ -146,12 +146,23 @@ compute_sqi <- function(input_csv,
 #'   SQI is reported as a ratio against this non-degraded reference soil,
 #'   which is what makes area-based values comparable across studies. Names
 #'   must cover every selected MDS indicator.
-#' @param select Indicator selection strategy. \code{"pca"} (the default, and
-#'   the historical behaviour) selects a Minimum Data Set via
-#'   \code{\link{pca_select_mds}}. \code{"none"} skips selection and uses
-#'   \strong{every} numeric indicator -- the "total data set" (TDS) index that
-#'   \code{\link{sqi_validate}} measures fidelity against. PCA is still run
-#'   and reported in either case.
+#' @param select Indicator selection strategy.
+#'   \describe{
+#'     \item{\code{"pca"}}{The default, and the historical behaviour: a
+#'       Minimum Data Set via \code{\link{pca_select_mds}}, selecting on
+#'       variance.}
+#'     \item{\code{"network"}}{Correlation-network selection via
+#'       \code{\link{na_select_mds}}, selecting on centrality. Its
+#'       centrality-derived weights are used unless \code{pairwise_df} is
+#'       supplied. Requires the suggested package \pkg{igraph}.}
+#'     \item{\code{"none"}}{No selection: every numeric indicator is used, the
+#'       "total data set" (TDS) index that \code{\link{sqi_validate}} measures
+#'       fidelity against.}
+#'   }
+#'   PCA is run and reported in all three cases.
+#' @param network_args A named list of arguments forwarded to
+#'   \code{\link{na_select_mds}} when \code{select = "network"}, for example
+#'   \code{list(r_min = 0.5, component = "all")}. Ignored otherwise.
 #' @param ... Additional arguments (currently unused).
 #'
 #' @return An object of class "sqi_result" containing:
@@ -217,7 +228,8 @@ compute_sqi_df <- function(df,
                            loading_threshold = 0.5,
                            method = c("weighted", "area"),
                            reference = NULL,
-                           select = c("pca", "none"),
+                           select = c("pca", "none", "network"),
+                           network_args = list(),
                            ...) {
   method <- match.arg(method)
   select <- match.arg(select)
@@ -253,6 +265,8 @@ compute_sqi_df <- function(df,
     loading_threshold = loading_threshold
   )
 
+  network_result <- NULL
+
   if (select == "pca") {
     mds <- pca_result$mds
 
@@ -260,6 +274,14 @@ compute_sqi_df <- function(df,
     if (length(mds) == 0) {
       stop("No indicators selected by PCA. Try adjusting thresholds.")
     }
+  } else if (select == "network") {
+    # Centrality-based selection. Spearman correlation is rank-based, so the
+    # unstandardised data is passed deliberately -- standardising would change
+    # nothing and would only obscure that.
+    indicator_df <- df[, setdiff(names(df), id_column), drop = FALSE]
+    network_result <- do.call(na_select_mds,
+                              c(list(indicator_df), network_args))
+    mds <- network_result$mds
   } else {
     # Total data set: every numeric indicator, no selection step. This is what
     # sqi_validate()'s fidelity metric compares an MDS index against.
@@ -277,6 +299,11 @@ compute_sqi_df <- function(df,
     ahp_result <- ahp_weights(pairwise_df, indicators = mds)
     weights <- ahp_result$weights
     CR <- ahp_result$CR
+  } else if (!is.null(network_result)) {
+    # Centrality weights come free with the network route, so an explicit
+    # pairwise matrix is the only thing that should override them.
+    weights <- network_result$weights[mds]
+    CR <- 0
   } else {
     # Use equal weights
     weights <- rep(1 / length(mds), length(mds))
@@ -354,7 +381,9 @@ compute_sqi_df <- function(df,
     pca = pca_result$pca,
     loadings = pca_result$loadings,
     var_exp = pca_result$var_exp,
-    method = method
+    method = method,
+    select = select,
+    network = network_result
   )
 
   class(result) <- "sqi_result"

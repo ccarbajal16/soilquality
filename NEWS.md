@@ -1,3 +1,46 @@
+# soilquality 1.3.0 (development)
+
+Adds correlation-network indicator selection, which chooses indicators by
+their centrality in a correlation network rather than by their contribution to
+variance.
+
+### New features
+- `na_select_mds()` - Minimum Data Set selection following Yuan and Shi (2026)
+  section 2.3.2: a Spearman correlation network, Louvain communities, an
+  eigenvector-centrality module filter, within-10% retention, weighted-degree
+  tie-breaking, an optional redundancy screen, and centrality-derived weights.
+- `mds_consensus()` - runs the PCA and network routes over the same data and
+  returns the indicators both agree on.
+- `compute_sqi_df()` gains `select = "network"` and a `network_args` list, so
+  the route reaches `compute_sqi()` and `compute_sqi_properties()` too. The
+  centrality weights are used unless a pairwise matrix is supplied.
+- `igraph` is a **suggested** dependency, guarded by `requireNamespace()`.
+  This package is MIT-licensed and igraph is GPL-2+; a hard dependency in
+  Imports would pull the combined work into GPL territory on distribution.
+  Everything in this section degrades gracefully when igraph is absent.
+
+### Two defects in the published procedure, and what was done about them
+- **Louvain is randomised, so the method is not deterministic.** Six runs over
+  identical input returned two different Minimum Data Sets during development.
+  `na_select_mds()` therefore takes a `seed`, defaulting to 1 and applied in a
+  local scope that leaves the caller's random stream untouched. Vary it to
+  find out whether a selection is genuinely robust; stability at one seed is
+  not evidence.
+- **On a disconnected network, eigenvector centrality goes to zero outside the
+  dominant component** -- exactly zero under the reference BLAS, around 1e-17
+  under macOS Accelerate; the distinction is immaterial, since neither passes
+  a usable threshold. A clique of three indicators correlating at 0.98 was
+  discarded entire, and no `centrality_min` could rescue it. The new
+  `component = "all"` computes centrality within each connected component so
+  each sub-network is judged on its own terms; the default reproduces the
+  published behaviour, and a warning now states the consequence.
+
+### Note on the example data
+`soil_data` is simulated from independent draws and carries almost no
+correlation structure: the largest off-diagonal Spearman rho is 0.66 and only
+one pair clears the default threshold. The network route collapses to a single
+indicator on it. That is a property of the fixture, not the method.
+
 # soilquality 1.2.0 (development)
 
 Adds index validation -- the ability to ask whether an index actually

@@ -61,11 +61,14 @@ reference:
   - standardize_numeric
   - to_numeric
 
-- title: PCA and MDS Selection
+- title: MDS Selection
   desc: >
-    Principal Component Analysis for Minimum Data Set selection
+    Selecting a Minimum Data Set, by variance (PCA) or by centrality
+    (correlation network)
   contents:
   - pca_select_mds
+  - na_select_mds
+  - mds_consensus
 
 - title: AHP Weighting
   desc: >
