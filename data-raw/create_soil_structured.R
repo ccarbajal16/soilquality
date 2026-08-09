@@ -1,10 +1,10 @@
 # Script to create the soil_structured example dataset
 #
 # WHY THIS EXISTS
-# soil_data and soil_ucayali draw every property independently from rnorm(),
-# so they carry no covariance beyond the texture closure applied afterwards.
+# soil_data draws every property independently from rnorm(),
+# so it carries no covariance beyond the texture closure applied afterwards.
 # The largest off-diagonal Spearman rho in soil_data is 0.66 and exactly one
-# pair clears a 0.6 threshold. That makes them unusable for demonstrating any
+# pair clears a 0.6 threshold. That makes it unusable for demonstrating any
 # method that works on the relationships BETWEEN indicators -- correlation
 # network selection, functional grouping, redundancy screening.
 #
@@ -21,7 +21,7 @@
 #   EC  = f(Ca + Mg)                  soluble bases carry conductivity
 #
 # The values remain in realistic ranges for acidic tropical soils of the
-# Ucayali region, matching soil_ucayali, so the three datasets are comparable.
+# Ucayali region, matching soil_data, so the two datasets are comparable.
 
 set.seed(2026)
 

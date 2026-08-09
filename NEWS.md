@@ -1,3 +1,47 @@
+# soilquality 2.0.0 (development)
+
+## Breaking change
+
+**`soil_ucayali` has been removed.** Use `soil_data`, which is a strict
+superset: the same 50 samples, the same `SampleID`s, and all fifteen shared
+columns **identical value for value**, plus a sulfur (`S`) measurement that
+`soil_ucayali` lacked. The dataset carried no information of its own, and
+shipping both made the reference index look like there were two example
+datasets to choose between when there was one.
+
+Migration is a rename:
+
+```r
+# before
+data(soil_ucayali)
+compute_sqi_properties(soil_ucayali, properties = c("pH", "OM"))
+
+# after
+data(soil_data)
+compute_sqi_properties(soil_data, properties = c("pH", "OM"))
+```
+
+One caveat worth stating: code that **auto-detects numeric columns** rather
+than naming properties explicitly will now see sixteen columns instead of
+fifteen, because `S` is present. The selected minimum data set, and therefore
+the index, can change. Name your properties if that matters to you. The
+package's own vignettes were updated on this basis and their results shift
+accordingly.
+
+The major version is bumped because this removes an exported object.
+
+## Documentation
+
+- `soil_data` is retitled from "Extended Soil Data from Ucayali, Peru" — the
+  "Extended" only meant "relative to `soil_ucayali`" and no longer parses. Its
+  help page now says plainly what it is good for and what it is not: it has
+  almost no covariance structure (largest off-diagonal Spearman rho 0.66, one
+  pair above 0.6), which is fine for scoring, weighting and aggregation, and
+  useless for anything that reads the structure *between* indicators. Use
+  `soil_structured` for that.
+- The two remaining datasets are now described in the reference index by the
+  job each does, rather than as interchangeable alternatives.
+
 # soilquality 1.7.0 (development)
 
 Completes the upgrade begun in 1.1.0: adequacy testing, the main vignette, and

@@ -36,10 +36,9 @@ soil_structured
 \description{
 A dataset of 120 simulated soil samples in which the properties are
 \strong{related to one another the way real soil properties are}. It exists
-because \code{\link{soil_data}} and \code{\link{soil_ucayali}} do not:
-those draw every property independently, so they carry almost no covariance
-and cannot exercise any method that works on the relationships
-\emph{between} indicators.
+because \code{\link{soil_data}} does not: it draws every property
+independently, so it carries almost no covariance and cannot exercise any
+method that works on the relationships \emph{between} indicators.
 }
 \details{
 The values are simulated, but from three latent gradients -- texture,
@@ -104,7 +103,7 @@ if (requireNamespace("igraph", quietly = TRUE)) {
 
 }
 \seealso{
-\code{\link{soil_data}} and \code{\link{soil_ucayali}}, which are
-  simpler but carry no covariance structure
+\code{\link{soil_data}}, which is simpler but carries no
+  covariance structure
 }
 \keyword{datasets}

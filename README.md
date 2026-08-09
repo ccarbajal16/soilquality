@@ -111,11 +111,11 @@ install.packages("soilquality")
 library(soilquality)
 
 # Load example data
-data(soil_ucayali)
+data(soil_data)
 
 # Compute SQI with automatic property detection
 result <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = c("Sand", "Silt", "Clay", "pH", "OM", "P", "K")
 )
 
@@ -134,7 +134,7 @@ plot_sqi_report(result)
 ```r
 # Use standard property set
 result <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = soil_property_sets$standard
 )
 ```
@@ -154,7 +154,7 @@ custom_rules <- list(
 )
 
 result <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = c("pH", "OM", "BD", "P"),
   scoring_rules = custom_rules
 )
@@ -169,7 +169,7 @@ ahp_matrix <- create_ahp_matrix(indicators, mode = "interactive")
 
 # Use computed AHP weights in SQI calculation
 result <- compute_sqi_properties(
-  data = soil_ucayali,
+  data = soil_data,
   properties = ahp_matrix$indicators,
   pairwise_matrix = ahp_matrix$weights
 )
