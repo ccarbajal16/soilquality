@@ -1,3 +1,53 @@
+# soilquality 2.3.0 (development)
+
+Second piece of the SEM module, and like the first it needs no SEM.
+
+### New features
+
+- `adjust_inherent()` - removes the variation in each indicator attributable
+  to properties a manager cannot change, so what remains is the part an index
+  can fairly hold anyone responsible for. A soil should not be scored down for
+  being what its geology made it.
+- `compute_sqi_df()` gains `inherent`, a one-sided formula. The adjustment
+  runs **before** selection, scoring and weighting -- correcting after any of
+  those would undo it. Defaults to `NULL`: the pipeline never adjusts unless
+  asked.
+
+### What it reports, which is half the value
+
+`$r_squared` is the share of each indicator's variation that was inheritance
+rather than management. On `soil_inherent`, `Clay` and `pH` come back above
+0.9 -- almost entirely inherited -- while `P` and `BD` sit near 0.2, meaning
+they were mostly telling you about management all along. An indicator whose
+inherent model explains more than `warn_r_squared` (default 0.95) is flagged,
+because once nearly all the variation is inherited the residual is mostly
+noise.
+
+### Honest about what it is, and when not to use it
+
+The arithmetic is `lm()` residuals, recentred on the indicator mean so the
+scale survives and the scoring functions behave exactly as before. A reviewer
+can fairly say "those are just residuals". They are. What the function adds is
+an opinionated, documented, correctly-defaulted step in an index pipeline that
+**no additive-index paper in the reviewed corpus performs**, plus a report of
+what the adjustment cost.
+
+**Do not do it by reflex.** Adjusting removes inherent variation by design. If
+your question is *which of these soils is inherently better* -- siting,
+valuation, capability mapping -- adjusting destroys the answer you came for.
+Adjust when the question is about management. The two look similar and are
+not.
+
+### A deliberate divergence from the plan
+
+The specification proposed `method = "none"` as the default so that adjustment
+would always be a deliberate act. The default here is `"residual"`, because
+**calling the function is the deliberate act**; a no-op default would mean
+`adjust_inherent(data, indicators, ~ soil_type)` silently did nothing, which
+is its own footgun. The deliberateness lives where it belongs instead: the
+`inherent` argument of `compute_sqi_df()` defaults to `NULL`. `"none"` remains
+available for switching the step off programmatically.
+
 # soilquality 2.2.0 (development)
 
 ### New data

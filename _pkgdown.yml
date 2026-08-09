@@ -118,6 +118,7 @@ reference:
   contents:
   - standardize_to_reference
   - sensitivity_resistance
+  - adjust_inherent
 
 - title: Aggregation
   desc: >
@@ -175,6 +176,7 @@ reference:
   - print.sqi_stability
   - print.pca_adequacy
   - print.sqi_circularity
+  - print.inherent_adjustment
 
 articles:
 - title: Getting Started

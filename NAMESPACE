@@ -2,11 +2,13 @@
 
 S3method(plot,sqi_result)
 S3method(print,ahp_matrix)
+S3method(print,inherent_adjustment)
 S3method(print,pca_adequacy)
 S3method(print,scoring_rule)
 S3method(print,sqi_circularity)
 S3method(print,sqi_stability)
 S3method(print,sqi_validation)
+export(adjust_inherent)
 export(ahp_weights)
 export(assign_function_groups)
 export(check_circularity)
